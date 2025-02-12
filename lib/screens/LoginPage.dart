@@ -3,6 +3,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:glam1/constants/AppColors.dart';
 import 'package:glam1/screens/VerifyEmailPage.dart';
 import 'package:glam1/widgets/CustomButton.dart';
+import 'package:glam1/widgets/CustomButton2.dart';
 import 'package:glam1/widgets/CustomHeader.dart';
 import 'package:glam1/widgets/CustomTextInputField.dart';
 
@@ -80,11 +81,32 @@ class _LoginPageState extends State<LoginPage> {
 
                 },
               ),
-              const SizedBox(height: 12),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 20),
-                child: imageContainer(context, "assets/images/div2.svg"),
-              ),
+              SizedBox(height: 10,),
+              Row(
+  children: [
+    Expanded(
+      child: Divider(
+        color:AppColors.primary,
+        thickness: 1,
+      ),
+    ),
+    Padding(
+      padding: EdgeInsets.symmetric(horizontal: 8),
+      child: Text(
+        "or continue with",
+        style: TextStyle(fontSize: 14, color:AppColors.primary,),
+      ),
+    ),
+    Expanded(
+      child: Divider(
+        color: AppColors.primary,
+        thickness: 1,
+      ),
+    ),
+  ],
+),
+               SizedBox(height: 12),
+              
 
              
              
@@ -120,7 +142,14 @@ class _LoginPageState extends State<LoginPage> {
                 },
               ),
               const SizedBox(height: 20),
-              imageContainer2(context, "assets/images/section.svg"),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  CustomButton2(text: "Country", color: Colors.white, leadingImage: 'assets/images/Frame.svg',trailingImage: 'assets/images/i.svg',),
+                  CustomButton2(text: "Language", color: Colors.white, leadingImage: 'assets/images/Frame-1.svg',trailingImage: 'assets/images/i.svg',),
+                ],
+              ),
+              
               // Row(
               //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
               //   children: [
@@ -163,19 +192,5 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Container imageContainer(BuildContext context , String imgLocation) {
-    return Container(
-              height: MediaQuery.of(context).size.height*0.02,
-              width: double.infinity,
-              child: SvgPicture.asset(imgLocation,fit: BoxFit.fill,),
-            );
-  }
-
-  Container imageContainer2(BuildContext context , String imgLocation) {
-    return Container(
-              height: MediaQuery.of(context).size.height*0.06,
-              width: double.infinity,
-              child: SvgPicture.asset(imgLocation,fit: BoxFit.fill,),
-            );
-  }
+  
 }

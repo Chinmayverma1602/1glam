@@ -15,7 +15,7 @@ class CustomTextInputField extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: 50,
-      width: 358,
+      width: double.infinity,
       child: TextFormField(
         controller: _textEditingController,
         decoration: InputDecoration(

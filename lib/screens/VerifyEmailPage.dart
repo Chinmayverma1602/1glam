@@ -32,7 +32,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
         child: Column(
           children: [
             CircleAvatar(
-              child: SvgPicture.asset('assets/images/Frame.svg', fit: BoxFit.fill,),
+              child: SvgPicture.asset('assets/images/Vector.svg', fit: BoxFit.fill,),
               radius: 75,
               backgroundColor: AppColors.primary.withOpacity(0.2),
             ),

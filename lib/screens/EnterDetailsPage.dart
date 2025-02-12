@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:glam1/constants/AppColors.dart';
+import 'package:glam1/screens/AboutMePage.dart';
 import 'package:glam1/screens/VerifyEmailPage.dart';
 import 'package:glam1/widgets/CustomButton.dart';
 import 'package:glam1/widgets/CustomHeader.dart';
@@ -87,7 +88,7 @@ class _EnterDetailsPageState extends State<EnterDetailsPage> {
                   icon: null,
                   onPressed: () => Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => VerifyEmailPage()),
+                    MaterialPageRoute(builder: (context) => AboutMePage()),
                   ),
                 ),
               ),
