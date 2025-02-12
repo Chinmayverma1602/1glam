@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:glam1/constants/AppColors.dart';
+import 'package:glam1/screens/VerifyEmailPage.dart';
 import 'package:glam1/widgets/CustomButton.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -33,8 +35,17 @@ class LoginScreen extends StatelessWidget {
             ),
             SizedBox(height: 16),
             CustomButton(
+              text: 'Continue',
+              color: AppColors.title,
+              onPressed: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context)=> VerifyEmailPage()));
+              },
+            ),
+            SizedBox(height: 16),
+            CustomButton(
               icon: Icons.mail,
               text: 'Continue with Email',
+              color: AppColors.title,
               onPressed: () {
                 // Handle email login
               },
@@ -43,6 +54,7 @@ class LoginScreen extends StatelessWidget {
             CustomButton(
               icon: Icons.g_translate,
               text: 'Continue with Google',
+              color: AppColors.title,
               onPressed: () {
                 // Handle Google login
               },
@@ -51,6 +63,7 @@ class LoginScreen extends StatelessWidget {
             CustomButton(
               icon: Icons.apple,
               text: 'Continue with Apple',
+              color: AppColors.title,
               onPressed: () {
                 // Handle Apple login
               },
@@ -59,6 +72,7 @@ class LoginScreen extends StatelessWidget {
             CustomButton(
               icon: Icons.facebook,
               text: 'Continue with Facebook',
+              color: AppColors.title,
               onPressed: () {
                 // Handle Facebook login
               },

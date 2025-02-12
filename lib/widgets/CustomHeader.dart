@@ -1,0 +1,20 @@
+import 'package:flutter/material.dart';
+import 'package:glam1/constants/AppColors.dart';
+import 'package:google_fonts/google_fonts.dart';
+
+class CustomHeader extends StatelessWidget {
+  const CustomHeader({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return  Padding(
+      padding: const EdgeInsets.only(top: 24),
+      child: Row(
+           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+            Text("1glam", style: GoogleFonts.inter(fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.title),),
+            Text("Skip",style: GoogleFonts.inter(fontSize: 14, color: AppColors.title),),
+          ],),
+    );
+  }
+}
