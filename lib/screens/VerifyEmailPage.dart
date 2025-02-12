@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:glam1/constants/AppColors.dart';
 import 'package:glam1/screens/EnterDetailsPage.dart';
 import 'package:glam1/widgets/CustomButton.dart';
@@ -31,9 +32,9 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
         child: Column(
           children: [
             CircleAvatar(
-              // child: SvgPicture.asset("assets/images/email.svg", fit: BoxFit.fill,),
+              child: SvgPicture.asset('assets/images/Frame.svg', fit: BoxFit.fill,),
               radius: 75,
-              backgroundColor: AppColors.primary.withOpacity(0.4),
+              backgroundColor: AppColors.primary.withOpacity(0.2),
             ),
             const SizedBox(height: 10),
             Text(
@@ -48,7 +49,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
             Text(
               "We've sent a verification code to",
               style: GoogleFonts.inter(
-                fontWeight: FontWeight.bold,
+                
                 color: AppColors.primary.withOpacity(0.8),
                 fontSize: 14,
               ),
@@ -57,7 +58,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
             Text(
               "example@email.com",
               style: GoogleFonts.inter(
-                fontWeight: FontWeight.bold,
+                
                 color: AppColors.title,
                 fontSize: 14,
               ),
@@ -69,8 +70,8 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                 print("Entered PIN: $pin");
               },
               defaultPinTheme: PinTheme(
-                width: 50,
-                height: 50,
+                width: 55,
+                height: 65,
                 textStyle: const TextStyle(
                   fontSize: 18,
                   color: Colors.black,
@@ -80,8 +81,8 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(
-                    color: AppColors.primary,
-                    width: 1,
+                    color: AppColors.primary.withOpacity(0.5),
+                    width: 1.5,
                   ),
                 ),
               ),
@@ -91,7 +92,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: CustomButton(
-                  text: "Continue",
+                  text: "Verify Email",
                   color: AppColors.subtitle,
                   onPressed: () => Navigator.push(
                     context,
