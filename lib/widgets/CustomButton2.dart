@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:glam1/constants/AppColors.dart';
 
 class CustomButton2 extends StatelessWidget {
   final String text;
@@ -44,7 +45,7 @@ class CustomButton2 extends StatelessWidget {
             ),
           Text(
             text,
-            style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+            style: const TextStyle(color: AppColors.text, ),
           ),
           if (trailingImage != null)
             Row(

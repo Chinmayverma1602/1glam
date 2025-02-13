@@ -9,4 +9,5 @@ class AppColors {
   static const Color subtitle = Color(0xFF86198F);
   static const Color facebookBlue = Color(0xFF1877F2);
   static const Color hintText = Color(0xFFADAEBC);
+  static const Color text = Color(0xFF1F2937);
 }

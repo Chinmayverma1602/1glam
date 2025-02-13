@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:glam1/constants/AppColors.dart';
 import 'package:glam1/widgets/CustomButton.dart';
+import 'package:glam1/widgets/CustomButton2.dart';
 import 'package:glam1/widgets/CustomHeader.dart';
 import 'package:glam1/widgets/CustomSubtitle.dart';
 import 'package:glam1/widgets/CustomTextInputField.dart';
@@ -17,6 +18,7 @@ class _AddressDetailsPageState extends State<AddressDetailsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: Padding(
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
         child: Column(
@@ -49,11 +51,29 @@ class _AddressDetailsPageState extends State<AddressDetailsPage> {
             CustomTextInputField(hintText: "Select address line 2(optional)", icon: Icons.padding_outlined),
              SizedBox(height: 15,),
             CustomTextInputField(hintText: "City", icon: Icons.apartment_outlined),
+            SizedBox(height: 15,),
+            Row(
+              children: [
+                Expanded(
+                  flex: 3, 
+                  child: CustomButton2(text: "Select Sate", borderColor: AppColors.primary.withOpacity(0.2), leadingImage: 'assets/images/Frame.svg',trailingImage: 'assets/images/i.svg',),
+                ),
+                SizedBox(width: 10),
+                Expanded(
+                  flex: 2, 
+                  child: CustomTextInputField(
+                    hintText: "ZIP",
+                    icon: Icons.tag,
+                  ),
+                ),
+              ],
+            ),
              SizedBox(height: 15,),
             Row(
               children: [
-                Icon(Icons.check_box),
-                CustomSubTitle(subtitle: "Where do you provide your services", color: Colors.black),
+                Icon(Icons.check_box_outline_blank, color: AppColors.primary.withOpacity(0.4),),
+                SizedBox(width: 10,),
+                CustomSubTitle(subtitle: "This is a shared location", color: AppColors.text),
               ],
             ),
              SizedBox(height: 15,),
