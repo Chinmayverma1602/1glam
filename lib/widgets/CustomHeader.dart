@@ -12,8 +12,8 @@ class CustomHeader extends StatelessWidget {
       child: Row(
            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-            Text("1glam", style: GoogleFonts.inter(fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.title),),
-            Text("Skip",style: GoogleFonts.inter(fontSize: 14, color: AppColors.title),),
+            Text("1glam", style: GoogleFonts.inter(fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.subtitle),),
+            Text("Skip",style: GoogleFonts.inter(fontSize: 14, color: AppColors.subtitle),),
           ],),
     );
   }

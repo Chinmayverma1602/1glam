@@ -145,8 +145,8 @@ class _LoginPageState extends State<LoginPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  CustomButton2(text: "Country", color: Colors.white, leadingImage: 'assets/images/Frame.svg',trailingImage: 'assets/images/i.svg',),
-                  CustomButton2(text: "Language", color: Colors.white, leadingImage: 'assets/images/Frame-1.svg',trailingImage: 'assets/images/i.svg',),
+                  CustomButton2(text: "Country", borderColor: AppColors.primary, leadingImage: 'assets/images/Frame.svg',trailingImage: 'assets/images/i.svg',),
+                  CustomButton2(text: "Language",borderColor: AppColors.primary, leadingImage: 'assets/images/Frame-1.svg',trailingImage: 'assets/images/i.svg',),
                 ],
               ),
               

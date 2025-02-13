@@ -20,28 +20,25 @@ class CheckBox extends StatefulWidget {
 class _CheckBoxState extends State<CheckBox> {
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Container(
-            height: MediaQuery.of(context).size.height*0.06,
-            width: double.infinity,
-            decoration: BoxDecoration(
-               border: widget.isRequired
-              ? Border.all(color: AppColors.primary)
-              : null, 
-              borderRadius: BorderRadius.circular(18),
-              
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(children: [
-                Icon(Icons.check_box_outline_blank, color: AppColors.primary),
-                SizedBox(width: 10,),
-                Text("${widget.location} " ,style: GoogleFonts.lato(fontSize: 14),)
-              ],),
-            ),
-      
+    return Container(
+          height: MediaQuery.of(context).size.height*0.06,
+          width: double.infinity,
+          decoration: BoxDecoration(
+             border: widget.isRequired
+            ? Border.all(color: AppColors.primary.withOpacity(0.2))
+            : null, 
+            borderRadius: BorderRadius.circular(12),
+            
           ),
-    );;
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(children: [
+              Icon(Icons.check_box_outline_blank, color: AppColors.primary.withOpacity(0.4)),
+              SizedBox(width: 10,),
+              Text("${widget.location} " ,style: GoogleFonts.lato(fontSize: 14),)
+            ],),
+          ),
+    
+        );;
   }
 }

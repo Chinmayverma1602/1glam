@@ -5,34 +5,49 @@ import 'package:glam1/constants/AppColors.dart';
 class CustomTextInputField extends StatelessWidget {
   final String hintText;
   final IconData icon;
-      CustomTextInputField({
+
+  CustomTextInputField({
     required this.hintText,
     required this.icon,
-    super.key});
-  TextEditingController _textEditingController= TextEditingController();
+    super.key,
+  });
+
+  final TextEditingController _textEditingController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 50,
+      height: 55,
       width: double.infinity,
       child: TextFormField(
         controller: _textEditingController,
         decoration: InputDecoration(
-          hintText: "$hintText",
-          prefixIcon: Icon(icon , color: AppColors.primary.withOpacity(0.4),),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(18),
-            borderSide: BorderSide(
-              width: 1,
-              color: AppColors.primary.withOpacity(0.4),
-            )
-            
+          hintText: hintText,
+          hintStyle: TextStyle(  
+            color: AppColors.hintText,
+            fontSize: 16,
+            fontWeight: FontWeight.w400,
           ),
-        
-      
+          
+          prefixIcon: Icon(
+            icon,
+            color: AppColors.primary.withOpacity(0.6),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12), 
+            borderSide: BorderSide(
+              color: AppColors.primary.withOpacity(0.2), 
+              width: 1.5,
+            ),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(
+              color: AppColors.primary,
+              width: 1.5,
+            ),
+          ),
         ),
-      
       ),
     );
   }
