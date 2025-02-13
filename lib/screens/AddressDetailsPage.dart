@@ -56,7 +56,7 @@ class _AddressDetailsPageState extends State<AddressDetailsPage> {
               children: [
                 Expanded(
                   flex: 3, 
-                  child: CustomButton2(text: "Select Sate", borderColor: AppColors.primary.withOpacity(0.2), leadingImage: 'assets/images/Frame.svg',trailingImage: 'assets/images/i.svg',),
+                  child: CustomButton2(text: "Select State", borderColor: AppColors.primary.withOpacity(0.2), leadingImage: 'assets/images/11.svg',trailingImage: 'assets/images/i.svg',),
                 ),
                 SizedBox(width: 10),
                 Expanded(

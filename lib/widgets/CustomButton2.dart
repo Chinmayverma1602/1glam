@@ -45,7 +45,8 @@ class CustomButton2 extends StatelessWidget {
             ),
           Text(
             text,
-            style: const TextStyle(color: AppColors.text, ),
+            
+            style: TextStyle(color: AppColors.text,fontWeight: FontWeight.w400 ),
           ),
           if (trailingImage != null)
             Row(
