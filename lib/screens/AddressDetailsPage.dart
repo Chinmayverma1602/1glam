@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:glam1/constants/AppColors.dart';
+import 'package:glam1/screens/TravellingInfo.dart';
 import 'package:glam1/widgets/CustomButton.dart';
 import 'package:glam1/widgets/CustomButton2.dart';
 import 'package:glam1/widgets/CustomHeader.dart';
@@ -79,7 +80,9 @@ class _AddressDetailsPageState extends State<AddressDetailsPage> {
              SizedBox(height: 15,),
             CustomTextInputField(hintText: "Booth number : 203", icon: Icons.store_mall_directory_outlined),
              SizedBox(height: 15,),
-            CustomButton(text: "Continue", color: AppColors.primary, onPressed: (){})
+            CustomButton(text: "Continue", color: AppColors.primary, onPressed: (){
+              Navigator.push(context, MaterialPageRoute(builder: (context)=> TravellingInfoPage()));
+            })
         
           ],
         ),
