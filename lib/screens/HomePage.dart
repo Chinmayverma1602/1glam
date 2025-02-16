@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:glam1/constants/AppColors.dart';
 import 'package:glam1/widgets/BottomNavBar.dart';
+import 'package:glam1/widgets/CustomButton2.dart';
+import 'package:glam1/widgets/CustomHomeServicesButton.dart';
+import 'package:glam1/widgets/CustomScheduleButton.dart';
+import 'package:glam1/widgets/CustomStatsButton.dart';
+
 import 'package:glam1/widgets/CustomSubtitle.dart';
 import 'package:glam1/widgets/CustomTitle.dart';
 
@@ -12,12 +17,15 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  // When on this page, the Home tab is selected (index 0)
-  final int _selectedIndex = 0;
+  // It’s better to make _selectedIndex mutable so that you can update it when tapping
+  int _selectedIndex = 0;
 
   void _onItemTapped(int index) {
-    // If the user taps on the current tab, do nothing.
     if (index == _selectedIndex) return;
+
+    setState(() {
+      _selectedIndex = index;
+    });
 
     switch (index) {
       case 0:
@@ -39,11 +47,111 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       
-      body: Column(
-        children: [
-          CustomTitle(title: "Welcome Parinaaz!"),
-          CustomSubTitle(subtitle: "Tuesday, 15 Feb 2025", color: AppColors.title)
-        ],
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              CustomTitle(title: "Welcome Parinaaz!"),
+              const SizedBox(height: 8),
+              CustomSubTitle(
+                subtitle: "Tuesday, 15 Feb 2025",
+                color: AppColors.title,
+              ),
+              const SizedBox(height: 16),
+              CustomButton2(
+                text: "Instagram",
+                borderColor: Colors.transparent,
+                fillColor: AppColors.instagram,
+              ),
+              const SizedBox(height: 8),
+              CustomButton2(
+                text: "Whatsapp",
+                borderColor: Colors.transparent,
+                fillColor: AppColors.whatsapp,
+              ),
+              const SizedBox(height: 8),
+              CustomButton2(
+                text: "Complete Your Profile",
+                borderColor: Colors.transparent,
+                fillColor: AppColors.profile,
+              ),
+              const SizedBox(height: 16),
+              
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 8,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: const [
+                        Text(
+                          "Today's Schedule",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          "View all",
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.blue,
+                          ),
+                        ),
+                      ],
+                    ),
+                   SizedBox(height: 16),
+                    
+                    CustomScheduleButton(),
+                    SizedBox(height: 16),
+                    CustomScheduleButton(),
+                  ],
+                ),
+              ),
+              Row(
+                children: [
+                  CustomHomeServicesButton(icon: Icons.calendar_month,label: "Add New Booking",),
+                  CustomHomeServicesButton(icon: Icons.calendar_month,label: "Add New Booking",),
+                  CustomHomeServicesButton(icon: Icons.calendar_month,label: "Add New Booking",),
+                ],
+              ),
+             Text(
+                  "Lead Stages",
+                  style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  ),
+                  ),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    CustomStatsButton(label: "Inquiry Received", stats: "12"),
+                    CustomStatsButton(label: "Inquiry Received", stats: "12"),
+                    CustomStatsButton(label: "Inquiry Received", stats: "12"),
+                  ],
+                ),
+              )
+              
+            ],
+          ),
+        ),
       ),
       bottomNavigationBar: BottomNavBar(
         currentIndex: _selectedIndex,
@@ -51,4 +159,6 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
+
+ 
 }

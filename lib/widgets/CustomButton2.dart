@@ -5,6 +5,7 @@ import 'package:glam1/constants/AppColors.dart';
 class CustomButton2 extends StatelessWidget {
   final String text;
   final Color borderColor;
+  final Color fillColor; // New fill color parameter
   final String? leadingImage;
   final String? trailingImage;
 
@@ -12,6 +13,7 @@ class CustomButton2 extends StatelessWidget {
     Key? key,
     required this.text,
     required this.borderColor,
+    this.fillColor = Colors.transparent, // Default is transparent
     this.leadingImage,
     this.trailingImage,
   }) : super(key: key);
@@ -22,10 +24,10 @@ class CustomButton2 extends StatelessWidget {
       style: ElevatedButton.styleFrom(
         minimumSize: const Size(175, 50),
         elevation: 0,
-        backgroundColor: Colors.transparent,  // Transparent background
+        backgroundColor: fillColor, // Use the provided fill color
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
-          side: BorderSide(color: borderColor, width: 1.5),  // Custom border color
+          side: BorderSide(color: borderColor, width: 1.5),
         ),
         padding: const EdgeInsets.all(8.0),
       ),
@@ -45,8 +47,7 @@ class CustomButton2 extends StatelessWidget {
             ),
           Text(
             text,
-            
-            style: TextStyle(color: AppColors.text,fontWeight: FontWeight.w400 ),
+            style: TextStyle(color: AppColors.text, fontWeight: FontWeight.w400),
           ),
           if (trailingImage != null)
             Row(
