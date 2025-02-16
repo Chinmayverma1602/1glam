@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:glam1/screens/HomePage.dart';
 import 'package:glam1/screens/LoginPage.dart';
+import 'package:glam1/screens/ServicesInfoPage.dart';
+import 'package:glam1/screens/VerifyEmailPage.dart';
 
 void main() {
   runApp(const MyApp());
@@ -13,7 +16,13 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: LoginPage(),
+    initialRoute: '/home',
+    routes: {
+      '/home': (context) => const HomePage(),
+      '/leads': (context) => const HomePage(),
+      '/calendar': (context) => const HomePage(),
+      '/settings': (context) => const HomePage(),
+    },
     );
   }
 }
