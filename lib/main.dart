@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:glam1/screens/AddServicesPage.dart';
 import 'package:glam1/screens/HomePage.dart';
 import 'package:glam1/screens/LoginPage.dart';
 import 'package:glam1/screens/ServicesInfoPage.dart';
@@ -18,7 +19,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
     initialRoute: '/home',
     routes: {
-      '/home': (context) => const HomePage(),
+      '/home': (context) => const AddServicesPage(),
       '/leads': (context) => const HomePage(),
       '/calendar': (context) => const HomePage(),
       '/settings': (context) => const HomePage(),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:glam1/constants/AppColors.dart';
+import 'package:glam1/screens/AddServicesPage.dart';
 import 'package:glam1/widgets/CustomButton.dart';
 import 'package:glam1/widgets/CustomHeader.dart';
 import 'package:glam1/widgets/CustomServiceButton.dart';
@@ -47,7 +48,9 @@ class _ServicesInfoPageState extends State<ServicesInfoPage> {
             CustomButton(
               text: "Continue",
               color: AppColors.primary,
-              onPressed: () {},
+              onPressed: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context)=> AddServicesPage()));
+              },
             ),
           ],
         ),
