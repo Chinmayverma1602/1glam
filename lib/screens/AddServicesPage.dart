@@ -102,10 +102,11 @@ class _AddServicesPageState extends State<AddServicesPage> {
               artistName: 'Emma Wilson',
                artistSpecialization: 'Hair Specialist',
                 serviceType: 'Mobile Service',
-                serviceIcon: Icons.pin_drop,
+                serviceIcon: '',
                 leadingIconColor: AppColors.primary,
-                mobileServiceIcon: Icons.radio_button_checked_rounded,
-                trailingIconColor: AppColors.primary,
+                mobileServiceIcon: '',
+                trailingIconColor: AppColors.primary, 
+                artistImage: '',
           
               ),
               SizedBox(height: 16,),
@@ -120,16 +121,20 @@ class _AddServicesPageState extends State<AddServicesPage> {
               artistName: 'Sophie Chen ',
                artistSpecialization: 'Hair Specialist',
                 serviceType: 'Mobile Service',
-                serviceIcon: Icons.pin_drop,
+                serviceIcon: '',
                 leadingIconColor: AppColors.primary,
-                mobileServiceIcon: Icons.radio_button_checked_rounded,
-                trailingIconColor: AppColors.primary,
+                mobileServiceIcon: '',
+                trailingIconColor: AppColors.primary, 
+                artistImage: '',
           
               ),
                  SizedBox(height: 16,),
               CustomButton(icon: Icons.add,text: "Add Another Service ", color: Colors.transparent, onPressed: (){}),
               SizedBox(height: 16,),
-              CustomButton(text: "Save Service", color: AppColors.primary, onPressed: (){})
+              CustomButton(text: "Save Service", color: AppColors.primary, onPressed: (){
+Navigator.push(context, MaterialPageRoute(builder: (context)=>HomePage()));
+
+              })
             ],
           ),
         ),

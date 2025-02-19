@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:glam1/constants/AppColors.dart';
 import 'package:glam1/widgets/CustomButton2.dart';
 
@@ -18,39 +19,40 @@ class CustomServiceSelectionContainer extends StatelessWidget {
   final String artistName;
   final String artistSpecialization;
   final String serviceType;
-  final IconData serviceIcon;
-  final IconData mobileServiceIcon;
+  final String serviceIcon;
+  final String mobileServiceIcon;
   final Color textColor;
-   final Color leadingIconColor;
-    final Color trailingIconColor;
+  final Color leadingIconColor;
+  final Color trailingIconColor;
   final Color backgroundColor;
   final double containerHeight;
-
+  final String artistImage;
 
   const CustomServiceSelectionContainer({
     Key? key,
-    required this.title ,
+    required this.title,
     this.deleteIcon = Icons.delete,
     required this.serviceCategory,
     required this.buttonBorderColor,
     this.trailingImage = 'assets/images/i.svg',
-    required this.hintText ,
+    required this.hintText,
     required this.borderColor,
     required this.borderRadius,
     required this.durationLabel,
-    required this.priceLabel ,
+    required this.priceLabel,
     this.artistLabel = "Select Artist (Optional)",
     this.changeLabel = "Change",
-    required this.artistName ,
-    required this.artistSpecialization ,
-    required this.serviceType ,
-    this.serviceIcon = Icons.pin,
-    this.mobileServiceIcon = Icons.abc,
+    required this.artistName,
+    required this.artistSpecialization,
+    required this.serviceType,
+    required this.serviceIcon,
+    required this.mobileServiceIcon,
     this.textColor = Colors.black,
     this.leadingIconColor = Colors.black,
     this.trailingIconColor = Colors.black,
     this.backgroundColor = Colors.white,
     this.containerHeight = 0.6,
+    required this.artistImage,
   }) : super(key: key);
 
   @override
@@ -67,7 +69,6 @@ class CustomServiceSelectionContainer extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Title and Delete Icon
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -83,40 +84,33 @@ class CustomServiceSelectionContainer extends StatelessWidget {
             ],
           ),
           SizedBox(height: 8.0),
-
-          // Custom Button
           CustomButton2(
             text: serviceCategory,
             borderColor: buttonBorderColor,
             trailingImage: trailingImage,
           ),
           SizedBox(height: 16.0),
-
-          // Service Description
           TextField(
             maxLines: 4,
             keyboardType: TextInputType.multiline,
             decoration: InputDecoration(
               hintText: hintText,
               border: OutlineInputBorder(
-                
                 borderRadius: BorderRadius.circular(borderRadius),
               ),
               enabledBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(borderRadius),
-      borderSide: const BorderSide(color: Colors.grey, width: 1.5), 
-    ),
-    focusedBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(borderRadius),
-      borderSide: const BorderSide(color: Colors.blue, width: 2.0), 
-    ),
+                borderRadius: BorderRadius.circular(borderRadius),
+                borderSide: BorderSide(color: Colors.grey, width: 1.5),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(borderRadius),
+                borderSide: BorderSide(color: Colors.blue, width: 2.0),
+              ),
             ),
           ),
           SizedBox(height: 16.0),
           Divider(),
           SizedBox(height: 16.0),
-
-          // Duration and Price Labels
           Row(
             children: [
               Text("Duration", style: TextStyle(color: textColor)),
@@ -125,11 +119,8 @@ class CustomServiceSelectionContainer extends StatelessWidget {
             ],
           ),
           SizedBox(height: 8.0),
-
-          // Duration and Price Input Fields
           Row(
             children: [
-              // Duration Input Field
               Container(
                 width: MediaQuery.of(context).size.width * 0.2,
                 child: TextField(
@@ -144,8 +135,6 @@ class CustomServiceSelectionContainer extends StatelessWidget {
               SizedBox(width: 8.0),
               Text("hours", style: TextStyle(color: textColor)),
               SizedBox(width: 8.0),
-
-              // Price Input Field
               Container(
                 width: MediaQuery.of(context).size.width * 0.4,
                 child: TextField(
@@ -160,8 +149,6 @@ class CustomServiceSelectionContainer extends StatelessWidget {
             ],
           ),
           Divider(),
-
-          // Select Artist Section
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -176,11 +163,9 @@ class CustomServiceSelectionContainer extends StatelessWidget {
             ],
           ),
           SizedBox(height: 8.0),
-
-          // Artist Information
           Row(
             children: [
-              CircleAvatar(radius: 25, backgroundColor: Colors.grey),
+              SvgPicture.asset(artistImage, width: 50, height: 50),
               SizedBox(width: 8.0),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -201,23 +186,20 @@ class CustomServiceSelectionContainer extends StatelessWidget {
             ],
           ),
           Divider(),
-
-          // Service Type
-          SizedBox(height: 10,),
-         Row(
-  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  children: [
-    Row(
-      children: [
-        Icon(serviceIcon, color: leadingIconColor),
-        SizedBox(width: 8.0),
-        Text(serviceType, style: TextStyle(color: textColor)),
-      ],
-    ),
-    Icon(mobileServiceIcon, color: trailingIconColor),
-  ],
-)
-
+          SizedBox(height: 10),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  SvgPicture.asset(serviceIcon, width: 24, height: 24, color: leadingIconColor),
+                  SizedBox(width: 8.0),
+                  Text(serviceType, style: TextStyle(color: textColor)),
+                ],
+              ),
+              SvgPicture.asset(mobileServiceIcon, width: 24, height: 24, color: trailingIconColor),
+            ],
+          ),
         ],
       ),
     );
