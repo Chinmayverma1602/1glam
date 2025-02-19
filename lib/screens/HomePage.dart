@@ -17,7 +17,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  // It’s better to make _selectedIndex mutable so that you can update it when tapping
+  
   int _selectedIndex = 0;
 
   void _onItemTapped(int index) {
@@ -59,23 +59,40 @@ class _HomePageState extends State<HomePage> {
                 subtitle: "Tuesday, 15 Feb 2025",
                 color: AppColors.title,
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 55),
               CustomButton2(
                 text: "Instagram",
                 borderColor: Colors.transparent,
                 fillColor: AppColors.instagram,
+                leadingImage: 'assets/images/d.svg',
+                trailingImage: 'assets/images/c.svg',
+                textColor: Colors.white,
+                textSize: 16,
+                isBold: true,
+
               ),
-              const SizedBox(height: 8),
+               SizedBox(height: 16),
               CustomButton2(
                 text: "Whatsapp",
                 borderColor: Colors.transparent,
                 fillColor: AppColors.whatsapp,
+                leadingImage: 'assets/images/a.svg',
+                trailingImage: 'assets/images/c.svg',
+                textColor: Colors.white,
+                textSize: 16,
+                isBold: true,
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: 16),
               CustomButton2(
                 text: "Complete Your Profile",
                 borderColor: Colors.transparent,
                 fillColor: AppColors.profile,
+                leadingImage: 'assets/images/b.svg',
+                trailingImage: 'assets/images/c.svg',
+                textColor: Colors.white,
+                textSize: 16,
+                isBold: true,
+                
               ),
               const SizedBox(height: 16),
               
@@ -124,27 +141,37 @@ class _HomePageState extends State<HomePage> {
                   ],
                 ),
               ),
-              Row(
-                children: [
-                  CustomHomeServicesButton(icon: Icons.calendar_month,label: "Add New Booking",),
-                  CustomHomeServicesButton(icon: Icons.calendar_month,label: "Add New Booking",),
-                  CustomHomeServicesButton(icon: Icons.calendar_month,label: "Add New Booking",),
-                ],
-              ),
-             Text(
-                  "Lead Stages",
-                  style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  ),
-                  ),
+              SizedBox(height: 25,),
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
                   children: [
-                    CustomStatsButton(label: "Inquiry Received", stats: "12"),
-                    CustomStatsButton(label: "Inquiry Received", stats: "12"),
-                    CustomStatsButton(label: "Inquiry Received", stats: "12"),
+                    CustomHomeServicesButton(label: "Add New Booking", iconPath: 'assets/images/i3.svg',),
+                     SizedBox(width: 15,),
+                    CustomHomeServicesButton(label: "Add New Booking", iconPath: 'assets/images/i-2.svg',),
+                    SizedBox(width: 15,),
+                    CustomHomeServicesButton(label: "Add New Booking", iconPath: 'assets/images/i-1.svg',),
+                  ],
+                ),
+              ),
+               SizedBox(height: 20,),
+             Text(
+                  "Lead Stages",
+                  style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  ),
+                  ),
+                   SizedBox(height: 20,),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    CustomStatsButton(label: "Inquiry Received", stats: "12", textColor: AppColors.primary,labelColor: Colors.grey,),
+                    SizedBox(width: 15,),
+                    CustomStatsButton(label: "Inquiry Received", stats: "12", textColor: AppColors.primary,labelColor: Colors.grey,),
+                    SizedBox(width: 15,),
+                    CustomStatsButton(label: "Inquiry Received", stats: "12", textColor: AppColors.primary,labelColor:  Colors.grey,),
                   ],
                 ),
               )

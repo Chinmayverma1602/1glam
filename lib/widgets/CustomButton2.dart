@@ -5,26 +5,32 @@ import 'package:glam1/constants/AppColors.dart';
 class CustomButton2 extends StatelessWidget {
   final String text;
   final Color borderColor;
-  final Color fillColor; // New fill color parameter
+  final Color fillColor; 
   final String? leadingImage;
   final String? trailingImage;
+  final Color textColor;
+  final double textSize;
+  final bool isBold;
 
   CustomButton2({
     Key? key,
     required this.text,
     required this.borderColor,
-    this.fillColor = Colors.transparent, // Default is transparent
+    this.fillColor = Colors.transparent, 
     this.leadingImage,
     this.trailingImage,
+    this.textColor = AppColors.text,
+    this.textSize = 14.0,
+    this.isBold = false,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
-        minimumSize: const Size(175, 50),
+        minimumSize: const Size(175, 60),
         elevation: 0,
-        backgroundColor: fillColor, // Use the provided fill color
+        backgroundColor: fillColor, 
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
           side: BorderSide(color: borderColor, width: 1.5),
@@ -47,7 +53,11 @@ class CustomButton2 extends StatelessWidget {
             ),
           Text(
             text,
-            style: TextStyle(color: AppColors.text, fontWeight: FontWeight.w400),
+            style: TextStyle(
+              color: textColor,
+              fontSize: textSize,
+              fontWeight: isBold ? FontWeight.bold : FontWeight.w400,
+            ),
           ),
           if (trailingImage != null)
             Row(

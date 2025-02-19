@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class CustomHomeServicesButton extends StatelessWidget {
-  final IconData icon;
+  final String iconPath;
   final String label;
-  final Color iconColor;
   final Color textColor;
   final Color backgroundColor;
 
   const CustomHomeServicesButton({
     Key? key,
-    required this.icon,
+    required this.iconPath,
     required this.label,
-    this.iconColor = Colors.blue,
     this.textColor = Colors.black,
     this.backgroundColor = Colors.white,
   }) : super(key: key);
@@ -20,7 +19,7 @@ class CustomHomeServicesButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: MediaQuery.of(context).size.height * 0.11,
-      width: MediaQuery.of(context).size.width * 0.25,
+      width: MediaQuery.of(context).size.width * 0.30,
       decoration: BoxDecoration(
         color: backgroundColor,
         borderRadius: BorderRadius.circular(12),
@@ -35,10 +34,10 @@ class CustomHomeServicesButton extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            icon,
-            color: iconColor,
-            size: 32,
+          SvgPicture.asset(
+            iconPath,
+            height: 32,
+            width: 32,
           ),
           const SizedBox(height: 8),
           Text(
