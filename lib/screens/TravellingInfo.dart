@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:glam1/constants/AppColors.dart';
 import 'package:glam1/screens/ServicesInfoPage.dart';
 import 'package:glam1/widgets/CustomButton.dart';
@@ -39,11 +40,11 @@ class _TravellingInfoPageState extends State<TravellingInfoPage> {
             height: MediaQuery.of(context).size.height*0.2,
             width: double.infinity,
             decoration: BoxDecoration(
-              color: Colors.transparent.withOpacity(0.2),
+              // color: Colors.transparent.withOpacity(0.2),
               borderRadius: BorderRadius.circular(12),
         
             ),
-            // Image to be added later
+            child: SvgPicture.asset('assets/images/globe.svg', fit: BoxFit.fill,),
           ),
            SizedBox(height: 15,),
           CustomSubTitle(subtitle: "Travel & Fee Policy (Optional)", color: AppColors.text),
@@ -62,7 +63,8 @@ class _TravellingInfoPageState extends State<TravellingInfoPage> {
         
           ),
            SizedBox(height: 35,),
-          CustomButton(text: "Skip for now", color: Colors.transparent.withOpacity(0.1), onPressed: (){}),
+          CustomButton(text: "Skip for now", color: Colors.white,textColor: AppColors.primary, onPressed: (){},border: false,elevation: 0.1,
+          ),
            SizedBox(height: 15,),
           CustomButton(text: "Continue", color: AppColors.subtitle, onPressed: (){
             Navigator.push(context, MaterialPageRoute(builder: (context)=> ServicesInfoPage()));
