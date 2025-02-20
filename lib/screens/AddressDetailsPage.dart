@@ -80,7 +80,7 @@ class _AddressDetailsPageState extends State<AddressDetailsPage> {
              SizedBox(height: 15,),
             CustomTextInputField(hintText: "Booth number : 203", icon: Icons.store_mall_directory_outlined),
              SizedBox(height: 15,),
-            CustomButton(text: "Continue", color: AppColors.primary, onPressed: (){
+            CustomButton(text: "Continue", color: AppColors.subtitle, onPressed: (){
               Navigator.push(context, MaterialPageRoute(builder: (context)=> TravellingInfoPage()));
             })
         

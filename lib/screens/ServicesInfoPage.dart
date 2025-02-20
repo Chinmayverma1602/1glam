@@ -47,7 +47,7 @@ class _ServicesInfoPageState extends State<ServicesInfoPage> {
             SizedBox(height: 15),
             CustomButton(
               text: "Continue",
-              color: AppColors.primary,
+              color: AppColors.subtitle,
               onPressed: () {
                 Navigator.push(context, MaterialPageRoute(builder: (context)=> AddServicesPage()));
               },
