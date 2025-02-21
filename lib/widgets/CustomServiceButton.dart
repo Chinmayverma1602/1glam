@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:glam1/constants/AppColors.dart';
 
 class CustomServiceButton extends StatelessWidget {
   final String title;
@@ -19,9 +20,9 @@ class CustomServiceButton extends StatelessWidget {
     this.titleColor = Colors.black,
     this.subtitleColor = Colors.grey,
     this.leadingIconColor = Colors.amber,
-    this.numberColor = Colors.black,
-    this.trailingIconColor = Colors.black,
-    this.value = "30",
+    this.numberColor = AppColors.subtitle,
+    this.trailingIconColor = AppColors.subtitle,
+    this.value = "30.00",
   }) : super(key: key);
 
   @override
@@ -58,12 +59,12 @@ class CustomServiceButton extends StatelessWidget {
           ),
           Row(
             children: [
-              Icon(Icons.star, color: leadingIconColor),
+              Icon(Icons.attach_money, color: leadingIconColor),
               const SizedBox(width: 8),
               Text(
                 value,
                 style: TextStyle(
-                  fontSize: 16,
+                  fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: numberColor,
                 ),

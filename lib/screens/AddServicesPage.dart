@@ -19,6 +19,7 @@ class _AddServicesPageState extends State<AddServicesPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
+        shadowColor: Colors.white,
         title: const Text("Add Service"),
       ),
       
@@ -38,20 +39,24 @@ class _AddServicesPageState extends State<AddServicesPage> {
                     borderColor: AppColors.primary.withOpacity(0.2),
                   ),
                   CustomButton2(
+                    fillColor: AppColors.hintText.withOpacity(0.2),
                     
                     text: "Single",
-                    borderColor: AppColors.primary,
+                    borderColor:Colors.white,
                   ),
                 ],
               ),
                SizedBox(height: 16.0),
              
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                
                 children: const [
-                  Text("Total time:"),
+                  Text("Total time:", style: TextStyle(color: AppColors.hintText),),
+                  SizedBox(width: 15,),
                   Text("4 hours"),
-                  Text("Total price:"),
+                   Spacer(),
+                  Text("Total price:", style: TextStyle(color: AppColors.hintText),),
+                   SizedBox(width: 15,),
                   Text("65,000"),
                 ],
               ),
@@ -92,7 +97,7 @@ class _AddServicesPageState extends State<AddServicesPage> {
               CustomServiceSelectionContainer(
               title: 'Makeup', 
               serviceCategory: 'Luxury', 
-              buttonBorderColor: AppColors.hintText, 
+              buttonBorderColor: AppColors.hintText.withOpacity(0.4), 
               borderColor: AppColors.hintText, 
               hintText: 'Service description', 
           
@@ -104,7 +109,7 @@ class _AddServicesPageState extends State<AddServicesPage> {
                 serviceType: 'Mobile Service',
                 serviceIcon: 'assets/images/f.svg',
                 leadingIconColor: AppColors.primary,
-                mobileServiceIcon: 'assets/images/slide.svg',
+                
                 trailingIconColor: AppColors.primary, 
                 artistImage: 'assets/images/img.svg',
           
@@ -123,13 +128,13 @@ class _AddServicesPageState extends State<AddServicesPage> {
                 serviceType: 'Mobile Service',
                 serviceIcon: 'assets/images/f.svg',
                 leadingIconColor: AppColors.primary,
-                mobileServiceIcon: 'assets/images/img.svg',
+                
                 trailingIconColor: AppColors.primary, 
                 artistImage: 'assets/images/img.svg',
           
               ),
                  SizedBox(height: 16,),
-              CustomButton(icon: Icons.add,text: "Add Another Service ", color: Colors.transparent, onPressed: (){}),
+              CustomButton(icon: Icons.add,text: "Add Another Service ", color: Colors.transparent, onPressed: (){}, textColor: AppColors.primary,borderColor: AppColors.primary,border: true,borderThickness: 0.4,),
               SizedBox(height: 16,),
               CustomButton(text: "Save Service", color: AppColors.primary, onPressed: (){
 Navigator.push(context, MaterialPageRoute(builder: (context)=>HomePage()));

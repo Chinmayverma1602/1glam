@@ -1,30 +1,44 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class CustomButton extends StatelessWidget {
-  final IconData? icon;
+  final IconData? icon; // For using Icon
+  final String? svgIcon; // For using SVG image
   final String text;
   final Color color;
-  final Color? iconColor;
+  final Color iconColor;
   final Color textColor;
   final bool border;
   final Color borderColor;
-  final bool dottedBorder;
+  final double borderThickness;
   final double elevation;
   final VoidCallback onPressed;
+  final MainAxisAlignment alignment; // New Parameter
 
   const CustomButton({
     Key? key,
     this.icon,
+    this.svgIcon,
     required this.text,
     required this.color,
-    this.iconColor,
+    this.iconColor = Colors.white,
     this.textColor = Colors.white,
     this.border = true,
     this.borderColor = Colors.white,
-    this.dottedBorder = true,
+    this.borderThickness = 2.0,
     this.elevation = 0.0,
+    this.alignment = MainAxisAlignment.center, // Default alignment
     required this.onPressed,
   }) : super(key: key);
+
+  Widget _buildLeadingWidget() {
+    if (svgIcon != null) {
+      return SvgPicture.asset(svgIcon!, width: 24, height: 24);
+    } else if (icon != null) {
+      return Icon(icon, color: iconColor);
+    }
+    return const SizedBox.shrink();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,8 +47,8 @@ class CustomButton extends StatelessWidget {
           ? BoxDecoration(
               border: Border.all(
                 color: borderColor,
-                width: 2,
-                style: dottedBorder ? BorderStyle.solid : BorderStyle.solid,
+                width: borderThickness,
+                style: BorderStyle.solid,
               ),
               borderRadius: BorderRadius.circular(15),
             )
@@ -47,17 +61,25 @@ class CustomButton extends StatelessWidget {
           minimumSize: const Size(358, 50),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(15),
-            side: border ? BorderSide(color: borderColor, width: 2) : BorderSide.none,
+            side: border
+                ? BorderSide(color: borderColor, width: borderThickness)
+                : BorderSide.none,
           ),
         ),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: alignment, // Dynamic alignment
           children: [
-            if (icon != null) Icon(icon, color: iconColor),
-            if (icon != null) const SizedBox(width: 8),
+            if (svgIcon != null || icon != null) ...[
+              _buildLeadingWidget(),
+              const SizedBox(width: 8),
+            ],
             Text(
               text,
-              style: TextStyle(color: textColor, fontSize: 16, fontWeight: FontWeight.normal),
+              style: TextStyle(
+                color: textColor,
+                fontSize: 16,
+                fontWeight: FontWeight.normal,
+              ),
             ),
           ],
         ),

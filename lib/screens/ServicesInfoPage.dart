@@ -34,15 +34,21 @@ class _ServicesInfoPageState extends State<ServicesInfoPage> {
             ),
            SizedBox(height: 35,),
           
-            CustomServiceButton(title: "Natural Makeup", subtitle: "45 min"),
+            CustomServiceButton(title: "Natural Makeup", subtitle: "45 min", leadingIconColor: AppColors.subtitle,),
             SizedBox(height: 15),
          
-            CustomServiceButton(title: "Evening Makeup", subtitle: "60 min"),
+            CustomServiceButton(title: "Evening Makeup", subtitle: "60 min",leadingIconColor: AppColors.subtitle,),
             SizedBox(height: 35),
             CustomButton(
               text: "Add Service",
               color: Colors.transparent,
               onPressed: () {},
+              textColor: AppColors.primary,
+              icon: Icons.add,
+              iconColor: AppColors.primary,
+              borderThickness: 0.4,
+            
+              borderColor: AppColors.primary,
             ),
             SizedBox(height: 15),
             CustomButton(

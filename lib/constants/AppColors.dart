@@ -13,4 +13,6 @@ class AppColors {
   static const Color instagram = const Color(0xFFEC4899);   // Hex: EC4899
   static const Color whatsapp = const Color(0xFF10B981);   // Hex: 10B981
   static const Color profile = const Color(0xFF8B5CF6);
+  static const Color sliderColor = const Color(0xFF0075FF);
+  static const Color secondaryText = const Color(0xFF6B7280);
 }

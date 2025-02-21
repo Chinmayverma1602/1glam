@@ -112,6 +112,12 @@ class _LoginPageState extends State<LoginPage> {
              
               CustomButton(
                 text: "Continue with Google",
+                borderThickness: 0.4,
+                svgIcon: 'assets/images/google.svg',
+                
+                textColor: Colors.black,
+                border: true,
+                borderColor: Colors.grey.withOpacity(0.4),
                 color: Colors.transparent,
                 icon: Icons.abc,
                 onPressed: () {

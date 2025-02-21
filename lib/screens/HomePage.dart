@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:glam1/constants/AppColors.dart';
 import 'package:glam1/widgets/BottomNavBar.dart';
 import 'package:glam1/widgets/CustomButton2.dart';
@@ -76,8 +77,9 @@ class _HomePageState extends State<HomePage> {
               CustomButton2(
                 text: "Whatsapp",
                 borderColor: Colors.transparent,
+                iconColor: Colors.white,
                 fillColor: AppColors.whatsapp,
-                leadingImage: 'assets/images/a.svg',
+                leadingIcon: FontAwesomeIcons.whatsapp,
                 trailingImage: 'assets/images/c.svg',
                 textColor: Colors.white,
                 textSize: 16,
