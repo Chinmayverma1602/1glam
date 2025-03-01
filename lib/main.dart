@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:glam1/screens/AddServicesPage.dart';
 import 'package:glam1/screens/HomePage.dart';
+import 'package:glam1/screens/LeadsPage.dart';
 import 'package:glam1/screens/LoginPage.dart';
 import 'package:glam1/screens/ServicesInfoPage.dart';
 import 'package:glam1/screens/VerifyEmailPage.dart';
@@ -20,7 +21,7 @@ class MyApp extends StatelessWidget {
     initialRoute: '/home',
     routes: {
       '/home': (context) => const LoginPage(),
-      '/leads': (context) => const AddServicesPage(),
+      '/leads': (context) => const LeadsPage(),
       '/calendar': (context) => const HomePage(),
       '/settings': (context) => const HomePage(),
     },

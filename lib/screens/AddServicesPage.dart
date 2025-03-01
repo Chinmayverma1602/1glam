@@ -81,11 +81,17 @@ class _AddServicesPageState extends State<AddServicesPage> {
                 child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              "Bridal Makeup Bundle",
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: Text(
+                "Bridal Makeup Bundle",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+              ),
             ),
-            Divider(),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: Divider(),
+            ),
           ],
                 ),
               ),

@@ -10,9 +10,15 @@ class AppColors {
   static const Color facebookBlue = Color(0xFF1877F2);
   static const Color hintText = Color(0xFFADAEBC);
   static const Color text = Color(0xFF1F2937);
-  static const Color instagram = const Color(0xFFEC4899);   // Hex: EC4899
-  static const Color whatsapp = const Color(0xFF10B981);   // Hex: 10B981
+  static const Color instagram = const Color(0xFFEC4899);   
+  static const Color whatsapp = const Color(0xFF10B981);   
   static const Color profile = const Color(0xFF8B5CF6);
   static const Color sliderColor = const Color(0xFF0075FF);
   static const Color secondaryText = const Color(0xFF6B7280);
+  static const Color inquiryButtonColor = Color(0xFFFEF9C3);
+  static const Color inquiryTextColor = Color(0xFFA16207);
+  static const Color proposalAcceptedTextColor = Color(0xFF15803D);
+  static const Color proposalButtonColor = Color(0xFFDCFCE7);
+  static const Color qualifiedLeadTextColor = Color(0xFF1D4ED8);
+  static const Color qualifiedButtonColor = Color(0xFFDBEAFE);
 }
