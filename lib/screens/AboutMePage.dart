@@ -20,7 +20,8 @@ class _AboutMePageState extends State<AboutMePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: SingleChildScrollView(  // Added scroll for better UI on smaller screens
+      body: SingleChildScrollView(
+        // Added scroll for better UI on smaller screens
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -45,7 +46,6 @@ class _AboutMePageState extends State<AboutMePage> {
                 "Tell us more about your business",
                 style: GoogleFonts.lato(
                   color: AppColors.subtitle,
-                  
                 ),
               ),
             ),
@@ -54,6 +54,7 @@ class _AboutMePageState extends State<AboutMePage> {
               child: CustomTextInputField(
                 hintText: "Business Name",
                 icon: Icons.store,
+                keyboardType: TextInputType.name,
               ),
             ),
             Padding(
@@ -61,6 +62,7 @@ class _AboutMePageState extends State<AboutMePage> {
               child: CustomTextInputField(
                 hintText: "Your Name",
                 icon: Icons.person,
+                keyboardType: TextInputType.name,
               ),
             ),
             Padding(
@@ -68,15 +70,21 @@ class _AboutMePageState extends State<AboutMePage> {
               child: Row(
                 children: [
                   Expanded(
-                    flex: 2, 
-                    child: CustomButton2(text: "+ 1", borderColor: AppColors.primary.withOpacity(0.2), leadingImage: 'assets/images/Frame.svg',trailingImage: 'assets/images/i.svg',),
+                    flex: 2,
+                    child: CustomButton2(
+                      text: "+91",
+                      borderColor: AppColors.primary.withOpacity(0.2),
+                      leadingImage: 'assets/images/Frame.svg',
+                      trailingImage: 'assets/images/i.svg',
+                    ),
                   ),
                   SizedBox(width: 10),
                   Expanded(
-                    flex: 3, 
+                    flex: 3,
                     child: CustomTextInputField(
                       hintText: "Phone number",
                       icon: Icons.phone_callback,
+                      keyboardType: TextInputType.number,
                     ),
                   ),
                 ],
@@ -88,7 +96,6 @@ class _AboutMePageState extends State<AboutMePage> {
                 "Where do you provide your services?",
                 style: GoogleFonts.lato(
                   color: AppColors.title,
-                  
                 ),
               ),
             ),
@@ -98,7 +105,8 @@ class _AboutMePageState extends State<AboutMePage> {
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              child: CheckBox(location: "At client's location", isRequired: true),
+              child:
+                  CheckBox(location: "At client's location", isRequired: true),
             ),
             Padding(
               padding: const EdgeInsets.all(16),
@@ -109,7 +117,8 @@ class _AboutMePageState extends State<AboutMePage> {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => AddressDetailsPage()),
+                      MaterialPageRoute(
+                          builder: (context) => AddressDetailsPage()),
                     );
                   },
                 ),
