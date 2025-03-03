@@ -41,77 +41,79 @@ class _TravellingInfoPageState extends State<TravellingInfoPage> {
               const SizedBox(height: 35),
               // Dropdown for Payment Methods
               Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-        decoration: BoxDecoration(
-          border: Border.all(color: AppColors.primary.withOpacity(0.4), width: 1.5),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: DropdownButtonHideUnderline(
-          child: DropdownButton<String>(
-            isExpanded: true,
-            value: _selectedPaymentMethod,
-            // When no value is selected, we show a custom hint
-            hint: Row(
-              children: [
-                // Leading SVG Icon
-                SvgPicture.asset(
-                  'assets/icons/leading.svg',
-                  width: 24,
-                  height: 24,
-                  
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                decoration: BoxDecoration(
+                  border: Border.all(
+                      color: AppColors.primary.withOpacity(0.4), width: 1.5),
+                  borderRadius: BorderRadius.circular(12),
                 ),
-                const SizedBox(width: 8),
-                const Text(
-                  "Select Payment Method",
-                  style: TextStyle(color: Colors.black, fontSize: 16),
-                ),
-                const Spacer(),
-                // Trailing SVG Icon
-                SvgPicture.asset(
-                  'assets/icons/globe.svg',
-                  width: 24,
-                  height: 24,
-                  color: Colors.blueAccent,
-                ),
-              ],
-            ),
-            items: _paymentMethods.map((String method) {
-              return DropdownMenuItem<String>(
-                value: method,
-                child: Row(
-                  children: [
-                    // Option Leading Icon (can be same or different)
-                    SvgPicture.asset(
-                      'assets/icons/globe.svg',
-                      width: 24,
-                      height: 24,
-                      color: Colors.blueAccent,
+                child: DropdownButtonHideUnderline(
+                  child: DropdownButton<String>(
+                    isExpanded: true,
+                    value: _selectedPaymentMethod,
+                    // When no value is selected, we show a custom hint
+                    hint: Row(
+                      children: [
+                        // Leading SVG Icon
+                        SvgPicture.asset(
+                          'assets/icons/leading.svg',
+                          width: 24,
+                          height: 24,
+                        ),
+                        const SizedBox(width: 8),
+                        const Text(
+                          "Select Payment Method",
+                          style: TextStyle(color: Colors.black, fontSize: 16),
+                        ),
+                        const Spacer(),
+                        // Trailing SVG Icon
+                        SvgPicture.asset(
+                          'assets/icons/globe.svg',
+                          width: 24,
+                          height: 24,
+                          color: Colors.blueAccent,
+                        ),
+                      ],
                     ),
-                    const SizedBox(width: 8),
-                    Text(
-                      method,
-                      style: const TextStyle(fontSize: 16),
-                    ),
-                  ],
+                    items: _paymentMethods.map((String method) {
+                      return DropdownMenuItem<String>(
+                        value: method,
+                        child: Row(
+                          children: [
+                            // Option Leading Icon (can be same or different)
+                            SvgPicture.asset(
+                              'assets/icons/globe.svg',
+                              width: 24,
+                              height: 24,
+                              color: Colors.blueAccent,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              method,
+                              style: const TextStyle(fontSize: 16),
+                            ),
+                          ],
+                        ),
+                      );
+                    }).toList(),
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        _selectedPaymentMethod = newValue;
+                      });
+                    },
+                  ),
                 ),
-              );
-            }).toList(),
-            onChanged: (String? newValue) {
-              setState(() {
-                _selectedPaymentMethod = newValue;
-              });
-            },
-          ),
-        ),
-            ),
-            
+              ),
+
               SizedBox(height: 15),
               CustomTextInputField(
                 hintText: "Travel Fee per km/mile",
                 icon: Icons.monetization_on,
+                keyboardType: TextInputType.number,
               ),
               const SizedBox(height: 15),
-              
+
               CustomButton(
                 alignment: MainAxisAlignment.start,
                 icon: Icons.pin_drop,
@@ -125,8 +127,8 @@ class _TravellingInfoPageState extends State<TravellingInfoPage> {
                 textColor: Colors.black,
               ),
               const SizedBox(height: 15),
-               CustomDistanceSlider(),
-               const SizedBox(height: 15),
+              CustomDistanceSlider(),
+              const SizedBox(height: 15),
               Container(
                 height: MediaQuery.of(context).size.height * 0.2,
                 width: double.infinity,
@@ -139,8 +141,7 @@ class _TravellingInfoPageState extends State<TravellingInfoPage> {
                 ),
               ),
               const SizedBox(height: 15),
-             
-              
+
               CustomSubTitle(
                 subtitle: "Travel & Fee Policy (Optional)",
                 color: AppColors.text,

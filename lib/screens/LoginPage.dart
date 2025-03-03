@@ -102,6 +102,7 @@ class _LoginPageState extends State<LoginPage> {
                   hintText: "Enter your email",
                   controller: _emailController,
                   icon: Icons.email_outlined,
+                  keyboardType: TextInputType.emailAddress,
                 ),
               ),
               Padding(
@@ -110,6 +111,7 @@ class _LoginPageState extends State<LoginPage> {
                   hintText: "Enter your password",
                   controller: _passwordController,
                   icon: Icons.lock_outline,
+                  keyboardType: TextInputType.visiblePassword,
                 ),
               ),
               const SizedBox(height: 12),
