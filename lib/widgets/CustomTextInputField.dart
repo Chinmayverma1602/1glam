@@ -5,14 +5,14 @@ import 'package:glam1/constants/AppColors.dart';
 class CustomTextInputField extends StatelessWidget {
   final String hintText;
   final IconData icon;
+  final TextEditingController? controller;
 
   CustomTextInputField({
     required this.hintText,
     required this.icon,
+    this.controller,
     super.key,
   });
-
-  final TextEditingController _textEditingController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -20,23 +20,22 @@ class CustomTextInputField extends StatelessWidget {
       height: 55,
       width: double.infinity,
       child: TextFormField(
-        controller: _textEditingController,
+        controller: controller,
         decoration: InputDecoration(
           hintText: hintText,
-          hintStyle: TextStyle(  
+          hintStyle: TextStyle(
             color: AppColors.hintText,
             fontSize: 16,
             fontWeight: FontWeight.w400,
           ),
-          
           prefixIcon: Icon(
             icon,
             color: AppColors.primary.withOpacity(0.6),
           ),
           enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12), 
+            borderRadius: BorderRadius.circular(12),
             borderSide: BorderSide(
-              color: AppColors.primary.withOpacity(0.2), 
+              color: AppColors.primary.withOpacity(0.2),
               width: 1.5,
             ),
           ),

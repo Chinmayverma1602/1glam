@@ -12,7 +12,7 @@ class CustomButton extends StatelessWidget {
   final Color borderColor;
   final double borderThickness;
   final double elevation;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed; // ✅ Made nullable
   final MainAxisAlignment alignment; // New Parameter
 
   const CustomButton({
@@ -28,7 +28,7 @@ class CustomButton extends StatelessWidget {
     this.borderThickness = 2.0,
     this.elevation = 0.0,
     this.alignment = MainAxisAlignment.center, // Default alignment
-    required this.onPressed,
+    this.onPressed, // ✅ Allowing null value
   }) : super(key: key);
 
   Widget _buildLeadingWidget() {
@@ -54,7 +54,8 @@ class CustomButton extends StatelessWidget {
             )
           : null,
       child: ElevatedButton(
-        onPressed: onPressed,
+        onPressed:
+            onPressed, // ✅ Button will be disabled if `onPressed` is null
         style: ElevatedButton.styleFrom(
           backgroundColor: color,
           elevation: elevation,
