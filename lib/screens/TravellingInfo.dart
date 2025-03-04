@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:dropdown_textfield/dropdown_textfield.dart';
 import 'package:glam1/constants/AppColors.dart';
 import 'package:glam1/screens/ServicesInfoPage.dart';
 import 'package:glam1/widgets/CustomButton.dart';
@@ -18,12 +19,34 @@ class TravellingInfoPage extends StatefulWidget {
 }
 
 class _TravellingInfoPageState extends State<TravellingInfoPage> {
-  String? _selectedPaymentMethod;
-  final List<String> _paymentMethods = [
-    "Online Payment",
-    "Cash Payment",
-    "Net Banking"
+  late SingleValueDropDownController _paymentController;
+  late SingleValueDropDownController _travelFeeController;
+
+  final List<DropDownValueModel> _paymentMethods = const [
+    DropDownValueModel(name: "Free", value: "free"),
+    DropDownValueModel(name: "Starts from", value: "starts_from"),
+    DropDownValueModel(name: "Fixed", value: "fixed"),
   ];
+
+  final List<DropDownValueModel> _travelFeeOptions = const [
+    DropDownValueModel(name: "Free", value: "free"),
+    DropDownValueModel(name: "Per km", value: "km"),
+    DropDownValueModel(name: "Per mile", value: "mile"),
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _paymentController = SingleValueDropDownController();
+    _travelFeeController = SingleValueDropDownController();
+  }
+
+  @override
+  void dispose() {
+    _paymentController.dispose();
+    _travelFeeController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,78 +62,93 @@ class _TravellingInfoPageState extends State<TravellingInfoPage> {
               const SizedBox(height: 35),
               CustomTitle(title: "What is your travel fee?"),
               const SizedBox(height: 35),
-              // Dropdown for Payment Methods
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                decoration: BoxDecoration(
-                  border: Border.all(
-                      color: AppColors.primary.withOpacity(0.4), width: 1.5),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: DropdownButtonHideUnderline(
-                  child: DropdownButton<String>(
-                    isExpanded: true,
-                    value: _selectedPaymentMethod,
-                    // When no value is selected, we show a custom hint
-                    hint: Row(
-                      children: [
-                        // Leading SVG Icon
-                        SvgPicture.asset(
-                          'assets/icons/leading.svg',
-                          width: 24,
-                          height: 24,
-                        ),
-                        const SizedBox(width: 8),
-                        const Text(
-                          "Select Payment Method",
-                          style: TextStyle(color: Colors.black, fontSize: 16),
-                        ),
-                        const Spacer(),
-                        // Trailing SVG Icon
-                        SvgPicture.asset(
-                          'assets/icons/globe.svg',
-                          width: 24,
-                          height: 24,
-                          color: Colors.blueAccent,
-                        ),
-                      ],
+              // Payment Method Dropdown
+              DropDownTextField(
+                controller: _paymentController,
+                listSpace: 2,
+                dropdownRadius: 12,
+                textFieldDecoration: InputDecoration(
+                  hintText: "Select Payment Method",
+                  prefixIcon: Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: SvgPicture.asset(
+                      'assets/icons/leading.svg',
+                      width: 24,
+                      height: 24,
                     ),
-                    items: _paymentMethods.map((String method) {
-                      return DropdownMenuItem<String>(
-                        value: method,
-                        child: Row(
-                          children: [
-                            // Option Leading Icon (can be same or different)
-                            SvgPicture.asset(
-                              'assets/icons/globe.svg',
-                              width: 24,
-                              height: 24,
-                              color: Colors.blueAccent,
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              method,
-                              style: const TextStyle(fontSize: 16),
-                            ),
-                          ],
-                        ),
-                      );
-                    }).toList(),
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        _selectedPaymentMethod = newValue;
-                      });
-                    },
+                  ),
+                  suffixIcon: Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: SvgPicture.asset(
+                      'assets/icons/globe.svg',
+                      width: 24,
+                      height: 24,
+                      color: Colors.blueAccent,
+                    ),
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(
+                      color: AppColors.primary.withOpacity(0.4),
+                      width: 1.5,
+                    ),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(
+                      color: AppColors.primary.withOpacity(0.4),
+                      width: 1.5,
+                    ),
                   ),
                 ),
+                dropDownList: _paymentMethods,
+                dropDownItemCount: 3,
+                onChanged: (value) {
+                  setState(() {});
+                },
               ),
 
-              SizedBox(height: 15),
-              CustomTextInputField(
-                hintText: "Travel Fee per km/mile",
-                icon: Icons.monetization_on,
-                keyboardType: TextInputType.number,
+              const SizedBox(height: 15),
+              // Modified Travel Fee Dropdown
+              DropDownTextField(
+                controller: _travelFeeController,
+                listSpace: 2,
+                dropdownRadius: 12,
+                textFieldDecoration: InputDecoration(
+                  hintText: "Travel Fee per km/mile",
+                  prefixIcon: const Icon(
+                    Icons.monetization_on,
+                    size: 24,
+                  ),
+                  suffixIcon: Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: SvgPicture.asset(
+                      'assets/icons/globe.svg',
+                      width: 24,
+                      height: 24,
+                      color: Colors.blueAccent,
+                    ),
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(
+                      color: AppColors.primary.withOpacity(0.4),
+                      width: 1.5,
+                    ),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(
+                      color: AppColors.primary.withOpacity(0.4),
+                      width: 1.5,
+                    ),
+                  ),
+                ),
+                dropDownList: _travelFeeOptions,
+                dropDownItemCount: 3,
+                onChanged: (value) {
+                  setState(() {});
+                },
               ),
               const SizedBox(height: 15),
 
@@ -118,7 +156,7 @@ class _TravellingInfoPageState extends State<TravellingInfoPage> {
                 alignment: MainAxisAlignment.start,
                 icon: Icons.pin_drop,
                 iconColor: AppColors.primary,
-                text: "123 Main St, New Yors, NY 100001",
+                text: "123 Main St, New York, NY 100001",
                 color: Colors.transparent.withOpacity(0.1),
                 onPressed: () {},
                 border: true,

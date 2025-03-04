@@ -83,20 +83,25 @@ class _AddressDetailsPageState extends State<AddressDetailsPage> {
 
     setState(() => isLoading = true);
 
-    final address = UserAddress(
-      user: "test@gmail.com", // Make this dynamic based on your auth system
-      addressLine1: addressLine1Controller.text,
-      addressLine2: addressLine2Controller.text.isEmpty
-          ? null
-          : addressLine2Controller.text,
-      city: cityController.text,
-      zipCode: zipController.text,
-      state: selectedState!,
-      isSharedLocation: isSharedLocation,
-      boothNo: boothController.text,
-    );
-
     try {
+      String? userEmail = await _addressService.getLoggedInUserEmail();
+      if (userEmail == null) {
+        throw Exception("Failed to fetch user email.");
+      }
+
+      final address = UserAddress(
+        user: userEmail, // Use dynamic user email
+        addressLine1: addressLine1Controller.text,
+        addressLine2: addressLine2Controller.text.isEmpty
+            ? null
+            : addressLine2Controller.text,
+        city: cityController.text,
+        zipCode: zipController.text,
+        state: selectedState!,
+        isSharedLocation: isSharedLocation,
+        boothNo: boothController.text,
+      );
+
       final savedAddress = await _addressService.saveAddress(address);
       if (savedAddress != null) {
         Navigator.push(context,
@@ -170,7 +175,7 @@ class _AddressDetailsPageState extends State<AddressDetailsPage> {
               hintText: "City",
               icon: Icons.apartment_outlined,
               controller: cityController,
-              keyboardType: TextInputType.name,
+              keyboardType: TextInputType.streetAddress,
             ),
             SizedBox(height: 15),
             Row(
@@ -211,7 +216,7 @@ class _AddressDetailsPageState extends State<AddressDetailsPage> {
                     hintText: "ZIP",
                     icon: Icons.tag,
                     controller: zipController,
-                    keyboardType: TextInputType.number,
+                    keyboardType: TextInputType.streetAddress,
                   ),
                 ),
               ],
@@ -239,7 +244,7 @@ class _AddressDetailsPageState extends State<AddressDetailsPage> {
               hintText: "Booth number",
               icon: Icons.store_mall_directory_outlined,
               controller: boothController,
-              keyboardType: TextInputType.number,
+              keyboardType: TextInputType.streetAddress,
             ),
             SizedBox(height: 15),
             CustomButton(

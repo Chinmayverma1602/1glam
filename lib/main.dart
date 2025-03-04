@@ -6,6 +6,7 @@ import 'package:glam1/screens/HomePage.dart';
 import 'package:glam1/screens/LeadsPage.dart';
 import 'package:glam1/screens/LoginPage.dart';
 import 'package:glam1/screens/ServicesInfoPage.dart';
+import 'package:glam1/screens/TravellingInfo.dart';
 import 'package:glam1/screens/VerifyEmailPage.dart';
 
 void main() {
@@ -22,9 +23,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       initialRoute: '/home',
       routes: {
-        '/home': (context) => const AboutMePage(
-              userEmail: '',
-            ),
+        '/home': (context) => AddressDetailsPage(),
         '/leads': (context) => const LeadsPage(),
         '/calendar': (context) => const HomePage(),
         '/settings': (context) => const HomePage(),

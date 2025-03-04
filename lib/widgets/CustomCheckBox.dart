@@ -3,16 +3,21 @@ import 'package:glam1/constants/AppColors.dart';
 
 import 'package:google_fonts/google_fonts.dart';
 
-class CheckBox extends StatefulWidget {
+class CustomCheckBox extends StatefulWidget {
   final String location;
   final bool isRequired;
-  const CheckBox({required this.location, this.isRequired = false, super.key});
+  CustomCheckBox(
+      {required this.location,
+      this.isRequired = false,
+      super.key,
+      required Null Function(bool? value) onChanged,
+      required Color activeColor});
 
   @override
-  State<CheckBox> createState() => _CheckBoxState();
+  State<CustomCheckBox> createState() => _CustomCheckBoxState();
 }
 
-class _CheckBoxState extends State<CheckBox> {
+class _CustomCheckBoxState extends State<CustomCheckBox> {
   @override
   Widget build(BuildContext context) {
     return Container(

@@ -101,12 +101,23 @@ class _AboutMePageState extends State<AboutMePage> {
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              child: CheckBox(location: "At my place", isRequired: true),
+              child: CustomCheckBox(
+                onChanged: (bool? value) {
+                  setState(() {});
+                },
+                activeColor: AppColors.primary,
+                location: 'At My Place',
+              ),
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              child:
-                  CheckBox(location: "At client's location", isRequired: true),
+              child: CustomCheckBox(
+                onChanged: (bool? value) {
+                  setState(() {});
+                },
+                activeColor: AppColors.primary,
+                location: 'At Client Location',
+              ),
             ),
             Padding(
               padding: const EdgeInsets.all(16),
