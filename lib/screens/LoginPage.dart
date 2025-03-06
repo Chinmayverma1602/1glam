@@ -30,7 +30,7 @@ class _LoginPageState extends State<LoginPage> {
 
     setState(() => _isLoading = true);
 
-    final response = await ApiService.createUser(
+    final response = await LoginServiceApi.createUser(
       _emailController.text,
       _passwordController.text,
     );

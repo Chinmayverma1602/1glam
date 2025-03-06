@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       initialRoute: '/home',
       routes: {
-        '/home': (context) => AddressDetailsPage(),
+        '/home': (context) => AboutMePage(),
         '/leads': (context) => const LeadsPage(),
         '/calendar': (context) => const HomePage(),
         '/settings': (context) => const HomePage(),

@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-class ApiService {
+class LoginServiceApi {
   static const String baseUrl = "http://1glam.local:8000/api/resource/User";
 
   static const Map<String, String> headers = {
