@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:dropdown_textfield/dropdown_textfield.dart';
 import 'package:glam1/constants/AppColors.dart';
+import 'package:glam1/model/travelling_model.dart';
 import 'package:glam1/screens/ServicesInfoPage.dart';
+import 'package:glam1/services/travelling_service.dart';
 import 'package:glam1/widgets/CustomButton.dart';
 import 'package:glam1/widgets/CustomButton2.dart';
 import 'package:glam1/widgets/CustomDistanceSlider.dart';
 import 'package:glam1/widgets/CustomHeader.dart';
 import 'package:glam1/widgets/CustomSubtitle.dart';
-import 'package:glam1/widgets/CustomTextInputField.dart';
 import 'package:glam1/widgets/CustomTitle.dart';
 
 class TravellingInfoPage extends StatefulWidget {
@@ -21,17 +22,17 @@ class TravellingInfoPage extends StatefulWidget {
 class _TravellingInfoPageState extends State<TravellingInfoPage> {
   late SingleValueDropDownController _paymentController;
   late SingleValueDropDownController _travelFeeController;
+  final TravelFeeService _travelFeeService = TravelFeeService();
 
   final List<DropDownValueModel> _paymentMethods = const [
     DropDownValueModel(name: "Free", value: "free"),
-    DropDownValueModel(name: "Starts from", value: "starts_from"),
+    DropDownValueModel(name: "Starts from", value: "starts from"),
     DropDownValueModel(name: "Fixed", value: "fixed"),
   ];
 
   final List<DropDownValueModel> _travelFeeOptions = const [
-    DropDownValueModel(name: "Free", value: "free"),
-    DropDownValueModel(name: "Per km", value: "km"),
-    DropDownValueModel(name: "Per mile", value: "mile"),
+    DropDownValueModel(name: "Per km", value: "per_km"),
+    DropDownValueModel(name: "Per mile", value: "per_mile"),
   ];
 
   @override
@@ -48,6 +49,27 @@ class _TravellingInfoPageState extends State<TravellingInfoPage> {
     super.dispose();
   }
 
+  void _submitTravelFee() async {
+    TravelFee travelFee = TravelFee(
+      user: "hade@example.com",
+      feeType: _travelFeeController.dropDownValue?.value ?? "",
+      paymentMethod: _paymentController.dropDownValue?.value ?? "",
+      maxDistance: "78",
+    );
+
+    bool success = await _travelFeeService.submitTravelFee(travelFee);
+    if (success) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => ServicesInfoPage()),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Failed to submit travel fee.")),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -62,7 +84,6 @@ class _TravellingInfoPageState extends State<TravellingInfoPage> {
               const SizedBox(height: 35),
               CustomTitle(title: "What is your travel fee?"),
               const SizedBox(height: 35),
-              // Payment Method Dropdown
               DropDownTextField(
                 controller: _paymentController,
                 listSpace: 2,
@@ -77,23 +98,7 @@ class _TravellingInfoPageState extends State<TravellingInfoPage> {
                       height: 24,
                     ),
                   ),
-                  suffixIcon: Padding(
-                    padding: const EdgeInsets.all(12.0),
-                    child: SvgPicture.asset(
-                      'assets/icons/globe.svg',
-                      width: 24,
-                      height: 24,
-                      color: Colors.blueAccent,
-                    ),
-                  ),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(
-                      color: AppColors.primary.withOpacity(0.4),
-                      width: 1.5,
-                    ),
-                  ),
-                  enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide(
                       color: AppColors.primary.withOpacity(0.4),
@@ -102,14 +107,8 @@ class _TravellingInfoPageState extends State<TravellingInfoPage> {
                   ),
                 ),
                 dropDownList: _paymentMethods,
-                dropDownItemCount: 3,
-                onChanged: (value) {
-                  setState(() {});
-                },
               ),
-
               const SizedBox(height: 15),
-              // Modified Travel Fee Dropdown
               DropDownTextField(
                 controller: _travelFeeController,
                 listSpace: 2,
@@ -120,23 +119,7 @@ class _TravellingInfoPageState extends State<TravellingInfoPage> {
                     Icons.monetization_on,
                     size: 24,
                   ),
-                  suffixIcon: Padding(
-                    padding: const EdgeInsets.all(12.0),
-                    child: SvgPicture.asset(
-                      'assets/icons/globe.svg',
-                      width: 24,
-                      height: 24,
-                      color: Colors.blueAccent,
-                    ),
-                  ),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(
-                      color: AppColors.primary.withOpacity(0.4),
-                      width: 1.5,
-                    ),
-                  ),
-                  enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide(
                       color: AppColors.primary.withOpacity(0.4),
@@ -145,24 +128,6 @@ class _TravellingInfoPageState extends State<TravellingInfoPage> {
                   ),
                 ),
                 dropDownList: _travelFeeOptions,
-                dropDownItemCount: 3,
-                onChanged: (value) {
-                  setState(() {});
-                },
-              ),
-              const SizedBox(height: 15),
-
-              CustomButton(
-                alignment: MainAxisAlignment.start,
-                icon: Icons.pin_drop,
-                iconColor: AppColors.primary,
-                text: "123 Main St, New York, NY 100001",
-                color: Colors.transparent.withOpacity(0.1),
-                onPressed: () {},
-                border: true,
-                borderColor: AppColors.primary,
-                borderThickness: 0.4,
-                textColor: Colors.black,
               ),
               const SizedBox(height: 15),
               CustomDistanceSlider(),
@@ -179,7 +144,6 @@ class _TravellingInfoPageState extends State<TravellingInfoPage> {
                 ),
               ),
               const SizedBox(height: 15),
-
               CustomSubTitle(
                 subtitle: "Travel & Fee Policy (Optional)",
                 color: AppColors.text,
@@ -213,14 +177,7 @@ class _TravellingInfoPageState extends State<TravellingInfoPage> {
               CustomButton(
                 text: "Continue",
                 color: AppColors.subtitle,
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ServicesInfoPage(),
-                    ),
-                  );
-                },
+                onPressed: _submitTravelFee,
               )
             ],
           ),
