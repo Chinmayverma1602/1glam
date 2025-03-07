@@ -4,7 +4,6 @@ import 'package:glam1/screens/HomePage.dart';
 import 'package:glam1/widgets/CustomButton.dart';
 import 'package:glam1/widgets/CustomButton2.dart';
 import 'package:glam1/widgets/CustomServiceSelectionContainer.dart';
-import 'package:glam1/widgets/CustomTextInputField.dart';
 
 class AddServicesPage extends StatefulWidget {
   const AddServicesPage({Key? key}) : super(key: key);
@@ -14,6 +13,113 @@ class AddServicesPage extends StatefulWidget {
 }
 
 class _AddServicesPageState extends State<AddServicesPage> {
+  bool isBundle = true;
+  List<CustomServiceSelectionContainer> serviceWidgets = [];
+  
+  void _toggleMode() {
+  setState(() {
+    isBundle = !isBundle;
+
+    // If switching to single mode and multiple services exist, keep only the first one
+    if (!isBundle && serviceWidgets.length > 1) {
+      final firstService = serviceWidgets.first;
+      serviceWidgets.clear();
+      serviceWidgets.add(firstService);
+
+      // Show message to user
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Switched to Single mode: extra services removed')),
+        );
+      });
+    } 
+
+    // If switching to bundle mode and there's no service, add a default one
+    if (isBundle && serviceWidgets.isEmpty) {
+      _addService();
+    }
+
+    // Update service types
+    _updateServiceTypes();
+  });
+}
+
+  void _updateServiceTypes() {
+    setState(() {
+      // Rebuild the service widgets with updated service types
+      for (int i = 0; i < serviceWidgets.length; i++) {
+        final widget = serviceWidgets[i];
+        serviceWidgets[i] = CustomServiceSelectionContainer(
+          title: widget.title,
+          serviceCategory: widget.serviceCategory,
+          buttonBorderColor: widget.buttonBorderColor,
+          borderColor: widget.borderColor,
+          hintText: widget.hintText,
+          borderRadius: widget.borderRadius,
+          durationLabel: widget.durationLabel,
+          priceLabel: widget.priceLabel,
+          artistName: widget.artistName,
+          artistSpecialization: widget.artistSpecialization,
+          serviceType: isBundle ? 'Bundle Service' : 'Mobile Service',
+          serviceIcon: widget.serviceIcon,
+          leadingIconColor: widget.leadingIconColor,
+          trailingIconColor: widget.trailingIconColor,
+          artistImage: widget.artistImage,
+          onDelete: () => _removeService(i),
+        );
+      }
+    });
+  }
+
+  void _addService() {
+    if (!isBundle && serviceWidgets.isNotEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Single mode allows only one service')),
+      );
+      return;
+    }
+
+    setState(() {
+      final newIndex = serviceWidgets.length;
+      serviceWidgets.add(
+        CustomServiceSelectionContainer(
+          title: 'New Service',
+          serviceCategory: 'Luxury',
+          buttonBorderColor: AppColors.hintText.withOpacity(0.4),
+          borderColor: AppColors.hintText,
+          hintText: 'Service description',
+          borderRadius: 16,
+          durationLabel: '2',
+          priceLabel: '40,000',
+          artistName: 'New Artist',
+          artistSpecialization: 'Specialist',
+          serviceType: isBundle ? 'Bundle Service' : 'Mobile Service',
+          serviceIcon: 'assets/images/f.svg',
+          leadingIconColor: AppColors.primary,
+          trailingIconColor: AppColors.primary,
+          artistImage: 'assets/images/img.svg',
+          onDelete: () => _removeService(newIndex),
+        ),
+      );
+    });
+  }
+
+  void _removeService(int index) {
+    if (index >= 0 && index < serviceWidgets.length) {
+      setState(() {
+        serviceWidgets.removeAt(index);
+      });
+    }
+  }
+
+  int _calculateTotalTime() {
+    return serviceWidgets.length * 2;
+  }
+
+  int _calculateTotalPrice() {
+    return serviceWidgets.length * 40000;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,130 +128,136 @@ class _AddServicesPageState extends State<AddServicesPage> {
         shadowColor: Colors.white,
         title: const Text("Add Service"),
       ),
-      
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-             
+              // Mode toggle buttons
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  CustomButton2(
-                    fillColor: AppColors.primary.withOpacity(0.2),
-                    text: "Bundle",
-                    borderColor: AppColors.primary.withOpacity(0.2),
+                  GestureDetector(
+                    onTap: () {
+                      if (!isBundle) {
+                        setState(() {
+                          isBundle = true;
+                          // Clear existing services and add a default one
+                          serviceWidgets.clear();
+                          _addService();
+                        });
+                      }
+                    },
+                    child: CustomButton2(
+                      fillColor: isBundle ? AppColors.primary.withOpacity(0.2) : Colors.white,
+                      text: "Bundle",
+                      borderColor: isBundle ? AppColors.primary : Colors.grey,
+                    ),
                   ),
-                  CustomButton2(
-                    fillColor: AppColors.hintText.withOpacity(0.2),
-                    
-                    text: "Single",
-                    borderColor:Colors.white,
+                  GestureDetector(
+                    onTap: () {
+                      if (isBundle) {
+                        setState(() {
+                          isBundle = false;
+                          // If multiple services exist, keep only the first one
+                          if (serviceWidgets.length > 1) {
+                            final firstService = serviceWidgets.first;
+                            serviceWidgets.clear();
+                            serviceWidgets.add(firstService);
+                            
+                            // Show a message to the user
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Switched to Single mode: extra services removed')),
+                            );
+                          } else if (serviceWidgets.isEmpty) {
+                            _addService();
+                          }
+                          // Update service types
+                          _updateServiceTypes();
+                        });
+                      }
+                    },
+                    child: CustomButton2(
+                      fillColor: !isBundle ? AppColors.primary.withOpacity(0.2) : Colors.white,
+                      text: "Single",
+                      borderColor: !isBundle ? AppColors.primary : Colors.grey,
+                    ),
                   ),
                 ],
               ),
-               SizedBox(height: 16.0),
-             
+              const SizedBox(height: 16.0),
               Row(
-                
-                children: const [
-                  Text("Total time:", style: TextStyle(color: AppColors.hintText),),
-                  SizedBox(width: 15,),
-                  Text("4 hours"),
-                   Spacer(),
-                  Text("Total price:", style: TextStyle(color: AppColors.hintText),),
-                   SizedBox(width: 15,),
-                  Text("65,000"),
+                children: [
+                  const Text("Total time:", style: TextStyle(color: AppColors.hintText)),
+                  const SizedBox(width: 15),
+                  Text("${_calculateTotalTime()} hours"),
+                  const Spacer(),
+                  const Text("Total price:", style: TextStyle(color: AppColors.hintText)),
+                  const SizedBox(width: 15),
+                  Text("${_calculateTotalPrice()}"),
                 ],
               ),
-               SizedBox(height: 16.0),
-             
-            Material(
-            elevation: 1,
-            color: Colors.transparent,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Container(
-              height: MediaQuery.of(context).size.height * 0.09,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border.all(color: Colors.transparent),
-                borderRadius: BorderRadius.circular(12),
+              const SizedBox(height: 16.0),
+              // Services list with tap-to-toggle functionality
+              Column(
+                children: List.generate(serviceWidgets.length, (index) {
+                  final widget = serviceWidgets[index];
+                  return GestureDetector(
+                    onTap: _toggleMode, // Toggle mode on tap
+                    child: Container(
+                      margin: const EdgeInsets.only(bottom: 8),
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: Colors.transparent,
+                          width: 2,
+                        ),
+                        borderRadius: BorderRadius.circular(18),
+                      ),
+                      child: CustomServiceSelectionContainer(
+                        title: widget.title,
+                        serviceCategory: widget.serviceCategory,
+                        buttonBorderColor: widget.buttonBorderColor,
+                        borderColor: widget.borderColor,
+                        hintText: widget.hintText,
+                        borderRadius: widget.borderRadius,
+                        durationLabel: widget.durationLabel,
+                        priceLabel: widget.priceLabel,
+                        artistName: widget.artistName,
+                        artistSpecialization: widget.artistSpecialization,
+                        serviceType: isBundle ? 'Bundle Service' : 'Mobile Service',
+                        serviceIcon: widget.serviceIcon,
+                        leadingIconColor: widget.leadingIconColor,
+                        trailingIconColor: widget.trailingIconColor,
+                        artistImage: widget.artistImage,
+                        onDelete: () => _removeService(index),
+                      ),
+                    ),
+                  );
+                }),
               ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 17),
-                child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: Text(
-                "Bridal Makeup Bundle",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+              const SizedBox(height: 16),
+              CustomButton(
+                icon: Icons.add,
+                text: "Add Another Service",
+                color: Colors.transparent,
+                onPressed: _addService,
+                textColor: AppColors.primary,
+                borderColor: AppColors.primary,
+                border: true,
+                borderThickness: 0.4,
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: Divider(),
-            ),
-          ],
-                ),
+              const SizedBox(height: 16),
+              CustomButton(
+                text: "Save Service",
+                color: AppColors.primary,
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const HomePage()),
+                  );
+                },
               ),
-            ),
-          )
-          ,
-               SizedBox(height: 16.0),
-          
-              CustomServiceSelectionContainer(
-              title: 'Makeup', 
-              serviceCategory: 'Luxury', 
-              buttonBorderColor: AppColors.hintText.withOpacity(0.4), 
-              borderColor: AppColors.hintText, 
-              hintText: 'Service description', 
-          
-              borderRadius: 16, 
-              durationLabel: '2', 
-              priceLabel: '40,000', 
-              artistName: 'Emma Wilson',
-               artistSpecialization: 'Hair Specialist',
-                serviceType: 'Mobile Service',
-                serviceIcon: 'assets/images/f.svg',
-                leadingIconColor: AppColors.primary,
-                
-                trailingIconColor: AppColors.primary, 
-                artistImage: 'assets/images/img.svg',
-          
-              ),
-              SizedBox(height: 16,),
-              CustomServiceSelectionContainer(title: 'HairStyling', 
-              serviceCategory: 'Premium', 
-              buttonBorderColor: AppColors.hintText, 
-              borderColor: AppColors.hintText, 
-              hintText: 'Service description', 
-              borderRadius: 16, 
-              durationLabel: '2', 
-              priceLabel: '25,000', 
-              artistName: 'Sophie Chen ',
-               artistSpecialization: 'Hair Specialist',
-                serviceType: 'Mobile Service',
-                serviceIcon: 'assets/images/f.svg',
-                leadingIconColor: AppColors.primary,
-                
-                trailingIconColor: AppColors.primary, 
-                artistImage: 'assets/images/img.svg',
-          
-              ),
-                 SizedBox(height: 16,),
-              CustomButton(icon: Icons.add,text: "Add Another Service ", color: Colors.transparent, onPressed: (){}, textColor: AppColors.primary,borderColor: AppColors.primary,border: true,borderThickness: 0.4,),
-              SizedBox(height: 16,),
-              CustomButton(text: "Save Service", color: AppColors.primary, onPressed: (){
-Navigator.push(context, MaterialPageRoute(builder: (context)=>HomePage()));
-
-              })
             ],
           ),
         ),
