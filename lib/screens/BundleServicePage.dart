@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:glam1/constants/AppColors.dart';
 import 'package:glam1/screens/HomePage.dart';
 import 'package:glam1/screens/SIngleServiceScreen.dart';
+import 'package:glam1/screens/ServicesInfoPage.dart';
 
 import 'package:glam1/widgets/CustomButton.dart';
 import 'package:glam1/widgets/CustomButton2.dart';
@@ -167,7 +168,8 @@ class _BundleServicePageState extends State<BundleServicePage> {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const HomePage()),
+                      MaterialPageRoute(
+                          builder: (context) => const ServicesInfoPage()),
                     );
                   },
                 ),

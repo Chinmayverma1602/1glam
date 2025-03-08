@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:glam1/constants/AppColors.dart';
 import 'package:glam1/screens/BundleServicePage.dart';
 import 'package:glam1/screens/HomePage.dart';
+import 'package:glam1/screens/ServicesInfoPage.dart';
 import 'package:glam1/widgets/CustomButton.dart';
 import 'package:glam1/widgets/CustomButton2.dart';
 import 'package:glam1/widgets/CustomServiceSelectionContainer.dart';
@@ -65,12 +66,10 @@ class _SingleServicePageState extends State<SingleServicePage> {
               const SizedBox(height: 16.0),
               Material(
                 elevation: 1,
-        borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(16),
                 child: Container(
-                  height: MediaQuery.of(context).size.height*0.12,
-                  decoration: BoxDecoration(
-                    color: Colors.white
-                  ),
+                  height: MediaQuery.of(context).size.height * 0.12,
+                  decoration: BoxDecoration(color: Colors.white),
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Column(
@@ -78,29 +77,48 @@ class _SingleServicePageState extends State<SingleServicePage> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            CustomButton2(text: "Bundle",textColor: AppColors.hintText,fillColor: Colors.grey.withOpacity(0.2),isBold: true, onTap: (){
-                                Navigator.push(context, MaterialPageRoute(builder: (context)=>BundleServicePage()));
-                              }, borderColor: Colors.transparent,),
-                             CustomButton2(text: "Single", borderColor: Colors.transparent, fillColor: AppColors.primary,textColor: AppColors.title,textSize: 14, isBold: true,),
+                            CustomButton2(
+                              text: "Bundle",
+                              textColor: AppColors.hintText,
+                              fillColor: Colors.grey.withOpacity(0.2),
+                              isBold: true,
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            BundleServicePage()));
+                              },
+                              borderColor: Colors.transparent,
+                            ),
+                            CustomButton2(
+                              text: "Single",
+                              borderColor: Colors.transparent,
+                              fillColor: AppColors.primary,
+                              textColor: AppColors.title,
+                              textSize: 14,
+                              isBold: true,
+                            ),
                           ],
                         ),
                         Row(
-                      children: [
-                        const Text("Total time:", style: TextStyle(color: AppColors.hintText)),
-                        const SizedBox(width: 15),
-                        Text("${_calculateTotalTime()} hours"),
-                        const Spacer(),
-                        const Text("Total price:", style: TextStyle(color: AppColors.hintText)),
-                        const SizedBox(width: 15),
-                        Text("${_calculateTotalPrice()}"),
-                      ],
-                    ),
+                          children: [
+                            const Text("Total time:",
+                                style: TextStyle(color: AppColors.hintText)),
+                            const SizedBox(width: 15),
+                            Text("${_calculateTotalTime()} hours"),
+                            const Spacer(),
+                            const Text("Total price:",
+                                style: TextStyle(color: AppColors.hintText)),
+                            const SizedBox(width: 15),
+                            Text("${_calculateTotalPrice()}"),
+                          ],
+                        ),
                       ],
                     ),
                   ),
                 ),
               ),
-              
               const SizedBox(height: 16.0),
               if (serviceWidget != null)
                 CustomServiceSelectionContainer(
@@ -140,7 +158,8 @@ class _SingleServicePageState extends State<SingleServicePage> {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const HomePage()),
+                      MaterialPageRoute(
+                          builder: (context) => const ServicesInfoPage()),
                     );
                   },
                 ),
