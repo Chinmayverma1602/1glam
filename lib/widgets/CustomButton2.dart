@@ -16,6 +16,7 @@ class CustomButton2 extends StatelessWidget {
   final bool isBold;
   final Color iconColor;
   final double iconSize;
+  final VoidCallback? onTap;
 
   CustomButton2({
     Key? key,
@@ -31,6 +32,7 @@ class CustomButton2 extends StatelessWidget {
     this.isBold = false,
     this.iconColor = Colors.black,
     this.iconSize = 24.0,
+    this.onTap
   }) : super(key: key);
 
   @override
@@ -46,9 +48,7 @@ class CustomButton2 extends StatelessWidget {
         ),
         padding: const EdgeInsets.all(8.0),
       ),
-      onPressed: () {
-        // onPressed function
-      },
+      onPressed:onTap,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,

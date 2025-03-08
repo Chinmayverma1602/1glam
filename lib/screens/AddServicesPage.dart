@@ -13,7 +13,7 @@ class AddServicesPage extends StatefulWidget {
 }
 
 class _AddServicesPageState extends State<AddServicesPage> {
-  bool isBundle = true;
+  bool isBundle = false;
   List<CustomServiceSelectionContainer> serviceWidgets = [];
   
   void _toggleMode() {
