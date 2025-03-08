@@ -63,26 +63,44 @@ class _SingleServicePageState extends State<SingleServicePage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 16.0),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  CustomButton2(text: "Bundle", borderColor: AppColors.primary, onTap: (){
-                      Navigator.push(context, MaterialPageRoute(builder: (context)=>BundleServicePage()));
-                    },),
-                   CustomButton2(text: "Single", borderColor: AppColors.primary, fillColor: AppColors.primary.withOpacity(0.2),textColor: AppColors.title,),
-                ],
+              Material(
+                elevation: 1,
+        borderRadius: BorderRadius.circular(16),
+                child: Container(
+                  height: MediaQuery.of(context).size.height*0.12,
+                  decoration: BoxDecoration(
+                    color: Colors.white
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            CustomButton2(text: "Bundle",textColor: AppColors.hintText,fillColor: Colors.grey.withOpacity(0.2),isBold: true, onTap: (){
+                                Navigator.push(context, MaterialPageRoute(builder: (context)=>BundleServicePage()));
+                              }, borderColor: Colors.transparent,),
+                             CustomButton2(text: "Single", borderColor: Colors.transparent, fillColor: AppColors.primary,textColor: AppColors.title,textSize: 14, isBold: true,),
+                          ],
+                        ),
+                        Row(
+                      children: [
+                        const Text("Total time:", style: TextStyle(color: AppColors.hintText)),
+                        const SizedBox(width: 15),
+                        Text("${_calculateTotalTime()} hours"),
+                        const Spacer(),
+                        const Text("Total price:", style: TextStyle(color: AppColors.hintText)),
+                        const SizedBox(width: 15),
+                        Text("${_calculateTotalPrice()}"),
+                      ],
+                    ),
+                      ],
+                    ),
+                  ),
+                ),
               ),
-              Row(
-                children: [
-                  const Text("Total time:", style: TextStyle(color: AppColors.hintText)),
-                  const SizedBox(width: 15),
-                  Text("${_calculateTotalTime()} hours"),
-                  const Spacer(),
-                  const Text("Total price:", style: TextStyle(color: AppColors.hintText)),
-                  const SizedBox(width: 15),
-                  Text("${_calculateTotalPrice()}"),
-                ],
-              ),
+              
               const SizedBox(height: 16.0),
               if (serviceWidget != null)
                 CustomServiceSelectionContainer(
