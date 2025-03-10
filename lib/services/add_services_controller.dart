@@ -9,7 +9,6 @@ class AddServicesController extends GetxController {
   void toggleMode() {
     isBundle.value = !isBundle.value;
 
-    // If switching to single mode and multiple services exist, keep only the first one
     if (!isBundle.value && serviceWidgets.length > 1) {
       final firstService = serviceWidgets.first;
       serviceWidgets.clear();
@@ -17,12 +16,10 @@ class AddServicesController extends GetxController {
       Get.snackbar('Mode Changed', 'Switched to Single mode: extra services removed');
     }
 
-    // If switching to bundle mode and there are no services, add a default one
     if (isBundle.value && serviceWidgets.isEmpty) {
       addService();
     }
 
-    // Update service types
     updateServiceTypes();
   }
 
@@ -48,7 +45,7 @@ class AddServicesController extends GetxController {
         onDelete: () => removeService(i),
       );
     }
-    update(); // Trigger UI update
+    update();
   }
 
   void addService() {
