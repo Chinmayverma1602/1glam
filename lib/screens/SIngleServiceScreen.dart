@@ -46,8 +46,25 @@ class _SingleServicePageState extends State<SingleServicePage> {
     });
   }
 
-  int _calculateTotalTime() => serviceWidget != null ? 2 : 0;
-  int _calculateTotalPrice() => serviceWidget != null ? 40000 : 0;
+  void _saveService() {
+    if (serviceWidget != null) {
+      final serviceData = {
+        "title": serviceWidget!.title,
+        "category": serviceWidget!.serviceCategory,
+        "duration": serviceWidget!.durationLabel,
+        "price": serviceWidget!.priceLabel,
+        "artist": serviceWidget!.artistName,
+        "specialization": serviceWidget!.artistSpecialization,
+        "type": serviceWidget!.serviceType,
+      };
+      // Send this data to the backend
+      print("Service Data: $serviceData");
+    }
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const ServicesInfoPage()),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -64,82 +81,6 @@ class _SingleServicePageState extends State<SingleServicePage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 16.0),
-              Material(
-                elevation: 1,
-                borderRadius: BorderRadius.circular(16),
-                child: Container(
-                  height: MediaQuery.of(context).size.height * 0.12,
-                  decoration: BoxDecoration(color: Colors.white),
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            CustomButton2(
-                              text: "Bundle",
-                              textColor: AppColors.hintText,
-                              fillColor: Colors.grey.withOpacity(0.2),
-                              isBold: true,
-                              onTap: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            BundleServicePage()));
-                              },
-                              borderColor: Colors.transparent,
-                            ),
-                            CustomButton2(
-                              text: "Single",
-                              borderColor: Colors.transparent,
-                              fillColor: AppColors.primary,
-                              textColor: AppColors.title,
-                              textSize: 14,
-                              isBold: true,
-                            ),
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            const Text("Total time:",
-                                style: TextStyle(color: AppColors.hintText)),
-                            const SizedBox(width: 15),
-                            Text("${_calculateTotalTime()} hours"),
-                            const Spacer(),
-                            const Text("Total price:",
-                                style: TextStyle(color: AppColors.hintText)),
-                            const SizedBox(width: 15),
-                            Text("${_calculateTotalPrice()}"),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16.0),
-              if (serviceWidget != null)
-                CustomServiceSelectionContainer(
-                  title: serviceWidget!.title,
-                  serviceCategory: serviceWidget!.serviceCategory,
-                  buttonBorderColor: serviceWidget!.buttonBorderColor,
-                  borderColor: serviceWidget!.borderColor,
-                  hintText: serviceWidget!.hintText,
-                  borderRadius: serviceWidget!.borderRadius,
-                  durationLabel: serviceWidget!.durationLabel,
-                  priceLabel: serviceWidget!.priceLabel,
-                  artistName: serviceWidget!.artistName,
-                  artistSpecialization: serviceWidget!.artistSpecialization,
-                  serviceType: 'Mobile Service',
-                  serviceIcon: serviceWidget!.serviceIcon,
-                  leadingIconColor: serviceWidget!.leadingIconColor,
-                  trailingIconColor: serviceWidget!.trailingIconColor,
-                  artistImage: serviceWidget!.artistImage,
-                  onDelete: _removeService,
-                ),
-              const SizedBox(height: 16),
               if (serviceWidget == null)
                 CustomButton(
                   icon: Icons.add,
@@ -152,18 +93,16 @@ class _SingleServicePageState extends State<SingleServicePage> {
                   borderThickness: 0.4,
                 ),
               if (serviceWidget != null)
-                CustomButton(
-                  text: "Save Service",
-                  color: AppColors.primary,
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const ServicesInfoPage()),
-                    );
-                  },
+                Column(
+                  children: [
+                    serviceWidget!,
+                    CustomButton(
+                      text: "Save Service",
+                      color: AppColors.primary,
+                      onPressed: _saveService,
+                    ),
+                  ],
                 ),
-              const SizedBox(height: 16),
             ],
           ),
         ),

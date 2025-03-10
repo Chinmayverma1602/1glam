@@ -33,23 +33,45 @@ class ServicesInfoPage extends StatelessWidget {
               color: Colors.grey,
             ),
             const SizedBox(height: 35),
-            // Dynamically display added services
-            Obx(
-              () => Column(
-                children: controller.serviceWidgets.map((service) {
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 15),
-                    child: CustomServiceButton(
-                      title: service.title,
-                      subtitle: "${service.durationLabel} hours",
-                      value: service.priceLabel,
-                      leadingIconColor: AppColors.subtitle,
+
+            // Display services based on active mode (bundle or single)
+            Expanded(
+              child: Obx(() {
+                // Get the appropriate service list
+                final serviceList = controller.isBundle.value
+                    ? controller.bundleServiceWidgets
+                    : controller.singleServiceWidget;
+
+                // If no services, show message
+                if (serviceList.isEmpty) {
+                  return const Center(
+                    child: Text(
+                      "No services added yet",
+                      style: TextStyle(color: Colors.grey),
                     ),
                   );
-                }).toList(),
-              ),
+                }
+
+                // Display services
+                return ListView.builder(
+                  itemCount: serviceList.length,
+                  itemBuilder: (context, index) {
+                    final service = serviceList[index];
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 15),
+                      child: CustomServiceButton(
+                        title: service.title,
+                        subtitle: "${service.durationLabel} hours",
+                        value: service.priceLabel,
+                        leadingIconColor: AppColors.subtitle,
+                      ),
+                    );
+                  },
+                );
+              }),
             ),
-            const SizedBox(height: 35),
+
+            const SizedBox(height: 20),
             CustomButton(
               text: "Add Service",
               color: Colors.transparent,
@@ -63,13 +85,56 @@ class ServicesInfoPage extends StatelessWidget {
               borderColor: AppColors.primary,
             ),
             const SizedBox(height: 15),
-            CustomButton(
-              text: "Continue",
-              color: AppColors.subtitle,
-              onPressed: () {
-                // Add your next navigation logic here
-              },
-            ),
+
+            // Continue button with API integration
+            Obx(() => CustomButton(
+                  text: controller.isLoading ? "Saving..." : "Continue",
+                  color: AppColors.subtitle,
+                  onPressed: controller.isLoading
+                      ? null // Disable button while loading
+                      : () async {
+                          // Get active service list
+                          final serviceList = controller.isBundle.value
+                              ? controller.bundleServiceWidgets
+                              : controller.singleServiceWidget;
+
+                          // Check if there are services to save
+                          if (serviceList.isEmpty) {
+                            Get.snackbar(
+                              'Error',
+                              'Please add at least one service before continuing',
+                              snackPosition: SnackPosition.BOTTOM,
+                              backgroundColor: Colors.red,
+                              colorText: Colors.white,
+                            );
+                            return;
+                          }
+
+                          // Call API to save services
+                          final success = await controller.saveServices();
+
+                          if (success) {
+                            Get.snackbar(
+                              'Success',
+                              'Services saved successfully',
+                              snackPosition: SnackPosition.BOTTOM,
+                              backgroundColor: Colors.green,
+                              colorText: Colors.white,
+                            );
+                            // Navigate to next screen (add your navigation logic here)
+                            // Get.to(() => NextScreen());
+                          } else {
+                            Get.snackbar(
+                              'Error',
+                              'Failed to save services',
+                              snackPosition: SnackPosition.BOTTOM,
+                              backgroundColor: Colors.red,
+                              colorText: Colors.white,
+                            );
+                          }
+                        },
+                )),
+            const SizedBox(height: 20),
           ],
         ),
       ),

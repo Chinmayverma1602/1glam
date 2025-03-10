@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:glam1/constants/AppColors.dart';
-import 'package:glam1/screens/HomePage.dart';
 import 'package:glam1/screens/ServicesInfoPage.dart';
 import 'package:glam1/services/add_services_controller.dart';
 import 'package:glam1/widgets/CustomButton.dart';
@@ -13,8 +12,8 @@ class AddServicesPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Initialize the controller
-    final controller = Get.put(AddServicesController());
+    // Get the controller
+    final controller = Get.find<AddServicesController>();
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -90,7 +89,8 @@ class AddServicesPage extends StatelessWidget {
               // Services list - shows either bundle or single services
               Obx(
                 () => Column(
-                  children: List.generate(controller.serviceWidgets.length, (index) {
+                  children:
+                      List.generate(controller.serviceWidgets.length, (index) {
                     final widget = controller.serviceWidgets[index];
                     return Container(
                       margin: const EdgeInsets.only(bottom: 8),
@@ -122,9 +122,23 @@ class AddServicesPage extends StatelessWidget {
                 text: "Save Service",
                 color: AppColors.primary,
                 onPressed: () {
+                  // Check if there are services to save
+                  if (controller.serviceWidgets.isEmpty) {
+                    Get.snackbar(
+                      'Error',
+                      'Please add at least one service before saving',
+                      snackPosition: SnackPosition.BOTTOM,
+                      backgroundColor: Colors.red,
+                      colorText: Colors.white,
+                    );
+                    return;
+                  }
+
+                  // Navigate to the services info page
                   Get.to(() => const ServicesInfoPage());
                 },
               ),
+              const SizedBox(height: 20),
             ],
           ),
         ),

@@ -20,7 +20,6 @@ class _BundleServicePageState extends State<BundleServicePage> {
 
   void _addService() {
     setState(() {
-      final newIndex = serviceWidgets.length;
       serviceWidgets.add(
         CustomServiceSelectionContainer(
           title: 'New Service',
@@ -38,22 +37,40 @@ class _BundleServicePageState extends State<BundleServicePage> {
           leadingIconColor: AppColors.primary,
           trailingIconColor: AppColors.primary,
           artistImage: 'assets/images/img.svg',
-          onDelete: () => _removeService(newIndex),
+          onDelete: () => _removeService(serviceWidgets.length - 1),
         ),
       );
     });
   }
 
   void _removeService(int index) {
-    if (index >= 0 && index < serviceWidgets.length) {
-      setState(() {
+    setState(() {
+      if (index >= 0 && index < serviceWidgets.length) {
         serviceWidgets.removeAt(index);
-      });
-    }
+      }
+    });
   }
 
-  int _calculateTotalTime() => serviceWidgets.length * 2;
-  int _calculateTotalPrice() => serviceWidgets.length * 40000;
+  void _saveServices() {
+    final List<Map<String, dynamic>> servicesData = serviceWidgets
+        .map((service) => {
+              "title": service.title,
+              "category": service.serviceCategory,
+              "duration": service.durationLabel,
+              "price": service.priceLabel,
+              "artist": service.artistName,
+              "specialization": service.artistSpecialization,
+              "type": service.serviceType,
+            })
+        .toList();
+    // Send this data to the backend
+    print("Services Data: $servicesData");
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const ServicesInfoPage()),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -70,86 +87,6 @@ class _BundleServicePageState extends State<BundleServicePage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 16.0),
-              Material(
-                elevation: 1,
-                borderRadius: BorderRadius.circular(16),
-                child: Container(
-                  height: MediaQuery.of(context).size.height * 0.12,
-                  decoration: BoxDecoration(color: Colors.white),
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            CustomButton2(
-                              text: "Bundle",
-                              borderColor: Colors.transparent,
-                              fillColor: AppColors.primary,
-                              textColor: AppColors.title,
-                              textSize: 14,
-                              isBold: true,
-                            ),
-                            CustomButton2(
-                              onTap: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            SingleServicePage()));
-                              },
-                              text: "Single",
-                              textColor: AppColors.hintText,
-                              fillColor: Colors.grey.withOpacity(0.2),
-                              isBold: true,
-                              borderColor: Colors.transparent,
-                            ),
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            const Text("Total time:",
-                                style: TextStyle(color: AppColors.hintText)),
-                            const SizedBox(width: 15),
-                            Text("${_calculateTotalTime()} hours"),
-                            const Spacer(),
-                            const Text("Total price:",
-                                style: TextStyle(color: AppColors.hintText)),
-                            const SizedBox(width: 15),
-                            Text("${_calculateTotalPrice()}"),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16.0),
-              Column(
-                children: List.generate(serviceWidgets.length, (index) {
-                  final widget = serviceWidgets[index];
-                  return CustomServiceSelectionContainer(
-                    title: widget.title,
-                    serviceCategory: widget.serviceCategory,
-                    buttonBorderColor: widget.buttonBorderColor,
-                    borderColor: widget.borderColor,
-                    hintText: widget.hintText,
-                    borderRadius: widget.borderRadius,
-                    durationLabel: widget.durationLabel,
-                    priceLabel: widget.priceLabel,
-                    artistName: widget.artistName,
-                    artistSpecialization: widget.artistSpecialization,
-                    serviceType: 'Bundle Service',
-                    serviceIcon: widget.serviceIcon,
-                    leadingIconColor: widget.leadingIconColor,
-                    trailingIconColor: widget.trailingIconColor,
-                    artistImage: widget.artistImage,
-                    onDelete: () => _removeService(index),
-                  );
-                }),
-              ),
-              const SizedBox(height: 16),
               CustomButton(
                 icon: Icons.add,
                 text: "Add Another Service",
@@ -163,15 +100,9 @@ class _BundleServicePageState extends State<BundleServicePage> {
               if (serviceWidgets.isNotEmpty) ...[
                 const SizedBox(height: 16),
                 CustomButton(
-                  text: "Save Service",
+                  text: "Save Services",
                   color: AppColors.primary,
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const ServicesInfoPage()),
-                    );
-                  },
+                  onPressed: _saveServices,
                 ),
               ],
               const SizedBox(height: 16),

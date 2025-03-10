@@ -13,7 +13,6 @@ import 'package:glam1/screens/TravellingInfo.dart';
 import 'package:glam1/screens/VerifyEmailPage.dart';
 import 'package:glam1/services/add_services_controller.dart';
 
-
 void main() {
   runApp(const MyApp());
 }
@@ -30,7 +29,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       initialRoute: '/home',
       getPages: [
-        GetPage(name: '/home', page: () => const AddServicesPage()),
+        GetPage(name: '/home', page: () => const LoginPage()),
         GetPage(name: '/leads', page: () => const LeadsPage()),
         GetPage(name: '/calendar', page: () => const HomePage()),
         GetPage(name: '/settings', page: () => const HomePage()),
@@ -41,7 +40,7 @@ class MyApp extends StatelessWidget {
         GetPage(name: '/details', page: () => const EnterDetailsPage()),
         GetPage(name: '/login', page: () => const LoginPage()),
         GetPage(name: '/services', page: () => const ServicesInfoPage()),
-        
+
         GetPage(name: '/verify', page: () => const VerifyEmailPage()),
       ],
     );
