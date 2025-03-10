@@ -35,7 +35,7 @@ class AddServicesPage extends StatelessWidget {
                   GestureDetector(
                     onTap: () {
                       if (!controller.isBundle.value) {
-                        controller.toggleMode(); // Use toggleMode instead
+                        controller.toggleMode();
                       }
                     },
                     child: Obx(
@@ -53,7 +53,7 @@ class AddServicesPage extends StatelessWidget {
                   GestureDetector(
                     onTap: () {
                       if (controller.isBundle.value) {
-                        controller.toggleMode(); // Use toggleMode instead
+                        controller.toggleMode();
                       }
                     },
                     child: Obx(
@@ -87,24 +87,21 @@ class AddServicesPage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 16.0),
-              // Services list
+              // Services list - shows either bundle or single services
               Obx(
                 () => Column(
                   children: List.generate(controller.serviceWidgets.length, (index) {
                     final widget = controller.serviceWidgets[index];
-                    return GestureDetector(
-                      onTap: controller.toggleMode,
-                      child: Container(
-                        margin: const EdgeInsets.only(bottom: 8),
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: Colors.transparent,
-                            width: 2,
-                          ),
-                          borderRadius: BorderRadius.circular(18),
+                    return Container(
+                      margin: const EdgeInsets.only(bottom: 8),
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: Colors.transparent,
+                          width: 2,
                         ),
-                        child: widget,
+                        borderRadius: BorderRadius.circular(18),
                       ),
+                      child: widget,
                     );
                   }),
                 ),
