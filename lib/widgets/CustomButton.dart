@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class CustomButton extends StatelessWidget {
-  final IconData? icon; // For using Icon
-  final String? svgIcon; // For using SVG image
+  final IconData? icon;
+  final String? svgIcon;
   final String text;
   final Color color;
   final Color iconColor;
@@ -12,8 +12,8 @@ class CustomButton extends StatelessWidget {
   final Color borderColor;
   final double borderThickness;
   final double elevation;
-  final VoidCallback? onPressed; // ✅ Made nullable
-  final MainAxisAlignment alignment; // New Parameter
+  final VoidCallback? onPressed;
+  final MainAxisAlignment alignment;
 
   const CustomButton({
     Key? key,
@@ -27,8 +27,8 @@ class CustomButton extends StatelessWidget {
     this.borderColor = Colors.white,
     this.borderThickness = 2.0,
     this.elevation = 0.0,
-    this.alignment = MainAxisAlignment.center, // Default alignment
-    this.onPressed, // ✅ Allowing null value
+    this.alignment = MainAxisAlignment.center,
+    this.onPressed,
   }) : super(key: key);
 
   Widget _buildLeadingWidget() {
@@ -42,47 +42,58 @@ class CustomButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: border
-          ? BoxDecoration(
-              border: Border.all(
-                color: borderColor,
-                width: borderThickness,
-                style: BorderStyle.solid,
-              ),
-              borderRadius: BorderRadius.circular(15),
-            )
-          : null,
-      child: ElevatedButton(
-        onPressed:
-            onPressed, // ✅ Button will be disabled if `onPressed` is null
-        style: ElevatedButton.styleFrom(
-          backgroundColor: color,
-          elevation: elevation,
-          minimumSize: const Size(358, 50),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15),
-            side: border
-                ? BorderSide(color: borderColor, width: borderThickness)
-                : BorderSide.none,
-          ),
-        ),
-        child: Row(
-          mainAxisAlignment: alignment, // Dynamic alignment
-          children: [
-            if (svgIcon != null || icon != null) ...[
-              _buildLeadingWidget(),
-              const SizedBox(width: 8),
-            ],
-            Text(
-              text,
-              style: TextStyle(
-                color: textColor,
-                fontSize: 16,
-                fontWeight: FontWeight.normal,
+    return Material(
+      color: Colors.transparent,
+      child: Container(
+        height: MediaQuery.of(context).size.height*0.065,
+  decoration: BoxDecoration(
+    color: border ? Colors.transparent : color, // ✅ Fix: Only set color inside decoration
+    border: border
+        ? Border.all(
+            color: borderColor,
+            width: borderThickness,
+            style: BorderStyle.solid,
+          )
+        : null,
+    borderRadius: BorderRadius.circular(16),
+  ),
+
+        child: ElevatedButton(
+          onPressed: onPressed,
+          style: ButtonStyle(
+            backgroundColor: MaterialStateProperty.resolveWith<Color>(
+              (Set<MaterialState> states) {
+                return color; // ✅ Force the button color
+              },
+            ),
+            foregroundColor: MaterialStateProperty.all(textColor),
+            elevation: MaterialStateProperty.all(elevation),
+            shape: MaterialStateProperty.all(
+              RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15),
+                side: border
+                    ? BorderSide(color: borderColor, width: borderThickness)
+                    : BorderSide.none,
               ),
             ),
-          ],
+          ),
+          child: Row(
+            mainAxisAlignment: alignment,
+            children: [
+              if (svgIcon != null || icon != null) ...[
+                _buildLeadingWidget(),
+                const SizedBox(width: 8),
+              ],
+              Text(
+                text,
+                style: TextStyle(
+                  color: textColor,
+                  fontSize: 16,
+                  fontWeight: FontWeight.normal,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -8,6 +8,7 @@ import 'package:glam1/screens/EnterDetailsPage.dart';
 import 'package:glam1/screens/HomePage.dart';
 import 'package:glam1/screens/LeadsPage.dart';
 import 'package:glam1/screens/LoginPage.dart';
+import 'package:glam1/screens/LoginScreen.dart';
 import 'package:glam1/screens/ServicesInfoPage.dart';
 import 'package:glam1/screens/TravellingInfo.dart';
 import 'package:glam1/screens/VerifyEmailPage.dart';
@@ -29,7 +30,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       initialRoute: '/home',
       getPages: [
-        GetPage(name: '/home', page: () => const LoginPage()),
+        GetPage(name: '/home', page: () => const LoginScreen()),
         GetPage(name: '/leads', page: () => const LeadsPage()),
         GetPage(name: '/calendar', page: () => const HomePage()),
         GetPage(name: '/settings', page: () => const HomePage()),
