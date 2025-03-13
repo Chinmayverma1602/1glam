@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:glam1/constants/AppColors.dart';
+import 'package:glam1/screens/TravellingInfo.dart';
 
 class CustomDistanceSlider extends StatefulWidget {
   final String title;
@@ -28,12 +29,12 @@ class CustomDistanceSlider extends StatefulWidget {
 }
 
 class _CustomDistanceSliderState extends State<CustomDistanceSlider> {
-  late double _currentValue;
+  SliderController sliderController = SliderController();
 
   @override
   void initState() {
     super.initState();
-    _currentValue = widget.initialValue;
+    sliderController.sliderValue.value = widget.initialValue;
   }
 
   @override
@@ -53,24 +54,23 @@ class _CustomDistanceSliderState extends State<CustomDistanceSlider> {
             widget.title,
             style: TextStyle(
               fontSize: widget.textSize,
-              
               color: AppColors.hintText,
             ),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 20),
           // Slider Row
-          
+
           // Slider Widget
           Slider(
-            value: _currentValue,
+            value: sliderController.sliderValue.value,
             min: widget.minValue,
             max: widget.maxValue,
             activeColor: widget.sliderActiveColor,
             inactiveColor: widget.sliderInactiveColor,
             onChanged: (double value) {
               setState(() {
-                _currentValue = value;
+                sliderController.sliderValue.value = value;
               });
             },
           ),
@@ -79,7 +79,7 @@ class _CustomDistanceSliderState extends State<CustomDistanceSlider> {
             children: [
               // Minimum Value Text
               Text(
-                widget.minValue.toStringAsFixed(0)+"km",
+                widget.minValue.toStringAsFixed(0) + "km",
                 style: TextStyle(
                   fontSize: widget.textSize,
                   color: widget.textColor,
@@ -90,19 +90,17 @@ class _CustomDistanceSliderState extends State<CustomDistanceSlider> {
                 height: 50,
                 width: 100,
                 decoration: BoxDecoration(
-                  border: Border.all(color: AppColors.primary),
-                  borderRadius: BorderRadius.circular(8)
-                ),
+                    border: Border.all(color: AppColors.primary),
+                    borderRadius: BorderRadius.circular(8)),
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        _currentValue.toStringAsFixed(0),
+                        sliderController.sliderValue.value.toStringAsFixed(0),
                         style: TextStyle(
                           fontSize: widget.textSize,
-                         
                           color: widget.textColor,
                         ),
                       ),

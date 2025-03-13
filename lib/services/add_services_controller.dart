@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:glam1/widgets/CustomServiceSelectionContainer.dart';
 import 'package:glam1/constants/AppColors.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ServiceItemModel {
   final String serviceName;
@@ -34,6 +35,9 @@ class AddServicesController extends GetxController {
       <CustomServiceSelectionContainer>[].obs;
   RxList<CustomServiceSelectionContainer> singleServiceWidget =
       <CustomServiceSelectionContainer>[].obs;
+
+  TextEditingController titleController =
+      TextEditingController(text: 'New Service');
 
   // Computed property to get current widgets based on mode
   List<CustomServiceSelectionContainer> get serviceWidgets =>
@@ -66,7 +70,7 @@ class AddServicesController extends GetxController {
     final newIndex = isBundle.value ? bundleServiceWidgets.length : 0;
 
     final newService = CustomServiceSelectionContainer(
-      title: 'New Service',
+      title: titleController.text.trim(),
       serviceCategory: 'Luxury',
       buttonBorderColor: AppColors.hintText.withOpacity(0.4),
       borderColor: AppColors.hintText,
@@ -118,7 +122,7 @@ class AddServicesController extends GetxController {
 
       // Create updated service with correct index
       final updatedService = CustomServiceSelectionContainer(
-        title: currentService.title,
+        title: titleController.text.trim(),
         serviceCategory: currentService.serviceCategory,
         buttonBorderColor: currentService.buttonBorderColor,
         borderColor: currentService.borderColor,
@@ -195,6 +199,8 @@ class AddServicesController extends GetxController {
             serviceWidget.priceLabel.replaceAll(',', '')); // Remove commas
 
         Map<String, dynamic> requestBody;
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        String selectedEmail = prefs.getString('user_email') ?? "";
 
         if (isBundle.value) {
           // For bundle services, we need to include the individual services
@@ -216,7 +222,7 @@ class AddServicesController extends GetxController {
 
           // Create bundle service request body
           requestBody = {
-            "user": "test@example.com",
+            "user": selectedEmail,
             "service_name": serviceName,
             "bundle": true,
             "services_included":
@@ -227,7 +233,7 @@ class AddServicesController extends GetxController {
         } else {
           // Create single service request body
           requestBody = {
-            "user": "test@example.com",
+            "user": selectedEmail,
             "service_name": serviceName,
             "bundle": false,
             "price": price,

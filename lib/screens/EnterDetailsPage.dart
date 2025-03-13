@@ -26,6 +26,9 @@ class _EnterDetailsPageState extends State<EnterDetailsPage> {
     {"business": "Other", "imageLocation": "assets/images/other.svg"},
   ];
 
+  String selectedBusiness = '';
+
+  TextEditingController serviceController = TextEditingController();
   int? selectedIndex;
   bool isLoading = false; // To show loading indicator
   String? selectedEmail = '';
@@ -59,11 +62,13 @@ class _EnterDetailsPageState extends State<EnterDetailsPage> {
       return;
     }
 
-    String selectedBusiness = users[selectedIndex!]["business"];
+    selectedBusiness = users[selectedIndex!]["business"];
     Map<String, dynamic> requestBody = {
       "doctype": "loginUser",
       "user": selectedEmail, // Replace with actual user email if available
-      "business_type": selectedBusiness,
+      "business_type": selectedBusiness == "Other"
+          ? serviceController.text.trim()
+          : selectedBusiness,
     };
 
     try {
@@ -79,10 +84,6 @@ class _EnterDetailsPageState extends State<EnterDetailsPage> {
         print("API Response: ${response.body}");
 
         // Navigate to the AboutMePage with response data
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => AboutMePage()),
-        );
       } else {
         print("Error: ${response.body}");
         ScaffoldMessenger.of(context).showSnackBar(
@@ -102,8 +103,6 @@ class _EnterDetailsPageState extends State<EnterDetailsPage> {
   }
 
   void _showAddServiceDialog() {
-    TextEditingController serviceController = TextEditingController();
-
     showDialog(
       context: context,
       builder: (context) {
@@ -216,7 +215,18 @@ class _EnterDetailsPageState extends State<EnterDetailsPage> {
                         text: "Proceed to enter my details",
                         color: AppColors.subtitle,
                         icon: null,
-                        onPressed: _submitBusinessType,
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => AboutMePage(
+                                      bussinessType: selectedBusiness == "Other"
+                                          ? serviceController.text.trim()
+                                          : selectedBusiness,
+                                      selectedEmail: selectedEmail,
+                                    )),
+                          );
+                        },
                       ),
               ),
             )

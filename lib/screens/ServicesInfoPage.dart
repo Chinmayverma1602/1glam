@@ -16,6 +16,8 @@ class ServicesInfoPage extends StatelessWidget {
   Widget build(BuildContext context) {
     // Get the AddServicesController instance
     final controller = Get.find<AddServicesController>();
+    AddServicesController addServicesController =
+        Get.put(AddServicesController());
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -60,7 +62,7 @@ class ServicesInfoPage extends StatelessWidget {
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 15),
                       child: CustomServiceButton(
-                        title: service.title,
+                        title: addServicesController.titleController.text,
                         subtitle: "${service.durationLabel} hours",
                         value: service.priceLabel,
                         leadingIconColor: AppColors.subtitle,

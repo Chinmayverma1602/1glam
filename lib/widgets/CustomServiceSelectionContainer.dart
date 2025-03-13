@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
+import 'package:get/get_state_manager/src/rx_flutter/rx_getx_widget.dart';
 import 'package:glam1/constants/AppColors.dart';
 import 'package:switcher_button/switcher_button.dart';
 import 'package:dropdown_textfield/dropdown_textfield.dart';
+
+import '../services/add_services_controller.dart';
 
 class CustomServiceSelectionContainer extends StatefulWidget {
   final String title;
@@ -55,9 +59,11 @@ class CustomServiceSelectionContainer extends StatefulWidget {
       _CustomServiceSelectionContainerState();
 }
 
-class _CustomServiceSelectionContainerState extends State<CustomServiceSelectionContainer> {
+class _CustomServiceSelectionContainerState
+    extends State<CustomServiceSelectionContainer> {
   late SingleValueDropDownController _serviceController;
   TextEditingController titleController = TextEditingController();
+  GetxController addServicesController = Get.put(AddServicesController());
   bool isEditing = false; // Track editing state
   final FocusNode _titleFocusNode = FocusNode(); // Focus node for title field
 
@@ -65,7 +71,8 @@ class _CustomServiceSelectionContainerState extends State<CustomServiceSelection
   void initState() {
     super.initState();
     titleController.text = widget.title;
-    _serviceController = SingleValueDropDownController(data: DropDownValueModel(name: "Hairstyling", value: "Hairstyling"));
+    _serviceController = SingleValueDropDownController(
+        data: DropDownValueModel(name: "Hairstyling", value: "Hairstyling"));
   }
 
   @override
@@ -101,7 +108,8 @@ class _CustomServiceSelectionContainerState extends State<CustomServiceSelection
                     child: TextField(
                       controller: titleController,
                       focusNode: _titleFocusNode, // Assign focus node
-                      readOnly: !isEditing, // Make it read-only unless in edit mode
+                      readOnly:
+                          !isEditing, // Make it read-only unless in edit mode
                       decoration: const InputDecoration(
                         border: InputBorder.none,
                         contentPadding: EdgeInsets.zero,
@@ -114,24 +122,25 @@ class _CustomServiceSelectionContainerState extends State<CustomServiceSelection
                     ),
                   ),
                   IconButton(
-                    icon: Icon(
-                      isEditing ? Icons.check : Icons.edit, 
-                      size: 18, 
-                      color: isEditing ? AppColors.primary : Colors.grey
-                    ),
+                    icon: Icon(isEditing ? Icons.check : Icons.edit,
+                        size: 18,
+                        color: isEditing ? AppColors.primary : Colors.grey),
                     onPressed: () {
                       setState(() {
                         isEditing = !isEditing; // Toggle editing state
-                        
+
                         if (isEditing) {
                           // When starting edit (edit icon pressed)
                           // Request focus on the text field
+
                           _titleFocusNode.requestFocus();
                           // Position cursor at the end of text
-                          titleController.selection = TextSelection.fromPosition(
-                              TextPosition(offset: titleController.text.length));
+                          titleController.selection =
+                              TextSelection.fromPosition(TextPosition(
+                                  offset: titleController.text.length));
                         } else {
                           // When finishing edit (check icon pressed)
+
                           _titleFocusNode.unfocus();
                         }
                       });
@@ -166,7 +175,8 @@ class _CustomServiceSelectionContainerState extends State<CustomServiceSelection
                   DropDownValueModel(name: "Makeup", value: "Makeup"),
                   DropDownValueModel(name: "Facial", value: "Facial"),
                   DropDownValueModel(name: "Massage", value: "Massage"),
-                  DropDownValueModel(name: "Hair Coloring", value: "Hair Coloring"),
+                  DropDownValueModel(
+                      name: "Hair Coloring", value: "Hair Coloring"),
                   DropDownValueModel(name: "Nail Art", value: "Nail Art"),
                 ],
                 onChanged: (val) {
@@ -179,9 +189,11 @@ class _CustomServiceSelectionContainerState extends State<CustomServiceSelection
               // Duration and Price fields
               Row(
                 children: [
-                  Text("  Duration", style: TextStyle(color: AppColors.secondaryText)),
+                  Text("  Duration",
+                      style: TextStyle(color: AppColors.secondaryText)),
                   const SizedBox(width: 85),
-                  Text("Price", style: TextStyle(color: AppColors.secondaryText)),
+                  Text("Price",
+                      style: TextStyle(color: AppColors.secondaryText)),
                 ],
               ),
               const SizedBox(height: 2.0),
@@ -193,8 +205,10 @@ class _CustomServiceSelectionContainerState extends State<CustomServiceSelection
                       decoration: InputDecoration(
                         hintText: widget.durationLabel,
                         enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(widget.borderRadius),
-                          borderSide: BorderSide(color: Colors.grey.withOpacity(0.4)),
+                          borderRadius:
+                              BorderRadius.circular(widget.borderRadius),
+                          borderSide:
+                              BorderSide(color: Colors.grey.withOpacity(0.4)),
                         ),
                       ),
                     ),
@@ -208,8 +222,10 @@ class _CustomServiceSelectionContainerState extends State<CustomServiceSelection
                       decoration: InputDecoration(
                         hintText: widget.priceLabel,
                         enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(widget.borderRadius),
-                          borderSide: BorderSide(color: Colors.grey.withOpacity(0.4)),
+                          borderRadius:
+                              BorderRadius.circular(widget.borderRadius),
+                          borderSide:
+                              BorderSide(color: Colors.grey.withOpacity(0.4)),
                         ),
                       ),
                     ),
@@ -222,7 +238,8 @@ class _CustomServiceSelectionContainerState extends State<CustomServiceSelection
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(widget.artistLabel, style: TextStyle(color: widget.textColor)),
+                  Text(widget.artistLabel,
+                      style: TextStyle(color: widget.textColor)),
                   Text(
                     widget.changeLabel,
                     style: TextStyle(
@@ -249,7 +266,8 @@ class _CustomServiceSelectionContainerState extends State<CustomServiceSelection
                       ),
                       Text(
                         widget.artistSpecialization,
-                        style: TextStyle(color: widget.textColor.withOpacity(0.7)),
+                        style:
+                            TextStyle(color: widget.textColor.withOpacity(0.7)),
                       ),
                     ],
                   ),
@@ -271,7 +289,8 @@ class _CustomServiceSelectionContainerState extends State<CustomServiceSelection
                         color: widget.leadingIconColor,
                       ),
                       const SizedBox(width: 8.0),
-                      Text(widget.serviceType, style: TextStyle(color: widget.textColor)),
+                      Text(widget.serviceType,
+                          style: TextStyle(color: widget.textColor)),
                     ],
                   ),
                   SwitcherButton(

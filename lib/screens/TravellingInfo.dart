@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:dropdown_textfield/dropdown_textfield.dart';
+import 'package:get/get.dart';
 import 'package:glam1/constants/AppColors.dart';
 import 'package:glam1/model/travelling_model.dart';
 import 'package:glam1/screens/ServicesInfoPage.dart';
@@ -11,6 +12,7 @@ import 'package:glam1/widgets/CustomDistanceSlider.dart';
 import 'package:glam1/widgets/CustomHeader.dart';
 import 'package:glam1/widgets/CustomSubtitle.dart';
 import 'package:glam1/widgets/CustomTitle.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class TravellingInfoPage extends StatefulWidget {
   const TravellingInfoPage({super.key});
@@ -23,6 +25,7 @@ class _TravellingInfoPageState extends State<TravellingInfoPage> {
   late SingleValueDropDownController _paymentController;
   late SingleValueDropDownController _travelFeeController;
   final TravelFeeService _travelFeeService = TravelFeeService();
+  SliderController sliderController = Get.put(SliderController());
 
   final List<DropDownValueModel> _paymentMethods = const [
     DropDownValueModel(name: "Free", value: "free"),
@@ -50,11 +53,13 @@ class _TravellingInfoPageState extends State<TravellingInfoPage> {
   }
 
   void _submitTravelFee() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String selectedEmail = prefs.getString('user_email') ?? "";
     TravelFee travelFee = TravelFee(
-      user: "hade@example.com",
+      user: selectedEmail,
       feeType: _travelFeeController.dropDownValue?.value ?? "",
       paymentMethod: _paymentController.dropDownValue?.value ?? "",
-      maxDistance: "78",
+      maxDistance: sliderController.sliderValue.value.toInt().toString(),
     );
 
     bool success = await _travelFeeService.submitTravelFee(travelFee);
@@ -185,4 +190,8 @@ class _TravellingInfoPageState extends State<TravellingInfoPage> {
       ),
     );
   }
+}
+
+class SliderController extends GetxController {
+  RxDouble sliderValue = 0.0.obs;
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:glam1/screens/LoginScreen.dart';
+import 'package:glam1/screens/TravellingInfo.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:glam1/screens/AboutMePage.dart';
 import 'package:glam1/screens/AddServicesPage.dart';
@@ -50,6 +51,7 @@ class MyApp extends StatelessWidget {
         GetPage(name: '/loginScreen', page: () => const LoginScreen()),
         GetPage(name: '/services', page: () => const ServicesInfoPage()),
         GetPage(name: '/verify', page: () => const VerifyEmailPage()),
+        GetPage(name: '/travelInfo', page: () => const TravellingInfoPage()),
       ],
     );
   }

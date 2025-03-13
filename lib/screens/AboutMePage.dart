@@ -9,7 +9,9 @@ import 'package:glam1/widgets/CustomTextInputField.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AboutMePage extends StatefulWidget {
-  const AboutMePage({super.key});
+  final bussinessType;
+  final selectedEmail;
+  const AboutMePage({super.key, this.bussinessType, this.selectedEmail});
 
   @override
   State<AboutMePage> createState() => _AboutMePageState();
@@ -24,9 +26,9 @@ class _AboutMePageState extends State<AboutMePage> {
 
   void _submitForm() async {
     BusinessProfile profile = BusinessProfile(
-      user: "hade@example.com",
+      user: widget.selectedEmail,
       businessName: _businessNameController.text,
-      businessType: "Nail Salon",
+      businessType: widget.bussinessType,
       ownerName: _ownerNameController.text,
       phone: _phoneController.text,
       address: "123 Main Street, NY",

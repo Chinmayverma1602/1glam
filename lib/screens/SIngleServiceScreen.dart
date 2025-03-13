@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:glam1/constants/AppColors.dart';
 import 'package:glam1/screens/BundleServicePage.dart';
 import 'package:glam1/screens/HomePage.dart';
@@ -6,6 +7,8 @@ import 'package:glam1/screens/ServicesInfoPage.dart';
 import 'package:glam1/widgets/CustomButton.dart';
 import 'package:glam1/widgets/CustomButton2.dart';
 import 'package:glam1/widgets/CustomServiceSelectionContainer.dart';
+
+import '../services/add_services_controller.dart';
 
 class SingleServicePage extends StatefulWidget {
   const SingleServicePage({Key? key}) : super(key: key);
@@ -16,11 +19,12 @@ class SingleServicePage extends StatefulWidget {
 
 class _SingleServicePageState extends State<SingleServicePage> {
   CustomServiceSelectionContainer? serviceWidget;
+  AddServicesController controller = Get.put(AddServicesController());
 
   void _addService() {
     setState(() {
       serviceWidget = CustomServiceSelectionContainer(
-        title: 'New Service',
+        title: controller.titleController.text,
         serviceCategory: 'Luxury',
         buttonBorderColor: AppColors.hintText.withOpacity(0.4),
         borderColor: AppColors.hintText,
@@ -39,6 +43,12 @@ class _SingleServicePageState extends State<SingleServicePage> {
       );
     });
   }
+
+  // void _onCheck() {
+  //   setState(() {
+  //     serviceWidget!.title = controller.titleController.text;
+  //   });
+  // }
 
   void _removeService() {
     setState(() {

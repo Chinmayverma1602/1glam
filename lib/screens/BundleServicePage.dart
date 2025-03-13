@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:glam1/constants/AppColors.dart';
 import 'package:glam1/screens/HomePage.dart';
 import 'package:glam1/screens/SIngleServiceScreen.dart';
@@ -7,6 +9,8 @@ import 'package:glam1/screens/ServicesInfoPage.dart';
 import 'package:glam1/widgets/CustomButton.dart';
 import 'package:glam1/widgets/CustomButton2.dart';
 import 'package:glam1/widgets/CustomServiceSelectionContainer.dart';
+
+import '../services/add_services_controller.dart';
 
 class BundleServicePage extends StatefulWidget {
   const BundleServicePage({Key? key}) : super(key: key);
@@ -17,12 +21,13 @@ class BundleServicePage extends StatefulWidget {
 
 class _BundleServicePageState extends State<BundleServicePage> {
   List<CustomServiceSelectionContainer> serviceWidgets = [];
+  AddServicesController controller = Get.put(AddServicesController());
 
   void _addService() {
     setState(() {
       serviceWidgets.add(
         CustomServiceSelectionContainer(
-          title: 'New Service',
+          title: controller.titleController.text,
           serviceCategory: 'Luxury',
           buttonBorderColor: AppColors.hintText.withOpacity(0.4),
           borderColor: AppColors.hintText,
