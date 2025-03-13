@@ -45,19 +45,20 @@ class CustomButton extends StatelessWidget {
     return Material(
       color: Colors.transparent,
       child: Container(
-        height: MediaQuery.of(context).size.height*0.065,
-  decoration: BoxDecoration(
-    color: border ? Colors.transparent : color, // ✅ Fix: Only set color inside decoration
-    border: border
-        ? Border.all(
-            color: borderColor,
-            width: borderThickness,
-            style: BorderStyle.solid,
-          )
-        : null,
-    borderRadius: BorderRadius.circular(16),
-  ),
-
+        height: MediaQuery.of(context).size.height * 0.065,
+        decoration: BoxDecoration(
+          color: border
+              ? Colors.transparent
+              : color, // ✅ Fix: Only set color inside decoration
+          border: border
+              ? Border.all(
+                  color: borderColor,
+                  width: borderThickness,
+                  style: BorderStyle.solid,
+                )
+              : null,
+          borderRadius: BorderRadius.circular(16),
+        ),
         child: ElevatedButton(
           onPressed: onPressed,
           style: ButtonStyle(

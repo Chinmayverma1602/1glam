@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:glam1/screens/LoginScreen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:glam1/screens/AboutMePage.dart';
 import 'package:glam1/screens/AddServicesPage.dart';
 import 'package:glam1/screens/AddressDetailsPage.dart';
@@ -8,40 +10,45 @@ import 'package:glam1/screens/EnterDetailsPage.dart';
 import 'package:glam1/screens/HomePage.dart';
 import 'package:glam1/screens/LeadsPage.dart';
 import 'package:glam1/screens/LoginPage.dart';
-import 'package:glam1/screens/LoginScreen.dart';
 import 'package:glam1/screens/ServicesInfoPage.dart';
-import 'package:glam1/screens/TravellingInfo.dart';
 import 'package:glam1/screens/VerifyEmailPage.dart';
 import 'package:glam1/services/add_services_controller.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  String initialRoute = await getInitialRoute();
+  runApp(MyApp(initialRoute: initialRoute));
+}
+
+Future<String> getInitialRoute() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  return prefs.getString('user_email') != null ? '/home' : '/loginScreen';
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final String initialRoute;
+  const MyApp({super.key, required this.initialRoute});
 
   @override
   Widget build(BuildContext context) {
     // Initialize GetX controllers
-    Get.put(AddServicesController()); // Register the controller
+    Get.put(AddServicesController());
 
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
-      initialRoute: '/home',
+      initialRoute: initialRoute,
       getPages: [
-        GetPage(name: '/home', page: () => const LoginScreen()),
+        GetPage(name: '/home', page: () => const HomePage()),
         GetPage(name: '/leads', page: () => const LeadsPage()),
         GetPage(name: '/calendar', page: () => const HomePage()),
         GetPage(name: '/settings', page: () => const HomePage()),
-        // Add other pages as needed
         GetPage(name: '/about', page: () => const AboutMePage()),
         GetPage(name: '/address', page: () => const AddressDetailsPage()),
         GetPage(name: '/bundle', page: () => const BundleServicePage()),
         GetPage(name: '/details', page: () => const EnterDetailsPage()),
         GetPage(name: '/login', page: () => const LoginPage()),
+        GetPage(name: '/loginScreen', page: () => const LoginScreen()),
         GetPage(name: '/services', page: () => const ServicesInfoPage()),
-
         GetPage(name: '/verify', page: () => const VerifyEmailPage()),
       ],
     );

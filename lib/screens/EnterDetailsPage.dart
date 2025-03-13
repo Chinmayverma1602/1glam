@@ -6,6 +6,7 @@ import 'package:glam1/constants/AppColors.dart';
 import 'package:glam1/screens/AboutMePage.dart';
 import 'package:glam1/widgets/CustomButton.dart';
 import 'package:glam1/widgets/CustomHeader.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class EnterDetailsPage extends StatefulWidget {
   const EnterDetailsPage({super.key});
@@ -27,12 +28,28 @@ class _EnterDetailsPageState extends State<EnterDetailsPage> {
 
   int? selectedIndex;
   bool isLoading = false; // To show loading indicator
+  String? selectedEmail = '';
 
   final String apiUrl = "http://1glam.local:8000/api/resource/loginUser";
   final Map<String, String> headers = {
     'Authorization': 'token eb6cdc62a0caeef:b4f7342a55e5049',
     'Content-Type': 'application/json',
   };
+
+  @override
+  void initState() {
+    fetchUserData();
+    super.initState();
+  }
+
+  Future<void> fetchUserData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? email = prefs.getString('user_email');
+
+    setState(() {
+      selectedEmail = email;
+    });
+  }
 
   Future<void> _submitBusinessType() async {
     if (selectedIndex == null) {
@@ -42,14 +59,10 @@ class _EnterDetailsPageState extends State<EnterDetailsPage> {
       return;
     }
 
-    setState(() {
-      isLoading = true;
-    });
-
     String selectedBusiness = users[selectedIndex!]["business"];
     Map<String, dynamic> requestBody = {
       "doctype": "loginUser",
-      "user": "user@example.com", // Replace with actual user email if available
+      "user": selectedEmail, // Replace with actual user email if available
       "business_type": selectedBusiness,
     };
 
