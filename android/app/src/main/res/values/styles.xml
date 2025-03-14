@@ -16,5 +16,5 @@
         <item name="android:windowBackground">?android:colorBackground</item>
     </style>
     <string name="facebook_app_id">1935988350140419</string>
-    <string name="facebook_client_token">ea6e9c61137dc073f8699e548a8ec8a0</string>
+    <string name="facebook_client_token">0ec6d396357e0386f792065bd393a573</string>
 </resources>
