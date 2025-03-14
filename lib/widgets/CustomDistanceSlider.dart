@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:glam1/constants/AppColors.dart';
 import 'package:glam1/screens/TravellingInfo.dart';
 
@@ -29,13 +30,12 @@ class CustomDistanceSlider extends StatefulWidget {
 }
 
 class _CustomDistanceSliderState extends State<CustomDistanceSlider> {
-  SliderController sliderController = SliderController();
-
-  @override
-  void initState() {
-    super.initState();
-    sliderController.sliderValue.value = widget.initialValue;
-  }
+  final SliderController sliderController = Get.find<SliderController>();
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   sliderController.sliderValue.value = widget.initialValue;
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -62,18 +62,18 @@ class _CustomDistanceSliderState extends State<CustomDistanceSlider> {
           // Slider Row
 
           // Slider Widget
-          Slider(
-            value: sliderController.sliderValue.value,
-            min: widget.minValue,
-            max: widget.maxValue,
-            activeColor: widget.sliderActiveColor,
-            inactiveColor: widget.sliderInactiveColor,
-            onChanged: (double value) {
-              setState(() {
+          Obx(() {
+            return Slider(
+              value: sliderController.sliderValue.value,
+              min: widget.minValue,
+              max: widget.maxValue,
+              activeColor: widget.sliderActiveColor,
+              inactiveColor: widget.sliderInactiveColor,
+              onChanged: (double value) {
                 sliderController.sliderValue.value = value;
-              });
-            },
-          ),
+              },
+            );
+          }),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -86,29 +86,31 @@ class _CustomDistanceSliderState extends State<CustomDistanceSlider> {
                 ),
               ),
               // Current Value Text
-              Container(
-                height: 50,
-                width: 100,
-                decoration: BoxDecoration(
-                    border: Border.all(color: AppColors.primary),
-                    borderRadius: BorderRadius.circular(8)),
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        sliderController.sliderValue.value.toStringAsFixed(0),
-                        style: TextStyle(
-                          fontSize: widget.textSize,
-                          color: widget.textColor,
+              Obx(() {
+                return Container(
+                  height: 50,
+                  width: 100,
+                  decoration: BoxDecoration(
+                      border: Border.all(color: AppColors.primary),
+                      borderRadius: BorderRadius.circular(8)),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          sliderController.sliderValue.value.toStringAsFixed(0),
+                          style: TextStyle(
+                            fontSize: widget.textSize,
+                            color: widget.textColor,
+                          ),
                         ),
-                      ),
-                      Text("km")
-                    ],
+                        Text("km")
+                      ],
+                    ),
                   ),
-                ),
-              ),
+                );
+              }),
               // Maximum Value Text
               Text(
                 widget.maxValue.toStringAsFixed(0),

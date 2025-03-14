@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "857401068227",
+    "project_id": "glam-5677b",
+    "storage_bucket": "glam-5677b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:857401068227:android:75cf926fcf734cc30fb076",
+        "android_client_info": {
+          "package_name": "com.example.glam1"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDbrt-iOoFUYAeK8Lwzy6Azg0llAAMDEzg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

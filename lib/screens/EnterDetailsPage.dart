@@ -26,80 +26,29 @@ class _EnterDetailsPageState extends State<EnterDetailsPage> {
     {"business": "Other", "imageLocation": "assets/images/other.svg"},
   ];
 
-  String selectedBusiness = '';
-
-  TextEditingController serviceController = TextEditingController();
   int? selectedIndex;
-  bool isLoading = false; // To show loading indicator
+  String selectedBusiness = ''; // ✅ Stores the selected business type
+  bool isLoading = false; // Loader state
   String? selectedEmail = '';
+  TextEditingController serviceController = TextEditingController();
 
-  final String apiUrl = "http://1glam.local:8000/api/resource/loginUser";
-  final Map<String, String> headers = {
-    'Authorization': 'token eb6cdc62a0caeef:b4f7342a55e5049',
-    'Content-Type': 'application/json',
-  };
+  // final String apiUrl = "http://1glam.local:8000/api/resource/loginUser";
+  // final Map<String, String> headers = {
+  //   'Authorization': 'token eb6cdc62a0caeef:b4f7342a55e5049',
+  //   'Content-Type': 'application/json',
+  // };
 
   @override
   void initState() {
-    fetchUserData();
     super.initState();
+    fetchUserData();
   }
 
   Future<void> fetchUserData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? email = prefs.getString('user_email');
-
     setState(() {
-      selectedEmail = email;
+      selectedEmail = prefs.getString('user_email') ?? "";
     });
-  }
-
-  Future<void> _submitBusinessType() async {
-    if (selectedIndex == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Please select a business type")),
-      );
-      return;
-    }
-
-    selectedBusiness = users[selectedIndex!]["business"];
-    Map<String, dynamic> requestBody = {
-      "doctype": "loginUser",
-      "user": selectedEmail, // Replace with actual user email if available
-      "business_type": selectedBusiness == "Other"
-          ? serviceController.text.trim()
-          : selectedBusiness,
-    };
-
-    try {
-      final response = await http.post(
-        Uri.parse(apiUrl),
-        headers: headers,
-        body: jsonEncode(requestBody),
-      );
-
-      final responseData = jsonDecode(response.body);
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        print("API Response: ${response.body}");
-
-        // Navigate to the AboutMePage with response data
-      } else {
-        print("Error: ${response.body}");
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Failed to submit business type")),
-        );
-      }
-    } catch (error) {
-      print("Exception: $error");
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Something went wrong!")),
-      );
-    } finally {
-      setState(() {
-        isLoading = false;
-      });
-    }
   }
 
   void _showAddServiceDialog() {
@@ -107,15 +56,15 @@ class _EnterDetailsPageState extends State<EnterDetailsPage> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text("Add Your Own Service"),
+          title: const Text("Add Your Own Service"),
           content: TextField(
             controller: serviceController,
-            decoration: InputDecoration(hintText: "Enter service name"),
+            decoration: const InputDecoration(hintText: "Enter service name"),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text("Cancel"),
+              child: const Text("Cancel"),
             ),
             TextButton(
               onPressed: () {
@@ -126,11 +75,13 @@ class _EnterDetailsPageState extends State<EnterDetailsPage> {
                       "imageLocation": "assets/images/custom.svg",
                     });
                     selectedIndex = users.length - 2;
+                    selectedBusiness =
+                        serviceController.text.trim(); // ✅ Update business
                   });
                 }
                 Navigator.pop(context);
               },
-              child: Text("Add"),
+              child: const Text("Add"),
             ),
           ],
         );
@@ -147,9 +98,9 @@ class _EnterDetailsPageState extends State<EnterDetailsPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            CustomHeader(),
-            SizedBox(height: 20),
-            Text(
+            const CustomHeader(),
+            const SizedBox(height: 20),
+            const Text(
               "What's your business?",
               style: TextStyle(
                   fontSize: 24,
@@ -170,6 +121,8 @@ class _EnterDetailsPageState extends State<EnterDetailsPage> {
                       } else {
                         setState(() {
                           selectedIndex = index;
+                          selectedBusiness = users[index]
+                              ["business"]; // ✅ Update selected business
                         });
                       }
                     },
@@ -198,7 +151,7 @@ class _EnterDetailsPageState extends State<EnterDetailsPage> {
                             ),
                           ),
                         ),
-                        SizedBox(height: 10),
+                        const SizedBox(height: 10),
                         Text(users[index]["business"]),
                       ],
                     ),
@@ -210,21 +163,29 @@ class _EnterDetailsPageState extends State<EnterDetailsPage> {
               child: Padding(
                 padding: const EdgeInsets.only(bottom: 300),
                 child: isLoading
-                    ? CircularProgressIndicator() // Show loader when submitting
+                    ? const CircularProgressIndicator() // Show loader when submitting
                     : CustomButton(
                         text: "Proceed to enter my details",
                         color: AppColors.subtitle,
                         icon: null,
                         onPressed: () {
+                          if (selectedIndex == null) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content:
+                                      Text("Please select a business type")),
+                            );
+                            return;
+                          }
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => AboutMePage(
-                                      bussinessType: selectedBusiness == "Other"
-                                          ? serviceController.text.trim()
-                                          : selectedBusiness,
-                                      selectedEmail: selectedEmail,
-                                    )),
+                              builder: (context) => AboutMePage(
+                                bussinessType:
+                                    selectedBusiness, // ✅ Now correctly passes the selected business type
+                                selectedEmail: selectedEmail ?? "",
+                              ),
+                            ),
                           );
                         },
                       ),

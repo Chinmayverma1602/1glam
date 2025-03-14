@@ -8,6 +8,7 @@ import 'package:glam1/widgets/CustomHeader.dart';
 import 'package:glam1/widgets/CustomSubtitle.dart';
 import 'package:glam1/widgets/CustomTextInputField.dart';
 import 'package:glam1/widgets/CustomTitle.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AddressDetailsPage extends StatefulWidget {
   const AddressDetailsPage({super.key});
@@ -84,7 +85,9 @@ class _AddressDetailsPageState extends State<AddressDetailsPage> {
     setState(() => isLoading = true);
 
     try {
-      String? userEmail = await _addressService.getLoggedInUserEmail();
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? selectedEmail = prefs.getString('user_email');
+      String? userEmail = selectedEmail;
       if (userEmail == null) {
         throw Exception("Failed to fetch user email.");
       }
