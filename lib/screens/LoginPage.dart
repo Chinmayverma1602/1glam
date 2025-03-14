@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:glam1/constants/AppColors.dart';
 import 'package:glam1/screens/VerifyEmailPage.dart';
@@ -26,62 +27,73 @@ class _LoginPageState extends State<LoginPage> {
   bool _isLoading = false;
   bool _isGoogleLoading = false;
 
-//   Future<void> _handleFacebookSignIn() async {
-//   try {
-//     setState(() => _isLoading = true);
+  Future<void> _handleFacebookSignIn() async {
+    try {
+      setState(() => _isLoading = true);
 
-//     // Trigger Facebook login
-//     final LoginResult result = await FacebookAuth.instance.login();
+      // Trigger Facebook login
+      final LoginResult result = await FacebookAuth.instance.login();
 
-//     if (result.status == LoginStatus.success) {
-//       final AccessToken accessToken = result.accessToken!;
-//       final OAuthCredential credential = FacebookAuthProvider.credential(accessToken.token);
+      if (result.status == LoginStatus.success) {
+        final AccessToken accessToken = result.accessToken!;
+        final OAuthCredential credential =
+            FacebookAuthProvider.credential(accessToken.tokenString);
 
-//       // Sign in with Firebase
-//       final UserCredential userCredential = await _auth.signInWithCredential(credential);
-//       final User? user = userCredential.user;
+        // Sign in with Firebase
+        final UserCredential userCredential =
+            await _auth.signInWithCredential(credential);
+        final User? user = userCredential.user;
 
-//       if (user != null) {
-//         bool isNewUser = userCredential.additionalUserInfo?.isNewUser ?? false;
+        if (user != null) {
+          bool isNewUser =
+              userCredential.additionalUserInfo?.isNewUser ?? false;
 
-//         if (isNewUser) {
-//           await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
-//             'email': user.email,
-//             'displayName': user.displayName,
-//             'photoURL': user.photoURL,
-//             'createdAt': FieldValue.serverTimestamp(),
-//             'lastLogin': FieldValue.serverTimestamp(),
-//             'provider': 'facebook',
-//           });
-//         } else {
-//           await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
-//             'lastLogin': FieldValue.serverTimestamp(),
-//           });
-//         }
+          if (isNewUser) {
+            await FirebaseFirestore.instance
+                .collection('users')
+                .doc(user.uid)
+                .set({
+              'email': user.email,
+              'displayName': user.displayName,
+              'photoURL': user.photoURL,
+              'createdAt': FieldValue.serverTimestamp(),
+              'lastLogin': FieldValue.serverTimestamp(),
+              'provider': 'facebook',
+            });
+          } else {
+            await FirebaseFirestore.instance
+                .collection('users')
+                .doc(user.uid)
+                .update({
+              'lastLogin': FieldValue.serverTimestamp(),
+            });
+          }
 
-//         ScaffoldMessenger.of(context).showSnackBar(
-//           SnackBar(content: Text("Signed in with Facebook as ${user.displayName}")),
-//         );
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+                content:
+                    Text("Signed in with Facebook as ${user.displayName}")),
+          );
 
-//         // Navigate to VerifyEmailPage
-//         Navigator.pushReplacement(
-//           context,
-//           MaterialPageRoute(builder: (context) => VerifyEmailPage()),
-//         );
-//       }
-//     } else {
-//       throw Exception("Facebook login failed: ${result.status}");
-//     }
-//   } catch (e) {
-//     setState(() => _isLoading = false);
-//     ScaffoldMessenger.of(context).showSnackBar(
-//       SnackBar(content: Text("Facebook sign-in failed: ${e.toString()}")),
-//     );
-//     print("Facebook sign-in error: $e");
-//   } finally {
-//     setState(() => _isLoading = false);
-//   }
-// }
+          // Navigate to VerifyEmailPage
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => VerifyEmailPage()),
+          );
+        }
+      } else {
+        throw Exception("Facebook login failed: ${result.status}");
+      }
+    } catch (e) {
+      setState(() => _isLoading = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Facebook sign-in failed: ${e.toString()}")),
+      );
+      print("Facebook sign-in error: $e");
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
 
   Future<void> _handleGoogleSignIn() async {
     try {
