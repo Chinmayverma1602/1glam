@@ -313,11 +313,11 @@ class _LoginPageState extends State<LoginPage> {
               ),
               const SizedBox(height: 12),
               CustomButton(
-                text: "Continue with Facebook",
+                text: _isLoading ? "Signing in..." : "Continue with Facebook",
                 icon: Icons.facebook,
                 color: AppColors.facebookBlue,
                 iconColor: Colors.white,
-                onPressed: () {},
+                onPressed: _isLoading ? null : _handleFacebookSignIn,
               ),
               const SizedBox(height: 20),
               Row(
