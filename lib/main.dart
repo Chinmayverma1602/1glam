@@ -1,3 +1,4 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:glam1/screens/LoginScreen.dart';
@@ -17,6 +18,7 @@ import 'package:glam1/services/add_services_controller.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   String initialRoute = await getInitialRoute();
   runApp(MyApp(initialRoute: initialRoute));
 }
