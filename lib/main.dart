@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:glam1/firebase_options.dart';
 import 'package:glam1/screens/LoginScreen.dart';
 import 'package:glam1/screens/TravellingInfo.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -25,7 +26,7 @@ void main() async {
 
 Future<String> getInitialRoute() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  return prefs.getString('user_email') != null ? '/home' : '/login';
+  return prefs.getString('user_email') != null ? '/home' : '/about';
 }
 
 class MyApp extends StatelessWidget {
@@ -53,9 +54,7 @@ class MyApp extends StatelessWidget {
         GetPage(name: '/loginScreen', page: () => const LoginScreen()),
         GetPage(name: '/services', page: () => const ServicesInfoPage()),
         GetPage(name: '/verify', page: () => const VerifyEmailPage()),
-        GetPage(
-            name: '/travelInfo',
-            page: () => const TravellingInfoPage()), //nello   kcgdfckdufe
+        GetPage(name: '/travelInfo', page: () => const TravellingInfoPage()),
       ],
     );
   }

@@ -8,18 +8,30 @@ class CustomHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return  Padding(
-      padding: const EdgeInsets.only(top: 24),
+    return Padding(
+      padding: const EdgeInsets.only(top: 20),
       child: Row(
-           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-            Text("1glam", style: GoogleFonts.inter(fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.subtitle),),
-            GestureDetector(
-              onTap: (){
-                Navigator.push(context, MaterialPageRoute(builder: (context)=>HomePage()));
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            "1glam",
+            style: GoogleFonts.inter(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: AppColors.subtitle),
+          ),
+          GestureDetector(
+              onTap: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => HomePage()));
               },
-              child: Text("Skip",style: GoogleFonts.inter(fontSize: 14, color: AppColors.subtitle),)),
-          ],),
+              child: Text(
+                "Skip",
+                style:
+                    GoogleFonts.inter(fontSize: 14, color: AppColors.subtitle),
+              )),
+        ],
+      ),
     );
   }
 }

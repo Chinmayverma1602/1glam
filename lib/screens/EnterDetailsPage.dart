@@ -27,16 +27,10 @@ class _EnterDetailsPageState extends State<EnterDetailsPage> {
   ];
 
   int? selectedIndex;
-  String selectedBusiness = ''; // ✅ Stores the selected business type
-  bool isLoading = false; // Loader state
+  String selectedBusiness = '';
+  bool isLoading = false;
   String? selectedEmail = '';
   TextEditingController serviceController = TextEditingController();
-
-  // final String apiUrl = "http://1glam.local:8000/api/resource/loginUser";
-  // final Map<String, String> headers = {
-  //   'Authorization': 'token eb6cdc62a0caeef:b4f7342a55e5049',
-  //   'Content-Type': 'application/json',
-  // };
 
   @override
   void initState() {
@@ -75,8 +69,7 @@ class _EnterDetailsPageState extends State<EnterDetailsPage> {
                       "imageLocation": "assets/images/custom.svg",
                     });
                     selectedIndex = users.length - 2;
-                    selectedBusiness =
-                        serviceController.text.trim(); // ✅ Update business
+                    selectedBusiness = serviceController.text.trim();
                   });
                 }
                 Navigator.pop(context);
@@ -93,77 +86,91 @@ class _EnterDetailsPageState extends State<EnterDetailsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const CustomHeader(),
-            const SizedBox(height: 20),
-            const Text(
-              "What's your business?",
-              style: TextStyle(
+      body: SafeArea(
+        // Prevents overflow by respecting system UI areas
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+              horizontal: 16.0, vertical: 8.0), // Consistent horizontal padding
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const CustomHeader(),
+              const SizedBox(height: 20),
+              const Text(
+                "What's your business?",
+                style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.title),
-            ),
-            Expanded(
-              child: GridView.count(
-                crossAxisCount: 2,
-                crossAxisSpacing: 10,
-                mainAxisSpacing: 10,
-                children: List.generate(users.length, (index) {
-                  bool isSelected = selectedIndex == index;
-                  return GestureDetector(
-                    onTap: () {
-                      if (users[index]["business"] == "Other") {
-                        _showAddServiceDialog();
-                      } else {
-                        setState(() {
-                          selectedIndex = index;
-                          selectedBusiness = users[index]
-                              ["business"]; // ✅ Update selected business
-                        });
-                      }
-                    },
-                    child: Column(
-                      children: [
-                        Container(
-                          width: 150,
-                          height: 150,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: isSelected
-                                  ? AppColors.primary
-                                  : AppColors.primary.withOpacity(0.1),
-                              width: 2,
-                            ),
-                          ),
-                          child: CircleAvatar(
-                            radius: 72,
-                            backgroundColor: isSelected
-                                ? AppColors.primary.withOpacity(0.1)
-                                : Colors.transparent,
-                            child: SvgPicture.asset(
-                              users[index]["imageLocation"],
-                              fit: BoxFit.fill,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        Text(users[index]["business"]),
-                      ],
-                    ),
-                  );
-                }),
+                  color: AppColors.title,
+                ),
               ),
-            ),
-            Center(
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 300),
+              const SizedBox(height: 20), // Added spacing after title
+              Expanded(
+                child: GridView.count(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 16, // Increased spacing for better layout
+                  mainAxisSpacing: 16,
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 8.0), // Padding inside GridView
+                  children: List.generate(users.length, (index) {
+                    bool isSelected = selectedIndex == index;
+                    return GestureDetector(
+                      onTap: () {
+                        if (users[index]["business"] == "Other") {
+                          _showAddServiceDialog();
+                        } else {
+                          setState(() {
+                            selectedIndex = index;
+                            selectedBusiness = users[index]["business"];
+                          });
+                        }
+                      },
+                      child: Column(
+                        mainAxisSize:
+                            MainAxisSize.min, // Prevents unnecessary expansion
+                        children: [
+                          Container(
+                            width: 120, // Reduced size to fit better
+                            height: 120,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: isSelected
+                                    ? AppColors.primary
+                                    : AppColors.primary.withOpacity(0.1),
+                                width: 2,
+                              ),
+                            ),
+                            child: CircleAvatar(
+                              radius: 60, // Adjusted to fit container
+                              backgroundColor: isSelected
+                                  ? AppColors.primary.withOpacity(0.1)
+                                  : Colors.transparent,
+                              child: SvgPicture.asset(
+                                users[index]["imageLocation"],
+                                width: 80, // Controlled size of SVG
+                                height: 80,
+                                fit: BoxFit.none, // Ensures SVG fits properly
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            users[index]["business"],
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                                fontSize: 14), // Controlled text size
+                          ),
+                        ],
+                      ),
+                    );
+                  }),
+                ),
+              ),
+              const SizedBox(height: 20), // Spacing before button
+              Center(
                 child: isLoading
-                    ? const CircularProgressIndicator() // Show loader when submitting
+                    ? const CircularProgressIndicator()
                     : CustomButton(
                         text: "Proceed to enter my details",
                         color: AppColors.subtitle,
@@ -172,8 +179,8 @@ class _EnterDetailsPageState extends State<EnterDetailsPage> {
                           if (selectedIndex == null) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
-                                  content:
-                                      Text("Please select a business type")),
+                                content: Text("Please select a business type"),
+                              ),
                             );
                             return;
                           }
@@ -181,8 +188,7 @@ class _EnterDetailsPageState extends State<EnterDetailsPage> {
                             context,
                             MaterialPageRoute(
                               builder: (context) => AboutMePage(
-                                bussinessType:
-                                    selectedBusiness, // ✅ Now correctly passes the selected business type
+                                bussinessType: selectedBusiness,
                                 selectedEmail: selectedEmail ?? "",
                               ),
                             ),
@@ -190,8 +196,9 @@ class _EnterDetailsPageState extends State<EnterDetailsPage> {
                         },
                       ),
               ),
-            )
-          ],
+              const SizedBox(height: 16), // Bottom padding to avoid overlap
+            ],
+          ),
         ),
       ),
     );

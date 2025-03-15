@@ -1,0 +1,2 @@
+/home/roshan-singh/Desktop/1glam/1glam/android/app/.cxx/RelWithDebInfo/6t11w6un/x86_64/CMakeFiles/edit_cache.dir
+/home/roshan-singh/Desktop/1glam/1glam/android/app/.cxx/RelWithDebInfo/6t11w6un/x86_64/CMakeFiles/rebuild_cache.dir

@@ -143,8 +143,8 @@ class _AddressDetailsPageState extends State<AddressDetailsPage> {
             CustomTitle(title: "Enter your address"),
             SizedBox(height: 25),
             Container(
-              height: MediaQuery.of(context).size.height * 0.041,
-              width: MediaQuery.of(context).size.width * 0.45,
+              height: MediaQuery.of(context).size.height * 0.045,
+              width: MediaQuery.of(context).size.width * 0.50,
               decoration: BoxDecoration(
                 color: AppColors.primary.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(8),
@@ -153,7 +153,7 @@ class _AddressDetailsPageState extends State<AddressDetailsPage> {
                 padding: const EdgeInsets.all(8.0),
                 child: Row(children: [
                   Icon(Icons.pin_drop, color: AppColors.subtitle, size: 18),
-                  SizedBox(width: 5),
+                  SizedBox(width: 10),
                   Text("Use current location",
                       style: TextStyle(color: AppColors.subtitle))
                 ]),

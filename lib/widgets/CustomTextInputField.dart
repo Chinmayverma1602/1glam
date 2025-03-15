@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/src/services/text_formatter.dart';
 import 'package:glam1/constants/AppColors.dart';
 
 // ignore: must_be_immutable
@@ -7,13 +8,12 @@ class CustomTextInputField extends StatelessWidget {
   final IconData icon;
   final TextEditingController? controller;
 
-  CustomTextInputField({
-    required this.hintText,
-    required this.icon,
-    this.controller,
-    super.key,
-    required TextInputType keyboardType,
-  });
+  CustomTextInputField(
+      {required this.hintText,
+      required this.icon,
+      this.controller,
+      super.key,
+      required TextInputType keyboardType});
 
   @override
   Widget build(BuildContext context) {
