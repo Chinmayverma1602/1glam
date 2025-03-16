@@ -92,10 +92,10 @@ class _AddressDetailsPageState extends State<AddressDetailsPage> {
         return Future.error('Location permissions are denied');
       }
     }
-    
+
     if (permission == LocationPermission.deniedForever) {
       return Future.error(
-        'Location permissions are permanently denied, we cannot request permissions.');
+          'Location permissions are permanently denied, we cannot request permissions.');
     }
 
     return await Geolocator.getCurrentPosition();
@@ -108,10 +108,10 @@ class _AddressDetailsPageState extends State<AddressDetailsPage> {
 
     try {
       Position position = await _determinePosition();
-      
-      await _getAddressFromNominatim(position);
+
+      await _getAddressFromGeocoding(position);
     } catch (e) {
-            print(e);
+      print(e);
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error fetching location: $e')),
@@ -124,35 +124,42 @@ class _AddressDetailsPageState extends State<AddressDetailsPage> {
   }
 
   Future<void> _getAddressFromNominatim(Position position) async {
-    final String url = 'https://nominatim.openstreetmap.org/reverse?format=json&lat=${position.latitude}&lon=${position.longitude}&zoom=18&addressdetails=1';
-    
+    final String url =
+        'https://nominatim.openstreetmap.org/reverse?format=json&lat=${position.latitude}&lon=${position.longitude}&zoom=18&addressdetails=1';
+
     try {
       final http.Response response = await http.get(
         Uri.parse(url),
         headers: {'User-Agent': 'Glam1App'},
       );
-      
+
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = json.decode(response.body);
+        print("API Response: ${response.body}");
         final Map<String, dynamic> address = data['address'];
-        
+
         String street = address['road'] ?? '';
         if (address['house_number'] != null) {
           street = "${address['house_number']} $street";
         }
-        
-        String city = address['city'] ?? address['town'] ?? address['village'] ?? '';
+
+        String city =
+            address['city'] ?? address['town'] ?? address['village'] ?? '';
         String state = address['state'] ?? '';
         String postcode = address['postcode'] ?? '';
-        
+        print("Street: $street");
+        print("City: $city");
+        print("State: $state");
+        print("Postcode: $postcode");
+
         setState(() {
           addressLine1Controller.text = street;
           cityController.text = city;
           zipController.text = postcode;
-          
+
           if (state.isNotEmpty) {
             for (String indianState in indianStates) {
-              if (indianState.toLowerCase().contains(state.toLowerCase()) || 
+              if (indianState.toLowerCase().contains(state.toLowerCase()) ||
                   state.toLowerCase().contains(indianState.toLowerCase())) {
                 selectedState = indianState;
                 break;
@@ -171,23 +178,21 @@ class _AddressDetailsPageState extends State<AddressDetailsPage> {
 
   Future<void> _getAddressFromGeocoding(Position position) async {
     try {
-      List<Placemark> placemarks = await placemarkFromCoordinates(
-        position.latitude, 
-        position.longitude
-      );
-      
+      List<Placemark> placemarks =
+          await placemarkFromCoordinates(position.latitude, position.longitude);
+
       if (placemarks.isNotEmpty) {
         Placemark place = placemarks[0];
-        
+        print("Street: ${place.street}");
         setState(() {
           addressLine1Controller.text = place.street ?? '';
           cityController.text = place.locality ?? '';
           zipController.text = place.postalCode ?? '';
-          
+
           String adminArea = place.administrativeArea ?? '';
           if (adminArea.isNotEmpty) {
             for (String indianState in indianStates) {
-              if (indianState.toLowerCase().contains(adminArea.toLowerCase()) || 
+              if (indianState.toLowerCase().contains(adminArea.toLowerCase()) ||
                   adminArea.toLowerCase().contains(indianState.toLowerCase())) {
                 selectedState = indianState;
                 break;
@@ -199,7 +204,8 @@ class _AddressDetailsPageState extends State<AddressDetailsPage> {
     } catch (e) {
       print('Error fetching address from geocoding: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Could not determine address from your location')),
+        SnackBar(
+            content: Text('Could not determine address from your location')),
       );
     }
   }
@@ -289,18 +295,14 @@ class _AddressDetailsPageState extends State<AddressDetailsPage> {
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Row(children: [
-                    Icon(
-                      isLoadingLocation ? Icons.sync : Icons.pin_drop, 
-                      color: AppColors.subtitle, 
-                      size: 18
-                    ),
+                    Icon(isLoadingLocation ? Icons.sync : Icons.pin_drop,
+                        color: AppColors.subtitle, size: 18),
                     SizedBox(width: 10),
                     Text(
-                      isLoadingLocation 
-                          ? "Getting location..." 
-                          : "Use current location",
-                      style: TextStyle(color: AppColors.subtitle)
-                    )
+                        isLoadingLocation
+                            ? "Getting location..."
+                            : "Use current location",
+                        style: TextStyle(color: AppColors.subtitle))
                   ]),
                 ),
               ),
@@ -338,8 +340,8 @@ class _AddressDetailsPageState extends State<AddressDetailsPage> {
                           child: Container(
                             padding: EdgeInsets.symmetric(horizontal: 10),
                             decoration: BoxDecoration(
-                              border:
-                                  Border.all(color: AppColors.primary.withOpacity(0.2)),
+                              border: Border.all(
+                                  color: AppColors.primary.withOpacity(0.2)),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: DropdownButtonHideUnderline(
