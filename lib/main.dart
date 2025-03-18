@@ -26,7 +26,7 @@ void main() async {
 
 Future<String> getInitialRoute() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  return prefs.getString('user_email') != null ? '/home' : '/address';
+  return prefs.getString('user_email') != null ? '/home' : '/login';
 }
 
 class MyApp extends StatelessWidget {

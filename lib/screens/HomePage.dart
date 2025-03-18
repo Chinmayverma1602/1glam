@@ -9,6 +9,7 @@ import 'package:glam1/widgets/CustomScheduleButton.dart';
 import 'package:glam1/widgets/CustomStatsButton.dart';
 import 'package:glam1/widgets/CustomSubtitle.dart';
 import 'package:glam1/widgets/CustomTitle.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -114,6 +115,9 @@ class _HomePageState extends State<HomePage> {
                       textColor: Colors.white,
                       textSize: 16,
                       isBold: true,
+                      onTap: () async{
+                        launchUrl(Uri.https("instagram.com"));
+                      },
                     ),
                     const SizedBox(height: 16),
                     CustomButton3(
