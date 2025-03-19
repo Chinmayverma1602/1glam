@@ -5,6 +5,7 @@ import 'package:glam1/screens/AddressDetailsPage.dart';
 import 'package:glam1/services/bussiness_service.dart';
 import 'package:glam1/widgets/CustomButton.dart';
 import 'package:glam1/widgets/CustomCheckBox.dart';
+import 'package:glam1/widgets/CustomHeader.dart';
 import 'package:glam1/widgets/CustomTextInputField.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -53,80 +54,98 @@ class _AboutMePageState extends State<AboutMePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              child: Text(
-                "About You",
-                style: GoogleFonts.lato(
-                  color: const Color.fromARGB(255, 75, 14, 83),
-                  fontWeight: FontWeight.bold,
-                  fontSize: 26,
+      body: Column(
+        children: [
+          SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CustomHeader(),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: Text(
+                    "About You",
+                    style: GoogleFonts.inter(
+                      color: const Color.fromRGBO(74, 4, 78, 1),
+                      fontWeight: FontWeight.w700,
+                      fontSize: 24,
+                    ),
+                  ),
                 ),
-              ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Text(
+                    "Tell us more about yourself?",
+                    style: GoogleFonts.inter(
+                      color: const Color.fromRGBO(162, 28, 175, 1),
+                      fontWeight: FontWeight.w400,
+                      fontSize: 14,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 16,right: 16, top: 20),
+                  child: CustomTextInputField(
+                    hintText: "Business Name",
+                    icon: Icons.store,
+                    keyboardType: TextInputType.name,
+                    controller: _businessNameController,
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 16,right: 16, top: 20),
+                  child: CustomTextInputField(
+                    hintText: "Your Name",
+                    icon: Icons.person,
+                    keyboardType: TextInputType.name,
+                    controller: _ownerNameController,
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 16,right: 16, top: 20),
+                  child: CustomTextInputField(
+                    hintText: "Phone number",
+                    icon: Icons.phone,
+                    keyboardType: TextInputType.phone,
+                    controller: _phoneController,
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
+                  child: Text(
+                    "Where do you provide your services?",
+                    style: GoogleFonts.lato(color: AppColors.title),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+                  child: CustomCheckBox(
+                    onChanged: (bool? value) {
+                      setState(() {
+                        _atMyPlace = value ?? false;
+                      });
+                    },
+                    activeColor: AppColors.primary,
+                    location: 'At My Place',
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+                  child: CustomCheckBox(
+                    onChanged: (bool? value) {
+                      setState(() {
+                        _atClientLocation = value ?? false;
+                      });
+                    },
+                    activeColor: AppColors.primary,
+                    location: 'At Client Location',
+                  ),
+                ),
+              ],
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-              child: CustomTextInputField(
-                hintText: "Business Name",
-                icon: Icons.store,
-                keyboardType: TextInputType.name,
-                controller: _businessNameController,
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              child: CustomTextInputField(
-                hintText: "Your Name",
-                icon: Icons.person,
-                keyboardType: TextInputType.name,
-                controller: _ownerNameController,
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              child: CustomTextInputField(
-                hintText: "Phone number",
-                icon: Icons.phone,
-                keyboardType: TextInputType.phone,
-                controller: _phoneController,
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
-              child: Text(
-                "Where do you provide your services?",
-                style: GoogleFonts.lato(color: AppColors.title),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              child: CustomCheckBox(
-                onChanged: (bool? value) {
-                  setState(() {
-                    _atMyPlace = value ?? false;
-                  });
-                },
-                activeColor: AppColors.primary,
-                location: 'At My Place',
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              child: CustomCheckBox(
-                onChanged: (bool? value) {
-                  setState(() {
-                    _atClientLocation = value ?? false;
-                  });
-                },
-                activeColor: AppColors.primary,
-                location: 'At Client Location',
-              ),
-            ),
-            Padding(
+          ),
+          Spacer(),
+          Padding(
               padding: const EdgeInsets.all(16),
               child: Center(
                 child: CustomButton(
@@ -136,8 +155,8 @@ class _AboutMePageState extends State<AboutMePage> {
                 ),
               ),
             ),
-          ],
-        ),
+            
+        ],
       ),
     );
   }
