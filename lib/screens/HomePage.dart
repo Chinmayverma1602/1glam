@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-// Import your own files
 import 'package:glam1/constants/AppColors.dart';
 import 'package:glam1/widgets/BottomNavBar.dart';
 import 'package:glam1/widgets/CustomButton3.dart';
@@ -36,7 +35,7 @@ class _HomePageState extends State<HomePage> {
         Navigator.pushReplacementNamed(context, '/leads');
         break;
       case 2:
-        Navigator.pushReplacementNamed(context, '/calendar');
+        Navigator.pushReplacementNamed(context, '/calender');
         break;
       case 3:
         Navigator.pushReplacementNamed(context, '/settings');

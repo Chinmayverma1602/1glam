@@ -16,6 +16,7 @@ import 'package:glam1/screens/LoginPage.dart';
 import 'package:glam1/screens/ServicesInfoPage.dart';
 import 'package:glam1/screens/VerifyEmailPage.dart';
 import 'package:glam1/services/add_services_controller.dart';
+import 'package:glam1/screens/CalenderPage.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,7 +27,7 @@ void main() async {
 
 Future<String> getInitialRoute() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  return prefs.getString('user_email') != null ? '/home' : '/login';
+  return prefs.getString('user_email') != null ? '/home' : '/home';
 }
 
 class MyApp extends StatelessWidget {
@@ -44,7 +45,6 @@ class MyApp extends StatelessWidget {
       getPages: [
         GetPage(name: '/home', page: () => const HomePage()),
         GetPage(name: '/leads', page: () => const LeadsPage()),
-        GetPage(name: '/calendar', page: () => const HomePage()),
         GetPage(name: '/settings', page: () => const HomePage()),
         GetPage(name: '/about', page: () => const AboutMePage()),
         GetPage(name: '/address', page: () => const AddressDetailsPage()),
@@ -55,6 +55,7 @@ class MyApp extends StatelessWidget {
         GetPage(name: '/services', page: () => const ServicesInfoPage()),
         GetPage(name: '/verify', page: () => const VerifyEmailPage()),
         GetPage(name: '/travelInfo', page: () => const TravellingInfoPage()),
+        GetPage(name: '/calender', page: () => const CalenderPage()),
       ],
     );
   }

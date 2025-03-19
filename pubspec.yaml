@@ -52,6 +52,8 @@ dependencies:
   geolocator: ^10.1.0
   geocoding:
   url_launcher: ^6.3.1
+  table_calendar: ^3.0.9
+  intl: ^0.18.0
 
 dev_dependencies:
   flutter_test:
