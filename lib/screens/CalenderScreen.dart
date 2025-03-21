@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:glam1/model/booking_model.dart';
+import 'package:glam1/screens/EditBookingScreen.dart';
 import 'package:glam1/services/BookingController.dart';
 import 'package:glam1/widgets/BottomNavBar.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -29,8 +30,11 @@ class _CalendarPageState extends State<CalenderPage> {
 
   // Get bookings for a selected day
   List<Booking> _getBookingsForDay(DateTime day) {
+    print(bookingController.bookings
+        .where((booking) => isSameDay(booking.date, day))
+        .toList().length);
     return bookingController.bookings
-        .where((booking) => isSameDay(DateTime.parse(booking.date), day))
+        .where((booking) => isSameDay(booking.date, day))
         .toList();
   }
 
@@ -365,7 +369,10 @@ class _CalendarPageState extends State<CalenderPage> {
   Widget _buildBookingItem(Booking booking) {
     return GestureDetector(
       onTap: () {
-        Navigator.pushReplacementNamed(context, '/EditBookingScreen');
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => EditBookingScreen())
+        );
       },
       child: Container(
         margin: EdgeInsets.only(bottom: 16),
@@ -389,7 +396,7 @@ class _CalendarPageState extends State<CalenderPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  '${booking.services[0].serviceName}',
+                  booking.customerName,
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
@@ -400,7 +407,7 @@ class _CalendarPageState extends State<CalenderPage> {
             ),
             SizedBox(height: 4),
             Text(
-              '${booking.services[0].price}',
+              booking.serviceName,
               style: TextStyle(
                 color: Colors.grey[700],
               ),
@@ -415,7 +422,7 @@ class _CalendarPageState extends State<CalenderPage> {
                 ),
                 SizedBox(width: 4),
                 Text(
-                  booking.time,
+                  booking.startTime.toString(),
                   style: TextStyle(
                     color: Colors.grey[700],
                   ),

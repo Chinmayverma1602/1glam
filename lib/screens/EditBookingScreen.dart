@@ -1,163 +1,303 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:glam1/services/BookingController.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:get/get.dart';
+import 'package:intl/intl.dart';
+import 'package:glam1/model/booking_model.dart';
 
 class EditBookingScreen extends StatefulWidget {
-  const EditBookingScreen({super.key});
+  final Booking? booking;
+
+  const EditBookingScreen({Key? key, this.booking}) : super(key: key);
 
   @override
-  State<EditBookingScreen> createState() => _EditBookingScreenState();
+  _EditBookingScreenState createState() => _EditBookingScreenState();
 }
 
 class _EditBookingScreenState extends State<EditBookingScreen> {
-  DateTime _focusedDay = DateTime.now();
-  DateTime _selectedDay = DateTime.now();
-  CalendarFormat _calendarFormat = CalendarFormat.month;
-
+  final BookingController _bookingController = Get.find<BookingController>();
+  late DateTime _selectedDay;
+  late DateTime _focusedDay;
+  late CalendarFormat _calendarFormat;
+  late String _selectedClientName;
+  late String _selectedServiceName;
+  
+  // Time slots for the timeline (24-hour format)
+  final List<int> _timeSlots = List.generate(13, (index) => index + 9); // 9 AM to 9 PM
+  
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Edit Booking'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Get.back(),
-        ),
-      ),
-      body: Column(
-        children: [
-          _buildCalendar(),
-          Expanded(child: _buildTimeSlots()),
-          //_buildBottomSheet(),
-        ],
-      ),
-    );
+  void initState() {
+    super.initState();
+    
+    if (widget.booking != null) {
+      _selectedDay = widget.booking!.date;
+      _selectedClientName = widget.booking!.customerName;
+      _selectedServiceName = widget.booking!.serviceName;
+    } else {
+      _selectedDay = DateTime.now();
+      _selectedClientName = '';
+      _selectedServiceName = '';
+    }
+    
+    _focusedDay = _selectedDay;
+    _calendarFormat = CalendarFormat.month;
   }
-
-  Widget _buildCalendar() {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: TableCalendar(
-        rowHeight: 50,
-        firstDay: DateTime.utc(2025, 1, 1),
-        lastDay: DateTime.utc(2025, 12, 31),
-        focusedDay: _focusedDay,
-        calendarFormat: _calendarFormat,
-        selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
-        onDaySelected: (selectedDay, focusedDay) {
-          setState(() {
-            _selectedDay = selectedDay;
-            _focusedDay = focusedDay;
-          });
-        },
-        headerStyle: const HeaderStyle(
-          formatButtonVisible: false,
-          titleCentered: true,
-        ),
-        calendarStyle: const CalendarStyle(
-          todayDecoration: BoxDecoration(
-            color: Colors.purple,
-            shape: BoxShape.circle,
-          ),
-          selectedDecoration: BoxDecoration(
-            color: Colors.purpleAccent,
-            shape: BoxShape.circle,
-          ),
-        ),
-      ),
-    );
+  
+  String _formatTimeSlot(int hour) {
+    if (hour < 12) {
+      return '$hour AM';
+    } else if (hour == 12) {
+      return '12 PM';
+    } else {
+      return '${hour - 12} PM';
+    }
   }
-
-  Widget _buildTimeSlots() {
-    return ListView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-      itemCount: 5,
-      itemBuilder: (context, index) {
-        return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0),
-          child: Container(
-            padding: const EdgeInsets.all(16.0),
-            decoration: BoxDecoration(
-              color: index == 1 ? Colors.purple.withOpacity(0.2) : Colors.grey[200],
-              borderRadius: BorderRadius.circular(12.0),
-              border: index == 1 ? Border.all(color: Colors.purple, width: 2) : null,
-            ),
-            child: Text(
-              index == 1 ? 'Current Booking\nBridal Makeup + Hair Styling' : '${9 + index} AM',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: index == 1 ? FontWeight.bold : FontWeight.normal,
-                color: index == 1 ? Colors.purple : Colors.black,
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildBottomSheet() {
+  
+  Widget _buildBookingItem(Booking booking) {
+    // Format time for display
+    final timeFormat = DateFormat('h:mm a');
+    final startTimeString = timeFormat.format(booking.startTime);
+    final endTimeString = timeFormat.format(booking.endTime);
+    
     return Container(
-      padding: const EdgeInsets.all(16.0),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
-        ),
+      margin: const EdgeInsets.symmetric(vertical: 2),
+      padding: const EdgeInsets.all(8),
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: Colors.purple.shade100,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.purple.shade300),
       ),
       child: Column(
-        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildBottomSheetItem(Icons.person, 'Client', 'Sarah Johnson'),
-          _buildBottomSheetItem(Icons.cut, 'Services', 'Bridal Makeup + Hair'),
-          const SizedBox(height: 16),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              TextButton(
-                onPressed: () => Get.back(),
-                child: const Text('Cancel', style: TextStyle(color: Colors.grey, fontSize: 16)),
-              ),
-              ElevatedButton(
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.purple,
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                ),
-                child: const Text('Save Changes', style: TextStyle(fontSize: 16, color: Colors.white)),
-              ),
-            ],
+          Text(
+            'Current Booking',
+            style: TextStyle(
+              color: Colors.purple,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          Text(
+            '${booking.serviceName}',
+            style: TextStyle(
+              fontSize: 13,
+            ),
           ),
         ],
       ),
     );
   }
-
-  Widget _buildBottomSheetItem(IconData icon, String title, String subtitle) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8.0),
-            decoration: BoxDecoration(
-              color: Colors.purple.withOpacity(0.2),
-              shape: BoxShape.circle,
+  
+  List<Booking> _getBookingsForSelectedDay() {
+    return _bookingController.bookings.where((booking) {
+      return booking.date.year == _selectedDay.year &&
+             booking.date.month == _selectedDay.month &&
+             booking.date.day == _selectedDay.day;
+    }).toList();
+  }
+  
+  Map<int, List<Booking>> _getBookingsByHour() {
+    final bookingsForDay = _getBookingsForSelectedDay();
+    final bookingsByHour = <int, List<Booking>>{};
+    
+    for (var booking in bookingsForDay) {
+      final startHour = booking.startTime.hour;
+      if (!bookingsByHour.containsKey(startHour)) {
+        bookingsByHour[startHour] = [];
+      }
+      bookingsByHour[startHour]!.add(booking);
+    }
+    
+    return bookingsByHour;
+  }
+  
+  @override
+  Widget build(BuildContext context) {
+    final bookingsByHour = _getBookingsByHour();
+    
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: TableCalendar(
+                firstDay: DateTime.utc(2024, 1, 1),
+                lastDay: DateTime.utc(2025, 12, 31),
+                focusedDay: _focusedDay,
+                calendarFormat: _calendarFormat,
+                selectedDayPredicate: (day) {
+                  return isSameDay(_selectedDay, day);
+                },
+                onDaySelected: (selectedDay, focusedDay) {
+                  setState(() {
+                    _selectedDay = selectedDay;
+                    _focusedDay = focusedDay;
+                  });
+                },
+                onFormatChanged: (format) {
+                  setState(() {
+                    _calendarFormat = format;
+                  });
+                },
+                calendarStyle: CalendarStyle(
+                  todayDecoration: BoxDecoration(
+                    color: Colors.purple.withOpacity(0.3),
+                    shape: BoxShape.circle,
+                  ),
+                  selectedDecoration: BoxDecoration(
+                    color: Colors.purple,
+                    shape: BoxShape.circle,
+                  ),
+                  markerDecoration: BoxDecoration(
+                    color: Colors.purple,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+                calendarBuilders: CalendarBuilders(
+                  markerBuilder: (context, date, events) {
+                    // Check if there are bookings for this date
+                    final hasBookings = _bookingController.bookings.any((booking) {
+                      return booking.date.year == date.year &&
+                            booking.date.month == date.month &&
+                            booking.date.day == date.day;
+                    });
+                    
+                    if (hasBookings) {
+                      return Positioned(
+                        bottom: 1,
+                        child: Container(
+                          width: 8,
+                          height: 8,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.purple,
+                          ),
+                        ),
+                      );
+                    }
+                    return null;
+                  },
+                ),
+                headerStyle: HeaderStyle(
+                  titleCentered: true,
+                  formatButtonVisible: false,
+                  leftChevronIcon: Icon(Icons.chevron_left, color: Colors.black),
+                  rightChevronIcon: Icon(Icons.chevron_right, color: Colors.black),
+                ),
+              ),
             ),
-            child: Icon(icon, color: Colors.purple),
-          ),
-          const SizedBox(width: 12),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(title, style: const TextStyle(fontSize: 14, color: Colors.grey)),
-              Text(subtitle, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-            ],
-          ),
-          const Spacer(),
-          const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
-        ],
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+              child: Text(
+                'Select Time',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: ListView.builder(
+                  itemCount: _timeSlots.length,
+                  itemBuilder: (context, index) {
+                    final hour = _timeSlots[index];
+                    final timeText = _formatTimeSlot(hour);
+                    final hasBookingsForHour = bookingsByHour.containsKey(hour);
+                    
+                    return Column(
+                      children: [
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(
+                              width: 60,
+                              child: Text(
+                                timeText,
+                                style: TextStyle(color: Colors.grey[700]),
+                              ),
+                            ),
+                            Expanded(
+                              child: hasBookingsForHour
+                                  ? Column(
+                                      children: bookingsByHour[hour]!
+                                          .map((booking) => _buildBookingItem(booking))
+                                          .toList(),
+                                    )
+                                  : Container(
+                                      height: 50,
+                                      decoration: BoxDecoration(
+                                        color: Colors.grey[200],
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                    ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 10),
+                      ],
+                    );
+                  },
+                ),
+              ),
+            ),
+            Divider(),
+            // ListTile(
+            //   leading: Icon(Icons.person, color: Colors.purple),
+            //   title: Text('Client'),
+            //   subtitle: Text(widget.booking?.customerName ?? 'Sarah Johnson'),
+            //   trailing: Icon(Icons.chevron_right),
+            //   onTap: () {
+            //     // Navigate to client selection
+            //   },
+            // ),
+            // ListTile(
+            //   leading: Icon(Icons.spa, color: Colors.purple),
+            //   title: Text('Services'),
+            //   subtitle: Text(widget.booking?.serviceName ?? 'Bridal Makeup + Hair'),
+            //   trailing: Icon(Icons.chevron_right),
+            //   onTap: () {
+            //     // Navigate to services selection
+            //   },
+            //),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      icon: Icon(Icons.close),
+                      label: Text('Cancel'),
+                      onPressed: () => Navigator.of(context).pop(),
+                      style: OutlinedButton.styleFrom(
+                        padding: EdgeInsets.symmetric(vertical: 12),
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 16),
+                  Expanded(
+                    child: ElevatedButton(
+                      child: Text('Save Changes'),
+                      onPressed: () {
+                        // Save the updated booking
+                        Navigator.of(context).pop();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.purple,
+                        padding: EdgeInsets.symmetric(vertical: 12),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

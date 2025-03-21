@@ -1,66 +1,49 @@
 class Booking {
+  final String id;
   final String customerName;
-  final String email;
   final String phoneNo;
-  final String date;
-  final String time;
-  final String user;
-  final List<Service> services;
+  final DateTime date;
+  final String serviceName;
+  final int price;
+  final Duration duration;
+  final DateTime startTime;
 
   Booking({
+    required this.id,
     required this.customerName,
-    required this.email,
     required this.phoneNo,
     required this.date,
-    required this.time,
-    required this.user,
-    required this.services,
+    required this.serviceName,
+    required this.price,
+    required this.duration,
+    required this.startTime,
   });
 
   factory Booking.fromJson(Map<String, dynamic> json) {
     return Booking(
+      id: json['id'],
       customerName: json['customer_name'],
-      email: json['email'],
       phoneNo: json['phone_no'],
-      date: json['date'],
-      time: json['time'],
-      user: json['user'],
-      services: (json['services'] as List)
-          .map((service) => Service.fromJson(service))
-          .toList(),
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      "customer_name": customerName,
-      "email": email,
-      "phone_no": phoneNo,
-      "date": date,
-      "time": time,
-      "user": user,
-      "services": services.map((service) => service.toJson()).toList(),
-    };
-  }
-}
-
-class Service {
-  final String serviceName;
-  final int price;
-
-  Service({required this.serviceName, required this.price});
-
-  factory Service.fromJson(Map<String, dynamic> json) {
-    return Service(
+      date: DateTime.parse(json['date']),
       serviceName: json['service_name'],
       price: json['price'],
+      duration: Duration(minutes: json['duration']),
+      startTime: DateTime.parse(json['start_time']),
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      "service_name": serviceName,
-      "price": price,
+      'id': id,
+      'customer_name': customerName,
+      'phone_no': phoneNo,
+      'date': date.toIso8601String(),
+      'service_name': serviceName,
+      'price': price,
+      'duration': duration.inMinutes,
+      'start_time': startTime.toIso8601String(),
     };
   }
+
+  DateTime get endTime => startTime.add(duration);
 }

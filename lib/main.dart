@@ -57,7 +57,6 @@ class MyApp extends StatelessWidget {
         GetPage(name: '/verify', page: () => const VerifyEmailPage()),
         GetPage(name: '/travelInfo', page: () => const TravellingInfoPage()),
         GetPage(name: '/calender', page: () => const CalenderPage()),
-        GetPage(name: '/EditBookingScreen', page: () => const EditBookingScreen()),
       ],
     );
   }

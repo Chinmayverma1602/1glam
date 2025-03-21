@@ -8,18 +8,26 @@ class BookingController extends GetxController {
   var bookings = <Booking>[].obs;
 
   List<dynamic> jsonData = [
-      {
-        "customer_name": "John Doe",
-        "email": "john.doe@example.com",
-        "phone_no": "+1234567890",
-        "date": "2025-03-22",
-        "time": "10:00 AM",
-        "user": "user_123",
-        "services": [
-          {"service_name": "Haircut", "price": 2500},
-          {"service_name": "Beard Trim", "price": 15}
-        ]
-      },
+  {
+    "id": "booking_123",
+    "customer_name": "John Doe",
+    "phone_no": "9876543210",
+    "date": "2025-03-22T10:00:00Z",
+    "service_name": "Haircut",
+    "price": 500,
+    "duration": 30,
+    "start_time": "2025-03-21T10:00:00Z"
+  },
+  {
+    "id": "booking_124",
+    "customer_name": "Jane Doe",
+    "phone_no": "9876543211",
+    "date": "2025-03-22T14:00:00Z",
+    "service_name": "Facial",
+    "price": 800,
+    "duration": 120,
+    "start_time": "2025-03-22T14:00:00Z"
+  }
   ];
 
   @override
