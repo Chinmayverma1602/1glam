@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:glam1/firebase_options.dart';
+import 'package:glam1/screens/EditBookingScreen.dart';
 import 'package:glam1/screens/LoginScreen.dart';
 import 'package:glam1/screens/TravellingInfo.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -16,7 +17,7 @@ import 'package:glam1/screens/LoginPage.dart';
 import 'package:glam1/screens/ServicesInfoPage.dart';
 import 'package:glam1/screens/VerifyEmailPage.dart';
 import 'package:glam1/services/add_services_controller.dart';
-import 'package:glam1/screens/CalenderPage.dart';
+import 'package:glam1/screens/CalenderScreen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -56,6 +57,7 @@ class MyApp extends StatelessWidget {
         GetPage(name: '/verify', page: () => const VerifyEmailPage()),
         GetPage(name: '/travelInfo', page: () => const TravellingInfoPage()),
         GetPage(name: '/calender', page: () => const CalenderPage()),
+        GetPage(name: '/EditBookingScreen', page: () => const EditBookingScreen()),
       ],
     );
   }
