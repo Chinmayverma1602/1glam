@@ -59,33 +59,106 @@ class _EditBookingScreenState extends State<EditBookingScreen> {
     final startTimeString = timeFormat.format(booking.startTime);
     final endTimeString = timeFormat.format(booking.endTime);
     
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 2),
-      padding: const EdgeInsets.all(8),
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: Colors.purple.shade100,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.purple.shade300),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Current Booking',
-            style: TextStyle(
-              color: Colors.purple,
-              fontWeight: FontWeight.bold,
+    return GestureDetector(
+      onTap: () {
+        _showBookingEditSheet(booking);
+      },
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 2),
+        padding: const EdgeInsets.all(8),
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: Colors.purple.shade100,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: Colors.purple.shade300),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Current Booking',
+              style: TextStyle(
+                color: Colors.purple,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-          ),
-          Text(
-            '${booking.serviceName}',
-            style: TextStyle(
-              fontSize: 13,
+            Text(
+              '${booking.serviceName}',
+              style: TextStyle(
+                fontSize: 13,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
+    );
+  }
+  
+  void _showBookingEditSheet(Booking booking) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) {
+        return Container(
+          padding: EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Edit Booking',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(height: 16),
+              Text('Booking ID: ${booking.id}'),
+              SizedBox(height: 8),
+              Text('Client: ${booking.customerName}'),
+              SizedBox(height: 8),
+              Text('Service: ${booking.serviceName}'),
+              SizedBox(height: 8),
+              Text('Date: ${DateFormat('yyyy-MM-dd').format(booking.date)}'),
+              SizedBox(height: 8),
+              Text('Time: ${DateFormat('h:mm a').format(booking.startTime)} - ${DateFormat('h:mm a').format(booking.endTime)}'),
+              SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  OutlinedButton.icon(
+                    icon: Icon(Icons.delete),
+                    label: Text('Delete'),
+                    onPressed: () {
+                      // Handle booking deletion
+                      Navigator.pop(context);
+                      // You could add confirmation dialog here
+                      _bookingController.deleteBooking(booking.id);
+                      setState(() {}); // Refresh the UI
+                    },
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: Colors.red,
+                    ),
+                  ),
+                  ElevatedButton.icon(
+                    icon: Icon(Icons.edit),
+                    label: Text('Edit Details'),
+                    onPressed: () {
+                      Navigator.pop(context);
+                      // Navigate to a detailed edit screen or show another bottom sheet
+                      // with form fields to edit the booking
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.purple,
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 16),
+            ],
+          ),
+        );
+      },
     );
   }
   
@@ -246,25 +319,6 @@ class _EditBookingScreenState extends State<EditBookingScreen> {
                 ),
               ),
             ),
-            Divider(),
-            // ListTile(
-            //   leading: Icon(Icons.person, color: Colors.purple),
-            //   title: Text('Client'),
-            //   subtitle: Text(widget.booking?.customerName ?? 'Sarah Johnson'),
-            //   trailing: Icon(Icons.chevron_right),
-            //   onTap: () {
-            //     // Navigate to client selection
-            //   },
-            // ),
-            // ListTile(
-            //   leading: Icon(Icons.spa, color: Colors.purple),
-            //   title: Text('Services'),
-            //   subtitle: Text(widget.booking?.serviceName ?? 'Bridal Makeup + Hair'),
-            //   trailing: Icon(Icons.chevron_right),
-            //   onTap: () {
-            //     // Navigate to services selection
-            //   },
-            //),
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Row(
