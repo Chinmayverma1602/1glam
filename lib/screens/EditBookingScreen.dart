@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:glam1/screens/EditBookingInfo.dart';
 import 'package:glam1/screens/EditCustomerInfo.dart';
 import 'package:glam1/screens/EditNodesInfo.dart';
+import 'package:glam1/screens/EditServicesInfo.dart';
 import 'package:glam1/services/BookingController.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:get/get.dart';
@@ -133,14 +135,14 @@ class _EditBookingScreenState extends State<EditBookingScreen> {
                 icon: Icons.cut,
                 title: "Services",
                 subtitle: booking.serviceName,
-                onTap: () {}),
+                onTap: () => showServiceBottomSheet(context , booking)),
 
             _bottomSheetTile(
                 icon: Icons.calendar_today_outlined,
                 
                 title: "Booking Details",
                 subtitle: "${DateFormat('h:mm a').format(booking.startTime)} - ${DateFormat('h:mm a').format(booking.endTime)}",
-                onTap: () {}),
+                onTap: () => showBookingServiceSheet(context)),
 
             _bottomSheetTile(
                 icon: Icons.note_outlined,
