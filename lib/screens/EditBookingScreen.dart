@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:glam1/screens/EditCustomerInfo.dart';
+import 'package:glam1/screens/EditNodesInfo.dart';
 import 'package:glam1/services/BookingController.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:glam1/model/booking_model.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 class EditBookingScreen extends StatefulWidget {
   final Booking? booking;
@@ -21,14 +24,15 @@ class _EditBookingScreenState extends State<EditBookingScreen> {
   late CalendarFormat _calendarFormat;
   late String _selectedClientName;
   late String _selectedServiceName;
-  
+
   // Time slots for the timeline (24-hour format)
-  final List<int> _timeSlots = List.generate(13, (index) => index + 9); // 9 AM to 9 PM
-  
+  final List<int> _timeSlots =
+      List.generate(13, (index) => index + 9); // 9 AM to 9 PM
+
   @override
   void initState() {
     super.initState();
-    
+
     if (widget.booking != null) {
       _selectedDay = widget.booking!.date;
       _selectedClientName = widget.booking!.customerName;
@@ -38,11 +42,11 @@ class _EditBookingScreenState extends State<EditBookingScreen> {
       _selectedClientName = '';
       _selectedServiceName = '';
     }
-    
+
     _focusedDay = _selectedDay;
     _calendarFormat = CalendarFormat.month;
   }
-  
+
   String _formatTimeSlot(int hour) {
     if (hour < 12) {
       return '$hour AM';
@@ -52,16 +56,16 @@ class _EditBookingScreenState extends State<EditBookingScreen> {
       return '${hour - 12} PM';
     }
   }
-  
+
   Widget _buildBookingItem(Booking booking) {
     // Format time for display
     final timeFormat = DateFormat('h:mm a');
     final startTimeString = timeFormat.format(booking.startTime);
     final endTimeString = timeFormat.format(booking.endTime);
-    
+
     return GestureDetector(
       onTap: () {
-        _showBookingEditSheet(booking);
+        _showBookingEditSheet(context , booking);
       },
       child: Container(
         margin: const EdgeInsets.symmetric(vertical: 2),
@@ -93,87 +97,224 @@ class _EditBookingScreenState extends State<EditBookingScreen> {
       ),
     );
   }
-  
-  void _showBookingEditSheet(Booking booking) {
-    showModalBottomSheet(
+
+  void _showBookingEditSheet(BuildContext context  , Booking booking) {
+    showMaterialModalBottomSheet(
       context: context,
-      isScrollControlled: true,
-      builder: (context) {
-        return Container(
-          padding: EdgeInsets.all(16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Edit Booking',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (context) => Padding(
+        padding: EdgeInsets.all(16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Draggable Indicator
+            Center(
+              child: Container(
+                width: 50,
+                height: 5,
+                decoration: BoxDecoration(
+                  color: Colors.grey[400],
+                  borderRadius: BorderRadius.circular(10),
                 ),
               ),
-              SizedBox(height: 16),
-              Text('Booking ID: ${booking.id}'),
-              SizedBox(height: 8),
-              Text('Client: ${booking.customerName}'),
-              SizedBox(height: 8),
-              Text('Service: ${booking.serviceName}'),
-              SizedBox(height: 8),
-              Text('Date: ${DateFormat('yyyy-MM-dd').format(booking.date)}'),
-              SizedBox(height: 8),
-              Text('Time: ${DateFormat('h:mm a').format(booking.startTime)} - ${DateFormat('h:mm a').format(booking.endTime)}'),
-              SizedBox(height: 16),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  OutlinedButton.icon(
-                    icon: Icon(Icons.delete),
-                    label: Text('Delete'),
+            ),
+            SizedBox(height: 12),
+
+            // Clickable Tiles
+            _bottomSheetTile(
+                icon: Icons.person_outline,
+                title: "Client",
+                subtitle: booking.customerName,
+                onTap: () => showEditContactBottomSheet(context, booking)),
+
+            _bottomSheetTile(
+                icon: Icons.cut,
+                title: "Services",
+                subtitle: booking.serviceName,
+                onTap: () {}),
+
+            _bottomSheetTile(
+                icon: Icons.calendar_today_outlined,
+                
+                title: "Booking Details",
+                subtitle: "${DateFormat('h:mm a').format(booking.startTime)} - ${DateFormat('h:mm a').format(booking.endTime)}",
+                onTap: () {}),
+
+            _bottomSheetTile(
+                icon: Icons.note_outlined,
+                title: "Notes",
+                subtitle: "Add special instructions",
+
+                onTap: () => showNotesBottomSheet(context) 
+                
+                ),
+
+            SizedBox(height: 16),
+
+            Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton.icon(
+                    iconAlignment: IconAlignment.start,
                     onPressed: () {
-                      // Handle booking deletion
                       Navigator.pop(context);
-                      // You could add confirmation dialog here
-                      _bookingController.deleteBooking(booking.id);
-                      setState(() {}); // Refresh the UI
                     },
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: Colors.red,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.grey[300], // Lighter grey
+                      padding: EdgeInsets.symmetric(
+                          vertical: 14), // Better vertical padding
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
                     ),
+                    icon: Icon(Icons.arrow_back, color: Colors.black), // Cancel icon
+                    label:
+                        Text("Cancel", style: TextStyle(color: Colors.black)),
                   ),
-                  ElevatedButton.icon(
-                    icon: Icon(Icons.edit),
-                    label: Text('Edit Details'),
+                ),
+                SizedBox(width: 12), // Spacing between buttons
+                Expanded(
+                  child: ElevatedButton(
                     onPressed: () {
                       Navigator.pop(context);
-                      // Navigate to a detailed edit screen or show another bottom sheet
-                      // with form fields to edit the booking
+                      //TODO: Save changes action
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.purple,
+                      padding: EdgeInsets.symmetric(
+                          vertical: 14), // Consistent padding
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
                     ),
+                    child: Text("Save Changes",
+                        style: TextStyle(fontSize: 14, color: Colors.white)),
                   ),
-                ],
-              ),
-              SizedBox(height: 16),
-            ],
-          ),
-        );
-      },
+                ),
+              ],
+            )
+          ],
+        ),
+      ),
     );
   }
-  
+
+  Widget _bottomSheetTile(
+      {required IconData icon,
+      required String title,
+      required String subtitle,
+      required VoidCallback onTap}) {
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        child: Row(
+          children: [
+            CircleAvatar(
+              radius: 20,
+              backgroundColor: Colors.purple.withOpacity(0.1),
+              child: Icon(icon, color: Colors.purple),
+            ),
+            SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(title, style: TextStyle(fontWeight: FontWeight.bold)),
+                  Text(subtitle, style: TextStyle(color: Colors.grey[600])),
+                ],
+              ),
+            ),
+            Icon(Icons.arrow_forward_ios, size: 18, color: Colors.grey),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // void _showBookingEditSheet(Booking booking) {
+  //   showModalBottomSheet(
+  //     context: context,
+  //     isScrollControlled: true,
+  //     builder: (context) {
+  //       return Container(
+  //         padding: EdgeInsets.all(16),
+  //         child: Column(
+  //           mainAxisSize: MainAxisSize.min,
+  //           crossAxisAlignment: CrossAxisAlignment.start,
+  //           children: [
+  //             Text(
+  //               'Edit Booking',
+  //               style: TextStyle(
+  //                 fontSize: 18,
+  //                 fontWeight: FontWeight.bold,
+  //                 //color: Colors.red
+  //               ),
+  //             ),
+  //             SizedBox(height: 16),
+  //             Text('Booking ID: ${booking.id}'),
+  //             SizedBox(height: 8),
+  //             Text('Client: ${booking.customerName}'),
+  //             SizedBox(height: 8),
+  //             Text('Service: ${booking.serviceName}'),
+  //             SizedBox(height: 8),
+  //             Text('Date: ${DateFormat('yyyy-MM-dd').format(booking.date)}'),
+  //             SizedBox(height: 8),
+  //             Text('Time: ${DateFormat('h:mm a').format(booking.startTime)} - ${DateFormat('h:mm a').format(booking.endTime)}'),
+  //             SizedBox(height: 16),
+  //             Row(
+  //               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+  //               children: [
+  //                 OutlinedButton.icon(
+  //                   icon: Icon(Icons.delete),
+  //                   label: Text('Delete'),
+  //                   onPressed: () {
+  //                     // Handle booking deletion
+  //                     Navigator.pop(context);
+  //                     // You could add confirmation dialog here
+  //                     _bookingController.deleteBooking(booking.id);
+  //                     setState(() {}); // Refresh the UI
+  //                   },
+  //                   style: OutlinedButton.styleFrom(
+  //                     foregroundColor: Colors.red,
+  //                   ),
+  //                 ),
+  //                 ElevatedButton.icon(
+  //                   icon: Icon(Icons.edit),
+  //                   label: Text('Edit Details'),
+  //                   onPressed: () {
+  //                     Navigator.pop(context);
+  //                     // Navigate to a detailed edit screen or show another bottom sheet
+  //                     // with form fields to edit the booking
+  //                   },
+  //                   style: ElevatedButton.styleFrom(
+  //                     backgroundColor: Colors.purple,
+  //                   ),
+  //                 ),
+  //               ],
+  //             ),
+  //             SizedBox(height: 16),
+  //           ],
+  //         ),
+  //       );
+  //     },
+  //   );
+  // }
+
   List<Booking> _getBookingsForSelectedDay() {
     return _bookingController.bookings.where((booking) {
       return booking.date.year == _selectedDay.year &&
-             booking.date.month == _selectedDay.month &&
-             booking.date.day == _selectedDay.day;
+          booking.date.month == _selectedDay.month &&
+          booking.date.day == _selectedDay.day;
     }).toList();
   }
-  
+
   Map<int, List<Booking>> _getBookingsByHour() {
     final bookingsForDay = _getBookingsForSelectedDay();
     final bookingsByHour = <int, List<Booking>>{};
-    
+
     for (var booking in bookingsForDay) {
       final startHour = booking.startTime.hour;
       if (!bookingsByHour.containsKey(startHour)) {
@@ -181,14 +322,14 @@ class _EditBookingScreenState extends State<EditBookingScreen> {
       }
       bookingsByHour[startHour]!.add(booking);
     }
-    
+
     return bookingsByHour;
   }
-  
+
   @override
   Widget build(BuildContext context) {
     final bookingsByHour = _getBookingsByHour();
-    
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -233,12 +374,13 @@ class _EditBookingScreenState extends State<EditBookingScreen> {
                 calendarBuilders: CalendarBuilders(
                   markerBuilder: (context, date, events) {
                     // Check if there are bookings for this date
-                    final hasBookings = _bookingController.bookings.any((booking) {
+                    final hasBookings =
+                        _bookingController.bookings.any((booking) {
                       return booking.date.year == date.year &&
-                            booking.date.month == date.month &&
-                            booking.date.day == date.day;
+                          booking.date.month == date.month &&
+                          booking.date.day == date.day;
                     });
-                    
+
                     if (hasBookings) {
                       return Positioned(
                         bottom: 1,
@@ -258,8 +400,10 @@ class _EditBookingScreenState extends State<EditBookingScreen> {
                 headerStyle: HeaderStyle(
                   titleCentered: true,
                   formatButtonVisible: false,
-                  leftChevronIcon: Icon(Icons.chevron_left, color: Colors.black),
-                  rightChevronIcon: Icon(Icons.chevron_right, color: Colors.black),
+                  leftChevronIcon:
+                      Icon(Icons.chevron_left, color: Colors.black),
+                  rightChevronIcon:
+                      Icon(Icons.chevron_right, color: Colors.black),
                 ),
               ),
             ),
@@ -282,7 +426,7 @@ class _EditBookingScreenState extends State<EditBookingScreen> {
                     final hour = _timeSlots[index];
                     final timeText = _formatTimeSlot(hour);
                     final hasBookingsForHour = bookingsByHour.containsKey(hour);
-                    
+
                     return Column(
                       children: [
                         Row(
@@ -299,7 +443,8 @@ class _EditBookingScreenState extends State<EditBookingScreen> {
                               child: hasBookingsForHour
                                   ? Column(
                                       children: bookingsByHour[hour]!
-                                          .map((booking) => _buildBookingItem(booking))
+                                          .map((booking) =>
+                                              _buildBookingItem(booking))
                                           .toList(),
                                     )
                                   : Container(

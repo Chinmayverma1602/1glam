@@ -1,7 +1,10 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:glam1/model/booking_model.dart';
 import 'package:glam1/screens/EditBookingScreen.dart';
+import 'package:glam1/screens/HomePage.dart';
 import 'package:glam1/services/BookingController.dart';
 import 'package:glam1/widgets/BottomNavBar.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -15,7 +18,7 @@ class CalenderPage extends StatefulWidget {
 }
 
 class _CalendarPageState extends State<CalenderPage> {
-  CalendarFormat _calendarFormat = CalendarFormat.week;
+  CalendarFormat _calendarFormat = CalendarFormat.week;//to select the format of the calender from the enum
   DateTime _focusedDay = DateTime.now();
   DateTime _selectedDay = DateTime.now();
 
@@ -32,7 +35,8 @@ class _CalendarPageState extends State<CalenderPage> {
   List<Booking> _getBookingsForDay(DateTime day) {
     print(bookingController.bookings
         .where((booking) => isSameDay(booking.date, day))
-        .toList().length);
+        .toList()
+        .length);
     return bookingController.bookings
         .where((booking) => isSameDay(booking.date, day))
         .toList();
@@ -42,8 +46,9 @@ class _CalendarPageState extends State<CalenderPage> {
   String _getBookingsSectionTitle() {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
-    final selectedNormalized = DateTime(_selectedDay.year, _selectedDay.month, _selectedDay.day);
-    
+    final selectedNormalized =
+        DateTime(_selectedDay.year, _selectedDay.month, _selectedDay.day);
+
     if (selectedNormalized.isAtSameMomentAs(today)) {
       return "Today's Bookings";
     } else {
@@ -56,39 +61,38 @@ class _CalendarPageState extends State<CalenderPage> {
   Widget build(BuildContext context) {
     int _selectedIndex = 2;
 
-  void _onItemTapped(int index) {
-    if (index == _selectedIndex) return;
+    void _onItemTapped(int index) {
+      if (index == _selectedIndex) return;
 
-    setState(() {
-      _selectedIndex = index;
-    });
+      setState(() {
+        _selectedIndex = index;
+      });
 
-    switch (index) {
-      case 0:
-        Navigator.pushReplacementNamed(context, '/home');
-        break;
-      case 1:
-        Navigator.pushReplacementNamed(context, '/leads');
-        break;
-      case 2:
-        Navigator.pushReplacementNamed(context, '/calender');
-        break;
-      case 3:
-        Navigator.pushReplacementNamed(context, '/settings');
-        break;
+      switch (index) {
+        case 0:
+          Navigator.pushReplacementNamed(context, '/home');
+          break;
+        case 1:
+          Navigator.pushReplacementNamed(context, '/leads');
+          break;
+        case 2:
+          Navigator.pushReplacementNamed(context, '/calender');
+          break;
+        case 3:
+          Navigator.pushReplacementNamed(context, '/settings');
+          break;
+      }
     }
-  }
-    
+
     return Scaffold(
       bottomNavigationBar: BottomNavBar(
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
       ),
-      
       body: Column(
         children: [
           _buildCalendarHeader(),
-          //_buildCalendarViewOptions(),
+          //_buildCalendarViewOptions(),//TODO : we are here
           _buildCalendar(),
           Obx(() => _buildSelectedDayBookings()),
         ],
@@ -96,6 +100,7 @@ class _CalendarPageState extends State<CalenderPage> {
     );
   }
 
+  //return the calendar head on the top of the screen
   Widget _buildCalendarHeader() {
     return Padding(
       padding: const EdgeInsets.only(top: 50.0, left: 16.0, right: 16.0),
@@ -107,6 +112,7 @@ class _CalendarPageState extends State<CalenderPage> {
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
+              //color: Colors.red, //testing purposes
             ),
           ),
           Row(
@@ -123,10 +129,20 @@ class _CalendarPageState extends State<CalenderPage> {
                   color: Colors.purple,
                   shape: BoxShape.circle,
                 ),
-                child: Icon(
-                  Icons.add,
-                  color: Colors.white,
-                  size: 20,
+                child: Center(
+                  child: IconButton(
+                    onPressed: () {
+                      //added the on press for the plus button
+                    },
+                    icon: Icon(
+                      Icons.add,
+                      color: Colors.white,
+                      size: 20,
+                    ),
+                    iconSize: 20, // Ensures the icon is properly sized
+                    padding: EdgeInsets.zero, // Removes extra padding
+                    constraints: BoxConstraints(),
+                  ),
                 ),
               ),
             ],
@@ -167,158 +183,159 @@ class _CalendarPageState extends State<CalenderPage> {
     );
   }
 
- Widget _buildCalendar() {
-  return TableCalendar(
-    firstDay: DateTime.utc(2025, 1, 1),
-    lastDay: DateTime.utc(2025, 12, 31),
-    focusedDay: _focusedDay,
-    calendarFormat: _calendarFormat,
-    selectedDayPredicate: (day) {
-      return isSameDay(_selectedDay, day);
-    },
-    onDaySelected: (selectedDay, focusedDay) {
-      setState(() {
-        _selectedDay = selectedDay;
-        _focusedDay = focusedDay;
-      });
-    },
-    onFormatChanged: (format) {
-      setState(() {
-        _calendarFormat = format;
-      });
-    },
-    onPageChanged: (focusedDay) {
-      setState(() {
-        _focusedDay = focusedDay;
-      });
-    },
-    calendarStyle: CalendarStyle(
-      markersMaxCount: 0, // Hide default markers, using custom ones
-    ),
-    calendarBuilders: CalendarBuilders(
-      prioritizedBuilder: (context, day, focusedDay) {
-        final bookingsForDay = _getBookingsForDay(day);
-        bool isSelected = isSameDay(_selectedDay, day);
-        bool isToday = isSameDay(day, DateTime.now());
-  
-        return Container(
-          margin: const EdgeInsets.all(4),
-          alignment: Alignment.center,
-          child: Stack(
-            children: [
-              // Background Box for Event Days, Selected Day, and Today
-              if (bookingsForDay.isNotEmpty || isSelected || isToday)
-                Container(
-                  width: 50,
-                  height: 75,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: isToday
-                        ? const Color(0xFFE8CFFF) // Slightly darker for today
-                        : const Color(0xFFF9EBFF), // Light purple for selected & events
+  Widget _buildCalendar() {
+    return TableCalendar(
+      firstDay: DateTime.utc(2025, 1, 1),
+      lastDay: DateTime.utc(2025, 12, 31),
+      focusedDay: _focusedDay,
+      calendarFormat: _calendarFormat,
+      selectedDayPredicate: (day) {
+        return isSameDay(_selectedDay, day);
+      },
+      onDaySelected: (selectedDay, focusedDay) {
+        setState(() {
+          _selectedDay = selectedDay;
+          _focusedDay = focusedDay;
+        });
+      },
+      onFormatChanged: (format) {
+        setState(() {
+          _calendarFormat = format;
+        });
+      },
+      onPageChanged: (focusedDay) {
+        setState(() {
+          _focusedDay = focusedDay;
+        });
+      },
+      calendarStyle: CalendarStyle(
+        markersMaxCount: 0, // Hide default markers, using custom ones
+      ),
+      calendarBuilders: CalendarBuilders(
+        prioritizedBuilder: (context, day, focusedDay) {
+          final bookingsForDay = _getBookingsForDay(day);
+          bool isSelected = isSameDay(_selectedDay, day);
+          bool isToday = isSameDay(day, DateTime.now());
+
+          return Container(
+            margin: const EdgeInsets.all(4),
+            alignment: Alignment.center,
+            child: Stack(
+              children: [
+                // Background Box for Event Days, Selected Day, and Today
+                if (bookingsForDay.isNotEmpty || isSelected || isToday)
+                  Container(
+                    width: 50,
+                    height: 75,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: isToday
+                          ? const Color(0xFFE8CFFF) // Slightly darker for today
+                          : const Color(
+                              0xFFF9EBFF), // Light purple for selected & events
+                    ),
                   ),
-                ),
-  
-              // Date Text
-              Align(
-                alignment: Alignment.topLeft,
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 8,left: 6),
-                  child: Text(
-                    '${day.day}',
-                    style: const TextStyle(
-                      fontSize: 16,
-                      color: Colors.black,
+
+                // Date Text
+                Align(
+                  alignment: Alignment.topLeft,
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 8, left: 6),
+                    child: Text(
+                      '${day.day}',
+                      style: const TextStyle(
+                        fontSize: 16,
+                        color: Colors.black,
+                      ),
                     ),
                   ),
                 ),
-              ),
-  
-              // Event Indicator (Only if there are events)
-              if (bookingsForDay.isNotEmpty)
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Padding(
-                    padding: const EdgeInsets.only(bottom: 2.0),
-                    child: Container(
-                      width: 40,
-                      height: 35,
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.8),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(left: 4.0,top: 4.0),
-                            child: Text(
-                              '${bookingsForDay.length}\nevents',
-                              style: const TextStyle(
-                                fontSize: 10,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.purple,
+
+                // Event Indicator (Only if there are events)
+                if (bookingsForDay.isNotEmpty)
+                  Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 2.0),
+                      child: Container(
+                        width: 40,
+                        height: 35,
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.8),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding:
+                                  const EdgeInsets.only(left: 4.0, top: 4.0),
+                              child: Text(
+                                '${bookingsForDay.length}\nevents',
+                                style: const TextStyle(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.purple,
+                                ),
                               ),
                             ),
-                          ),
-                          // const Text(
-                          //   'events',
-                          //   style: TextStyle(
-                          //     fontSize: 10,
-                          //     color: Colors.purple,
-                          //   ),
-                          // ),
-                        ],
+                            // const Text(
+                            //   'events',
+                            //   style: TextStyle(
+                            //     fontSize: 10,
+                            //     color: Colors.purple,
+                            //   ),
+                            // ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                ),
-  
-              // "No Events" Label for Selected Day without Events
-              if (isSelected && bookingsForDay.isEmpty)
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Padding(
-                    padding: const EdgeInsets.only(bottom: 2.0),
-                    child: Container(
-                      width: 40,
-                      height: 35,
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.8),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: const Center(
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 4.0,top: 4.0),
-                          child: Text(
-                            'No events',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 10,
-                              color: Colors.purple,
+
+                // "No Events" Label for Selected Day without Events
+                if (isSelected && bookingsForDay.isEmpty)
+                  Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 2.0),
+                      child: Container(
+                        width: 40,
+                        height: 35,
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.8),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: const Center(
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 4.0, top: 4.0),
+                            child: Text(
+                              'No events',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 10,
+                                color: Colors.purple,
+                              ),
                             ),
                           ),
                         ),
                       ),
                     ),
                   ),
-                ),
-            ],
-          ),
-        );
+              ],
+            ),
+          );
+        },
+      ),
+      eventLoader: (day) {
+        return _getBookingsForDay(day);
       },
-    ),
-    eventLoader: (day) {
-      return _getBookingsForDay(day);
-    },
-    rowHeight: 50,
-  );
-}
-
+      rowHeight: 50,
+    );
+  }
 
   Widget _buildSelectedDayBookings() {
     final bookingsForSelectedDay = _getBookingsForDay(_selectedDay);
-    
+
     return Expanded(
       child: Container(
         padding: EdgeInsets.all(16),
@@ -335,7 +352,7 @@ class _CalendarPageState extends State<CalenderPage> {
             SizedBox(height: 16),
             bookingsForSelectedDay.isEmpty
                 ? Flexible(
-                  child: Center(
+                    child: Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -350,7 +367,7 @@ class _CalendarPageState extends State<CalenderPage> {
                         ],
                       ),
                     ),
-                )
+                  )
                 : Expanded(
                     child: ListView.builder(
                       itemCount: bookingsForSelectedDay.length,
@@ -369,10 +386,10 @@ class _CalendarPageState extends State<CalenderPage> {
   Widget _buildBookingItem(Booking booking) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => EditBookingScreen())
-        );
+
+        log("TAPPED");//debugging purposes
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => EditBookingScreen()));
       },
       child: Container(
         margin: EdgeInsets.only(bottom: 16),
@@ -438,7 +455,7 @@ class _CalendarPageState extends State<CalenderPage> {
   Widget _buildStatusChip(BookingStatus status) {
     Color backgroundColor;
     String text;
-    
+
     switch (status) {
       case BookingStatus.pending:
         backgroundColor = Colors.amber[100]!;
@@ -452,7 +469,7 @@ class _CalendarPageState extends State<CalenderPage> {
         backgroundColor = Colors.grey[100]!;
         text = 'Unknown';
     }
-    
+
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
@@ -463,12 +480,16 @@ class _CalendarPageState extends State<CalenderPage> {
         text,
         style: TextStyle(
           fontSize: 12,
-          color: status == BookingStatus.pending ? Colors.amber[800] : Colors.green[800],
+          color: status == BookingStatus.pending
+              ? Colors.amber[800]
+              : Colors.green[800],
         ),
       ),
     );
   }
 }
+
+
 
 enum BookingStatus {
   pending,
