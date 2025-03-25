@@ -1,9 +1,16 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
-import 'package:glam1/screens/EditBookingInfo.dart';
+import 'package:glam1/screens/EditDate.dart';
 import 'package:glam1/screens/EditCustomerInfo.dart';
 import 'package:glam1/screens/EditNodesInfo.dart';
+import 'package:glam1/screens/EditServices.dart';
 import 'package:glam1/screens/EditServicesInfo.dart';
+import 'package:glam1/screens/EditTime.dart';
 import 'package:glam1/services/BookingController.dart';
+import 'package:glam1/widgets/CustomTextInputField.dart';
+import 'package:glam1/widgets/ImageSelectionRow.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -18,6 +25,8 @@ class EditBookingScreen extends StatefulWidget {
   @override
   _EditBookingScreenState createState() => _EditBookingScreenState();
 }
+
+final TextEditingController notesController = TextEditingController();
 
 class _EditBookingScreenState extends State<EditBookingScreen> {
   final BookingController _bookingController = Get.find<BookingController>();
@@ -67,11 +76,12 @@ class _EditBookingScreenState extends State<EditBookingScreen> {
 
     return GestureDetector(
       onTap: () {
-        _showBookingEditSheet(context , booking);
+        _showBookingEditSheet(context, booking);
+        // showAppointmentBottomSheet(context);
       },
       child: Container(
         margin: const EdgeInsets.symmetric(vertical: 2),
-        padding: const EdgeInsets.all(8),
+        padding: const EdgeInsets.only(top: 8, left: 8, right: 8, bottom: 80),
         width: double.infinity,
         decoration: BoxDecoration(
           color: Colors.purple.shade100,
@@ -89,7 +99,7 @@ class _EditBookingScreenState extends State<EditBookingScreen> {
               ),
             ),
             Text(
-              '${booking.serviceName}',
+              booking.serviceName,
               style: TextStyle(
                 fontSize: 13,
               ),
@@ -100,118 +110,245 @@ class _EditBookingScreenState extends State<EditBookingScreen> {
     );
   }
 
-  void _showBookingEditSheet(BuildContext context  , Booking booking) {
+  List<File> selectedImages = [];
+  bool isLoading = false;
+
+  Future<void> pickImage(ImageSource source, BuildContext context) async {
+    setState(() => isLoading = true); // Show loading indicator
+    final pickedFile = await ImagePicker().pickImage(source: source);
+
+    if (pickedFile != null) {
+      setState(() {
+        selectedImages.add(File(pickedFile.path));
+        isLoading = false;
+      });
+    } else {
+      setState(() => isLoading = false);
+    }
+  }
+
+  void _showBookingEditSheet(BuildContext context, Booking booking) {
     showMaterialModalBottomSheet(
       context: context,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
       builder: (context) => Padding(
-        padding: EdgeInsets.all(16),
+        padding: EdgeInsets.all(8),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Draggable Indicator
-            Center(
-              child: Container(
-                width: 50,
-                height: 5,
-                decoration: BoxDecoration(
-                  color: Colors.grey[400],
-                  borderRadius: BorderRadius.circular(10),
+            /// **Header Section**
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                /// **Close Button**
+                IconButton(
+                  icon: Icon(Icons.close, color: Colors.black),
+                  onPressed: () => Navigator.pop(context),
                 ),
-              ),
-            ),
-            SizedBox(height: 12),
 
-            // Clickable Tiles
+                /// **Title**
+                Text(
+                  "Edit Appointment",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                ),
+
+                /// **Save Button**
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    // TODO: Implement save logic
+                  },
+                  child: Text(
+                    "Save",
+                    style: TextStyle(
+                        fontSize: 15,
+                        color: Colors.purple,
+                        fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ],
+            ),
+            Divider(
+              thickness: 1.2,
+            ),
+
+            SizedBox(height: 8),
+
+            /// **Draggable Indicator**
+            // Center(
+            //   child: Container(
+            //     width: 50,
+            //     height: 5,
+            //     decoration: BoxDecoration(
+            //       color: Colors.grey[400],
+            //       borderRadius: BorderRadius.circular(10),
+            //     ),
+            //   ),
+            // ),
+
+            // SizedBox(height: 12),
+
+            /// **Profile Section**
+            Row(
+              children: [
+                CircleAvatar(
+                  radius: 24,
+                  backgroundColor: Colors.grey[300], // Light grey background
+                  child: Icon(Icons.person,
+                      size: 28, color: Colors.black54), // Person icon
+                ),
+                SizedBox(width: 12),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(booking.customerName,
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.w600)),
+                    Text("Added on 10 Feb 2025",
+                        style: TextStyle(color: Colors.grey)),
+                  ],
+                ),
+              ],
+            ),
+
+            SizedBox(height: 4),
+
+            /// **Action Buttons (Call & WhatsApp)**
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: () {},
+                    icon: Icon(Icons.call, color: Colors.black),
+                    label: Text(
+                      "Call",
+                      style: TextStyle(fontSize: 16),
+                    ),
+                    style: OutlinedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius:
+                            BorderRadius.circular(8), // Slightly curved corners
+                      ),
+                      // side:
+                      // BorderSide(color: Colors.black, width: 1.5), // Border
+                      padding:
+                          EdgeInsets.symmetric(vertical: 5), // Better padding
+                    ),
+                  ),
+                ),
+                SizedBox(width: 8),
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: () {},
+                    icon: Icon(Icons.chat, color: Colors.black),
+                    label: Text(
+                      "WhatsApp",
+                      style: TextStyle(fontSize: 16),
+                    ),
+                    style: OutlinedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      // side: BorderSide(color: Colors.black, width: 1.5),
+                      padding: EdgeInsets.symmetric(vertical: 5),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(
+              height: 10,
+            ),
+
+            /// **Clickable Tiles**
             _bottomSheetTile(
-                icon: Icons.person_outline,
-                title: "Client",
-                subtitle: booking.customerName,
-                onTap: () => showEditContactBottomSheet(context, booking)),
+                icon: Icons.schedule,
+                title: "Time",
+                subtitle:
+                    "${DateFormat('h:mm a').format(booking.startTime)} - ${DateFormat('h:mm a').format(booking.endTime)}",
+                onTap: () => showBookingServiceSheetTime(context, booking)),
+            _bottomSheetTile(
+                icon: Icons.calendar_month,
+                title: "Date",
+                subtitle: DateFormat("dd MMMM yyyy").format(booking.date),
+                onTap: () => showBookingServiceSheetDate(context, booking)),
+            _bottomSheetTile(
+                icon: Icons.location_on,
+                title: "Location",
+                subtitle: "Client Location",
+                onTap: () {}),
 
             _bottomSheetTile(
                 icon: Icons.cut,
                 title: "Services",
                 subtitle: booking.serviceName,
-                onTap: () => showServiceBottomSheet(context , booking)),
-
+                onTap: () => editService(context)),
             _bottomSheetTile(
-                icon: Icons.calendar_today_outlined,
-                
-                title: "Booking Details",
-                subtitle: "${DateFormat('h:mm a').format(booking.startTime)} - ${DateFormat('h:mm a').format(booking.endTime)}",
-                onTap: () => showBookingServiceSheet(context)),
+                icon: Icons.currency_rupee,
+                title: "Payment",
+                subtitle: booking.price.toString(),
+                onTap: () {}),
 
-            _bottomSheetTile(
-                icon: Icons.note_outlined,
-                title: "Notes",
-                subtitle: "Add special instructions",
-
-                onTap: () => showNotesBottomSheet(context) 
-                
-                ),
-
-            SizedBox(height: 16),
-
-            Row(
-              children: [
-                Expanded(
-                  child: ElevatedButton.icon(
-                    iconAlignment: IconAlignment.start,
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.grey[300], // Lighter grey
-                      padding: EdgeInsets.symmetric(
-                          vertical: 14), // Better vertical padding
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                    ),
-                    icon: Icon(Icons.arrow_back, color: Colors.black), // Cancel icon
-                    label:
-                        Text("Cancel", style: TextStyle(color: Colors.black)),
+            Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Title & Close Button
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text("Notes",
+                          style: TextStyle(
+                              fontSize: 15, fontWeight: FontWeight.bold)),
+                      // IconButton(icon: Icon(Icons.close), onPressed: () => Navigator.pop(context)),
+                    ],
                   ),
-                ),
-                SizedBox(width: 12), // Spacing between buttons
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                      //TODO: Save changes action
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.purple,
-                      padding: EdgeInsets.symmetric(
-                          vertical: 14), // Consistent padding
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                    ),
-                    child: Text("Save Changes",
-                        style: TextStyle(fontSize: 14, color: Colors.white)),
+                  SizedBox(
+                    height: 5,
                   ),
-                ),
-              ],
-            )
+
+                  // Notes Text Field
+                  // CustomTextInputField(hintText: "Write your notes here ...", icon: Icons.,),
+                  TextField(
+                    controller: notesController,
+                    maxLines: 3,
+                    decoration: InputDecoration(
+                      hintText: "Add appointment notes...",
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                  SizedBox(height: 4),
+
+                  // Display Selected Images
+                ]),
+
+            // SizedBox(height: 16),
+
+            ImageSelectionRow(),
           ],
         ),
       ),
     );
   }
 
-  Widget _bottomSheetTile(
-      {required IconData icon,
-      required String title,
-      required String subtitle,
-      required VoidCallback onTap}) {
+  Widget _bottomSheetTile({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required VoidCallback onTap,
+  }) {
     return InkWell(
       onTap: onTap,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 10),
+      child: Container(
+        margin:
+            EdgeInsets.symmetric(horizontal: 6, vertical: 6), // Added margin
+        padding: EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Colors.grey[200], // Light grey background
+          borderRadius: BorderRadius.circular(10), // Rounded corners
+        ),
         child: Row(
           children: [
             CircleAvatar(
@@ -229,7 +366,7 @@ class _EditBookingScreenState extends State<EditBookingScreen> {
                 ],
               ),
             ),
-            Icon(Icons.arrow_forward_ios, size: 18, color: Colors.grey),
+            Icon(Icons.arrow_forward_ios, size: 18, color: const Color.fromARGB(255, 208, 204, 204)),
           ],
         ),
       ),
@@ -333,11 +470,25 @@ class _EditBookingScreenState extends State<EditBookingScreen> {
     final bookingsByHour = _getBookingsByHour();
 
     return Scaffold(
+      appBar: AppBar(
+        title:Text("Edit Booking"
+              ),
+      ),
       backgroundColor: Colors.white,
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 10,top: 10),
+              child: Text(
+                'Select Date',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: TableCalendar(
@@ -410,7 +561,7 @@ class _EditBookingScreenState extends State<EditBookingScreen> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+              padding: const EdgeInsets.only(left: 10,top: 10),
               child: Text(
                 'Select Time',
                 style: TextStyle(
@@ -483,7 +634,10 @@ class _EditBookingScreenState extends State<EditBookingScreen> {
                   SizedBox(width: 16),
                   Expanded(
                     child: ElevatedButton(
-                      child: Text('Save Changes'),
+                      child: Text(
+                        'Save Changes',
+                        style: TextStyle(color: Colors.white),
+                      ),
                       onPressed: () {
                         // Save the updated booking
                         Navigator.of(context).pop();

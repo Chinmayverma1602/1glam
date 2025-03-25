@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:glam1/model/booking_model.dart';
 import 'package:intl/intl.dart';
 
-void showBookingServiceSheet(BuildContext context) {
-  TextEditingController durationController = TextEditingController();
+void showBookingServiceSheetDate(BuildContext context , Booking booking) {
+
   TextEditingController dateController = TextEditingController();
-  TextEditingController timeController = TextEditingController();
+
+
+  dateController.text = DateFormat("dd-MM-yyyy").format(booking.date);
 
   showModalBottomSheet(
     context: context,
@@ -29,17 +32,17 @@ void showBookingServiceSheet(BuildContext context) {
             }
           }
 
-          void _pickTime() async {
-            TimeOfDay? picked = await showTimePicker(
-              context: context,
-              initialTime: TimeOfDay.now(),
-            );
-            if (picked != null) {
-              setState(() {
-                timeController.text = picked.format(context);
-              });
-            }
-          }
+          // void _pickTime() async {
+          //   TimeOfDay? picked = await showTimePicker(
+          //     context: context,
+          //     initialTime: TimeOfDay.now(),
+          //   );
+          //   if (picked != null) {
+          //     setState(() {
+          //       timeController.text = picked.format(context);
+          //     });
+          //   }
+          // }
 
           return Padding(
             padding: EdgeInsets.only(
@@ -76,29 +79,29 @@ void showBookingServiceSheet(BuildContext context) {
                 ),
                 SizedBox(height: 10),
 
-                // Time Picker Field
-                TextField(
-                  controller: timeController,
-                  readOnly: true,
-                  onTap: _pickTime,
-                  decoration: InputDecoration(
-                    labelText: "Start Time",
-                    border: OutlineInputBorder(),
-                    suffixIcon: Icon(Icons.access_time),
-                  ),
-                ),
-                SizedBox(height: 10),
+                // // Time Picker Field
+                // TextField(
+                //   controller: timeController,
+                //   readOnly: true,
+                //   onTap: _pickTime,
+                //   decoration: InputDecoration(
+                //     labelText: "Start Time",
+                //     border: OutlineInputBorder(),
+                //     suffixIcon: Icon(Icons.access_time),
+                //   ),
+                // ),
+                // SizedBox(height: 10),
 
-                // Duration Field
-                TextField(
-                  controller: durationController,
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
-                    labelText: "Duration (minutes)",
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-                SizedBox(height: 20),
+                // // Duration Field
+                // TextField(
+                //   controller: durationController,
+                //   keyboardType: TextInputType.number,
+                //   decoration: InputDecoration(
+                //     labelText: "Duration (minutes)",
+                //     border: OutlineInputBorder(),
+                //   ),
+                // ),
+                // SizedBox(height: 20),
 
                 // Cancel & Save Buttons
                 Row(
