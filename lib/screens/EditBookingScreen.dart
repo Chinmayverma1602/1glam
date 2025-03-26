@@ -128,211 +128,161 @@ class _EditBookingScreenState extends State<EditBookingScreen> {
     }
   }
 
-  void _showBookingEditSheet(BuildContext context, Booking booking) {
-    showMaterialModalBottomSheet(
-      context: context,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+ void _showBookingEditSheet(BuildContext context, Booking booking) {
+  showMaterialModalBottomSheet(
+    context: context,
+    // isScrollControlled: true, // Allows better height control
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+    ),
+    builder: (context) => Container(
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * 0.7, // Limits height to 80%
       ),
-      builder: (context) => Padding(
-        padding: EdgeInsets.all(8),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            /// **Header Section**
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                /// **Close Button**
-                IconButton(
-                  icon: Icon(Icons.close, color: Colors.black),
-                  onPressed: () => Navigator.pop(context),
+      padding: EdgeInsets.all(8),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          /// **Header Section**
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              IconButton(
+                icon: Icon(Icons.close, color: Colors.black),
+                onPressed: () => Navigator.pop(context),
+              ),
+              Text(
+                "Edit Appointment",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  // TODO: Implement save logic
+                },
+                child: Text(
+                  "Save",
+                  style: TextStyle(
+                      fontSize: 15, color: Colors.purple, fontWeight: FontWeight.bold),
                 ),
+              ),
+            ],
+          ),
+          Divider(thickness: 1.2),
+          SizedBox(height: 8),
 
-                /// **Title**
-                Text(
-                  "Edit Appointment",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-                ),
-
-                /// **Save Button**
-                TextButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                    // TODO: Implement save logic
-                  },
-                  child: Text(
-                    "Save",
-                    style: TextStyle(
-                        fontSize: 15,
-                        color: Colors.purple,
-                        fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ],
-            ),
-            Divider(
-              thickness: 1.2,
-            ),
-
-            SizedBox(height: 8),
-
-            /// **Draggable Indicator**
-            // Center(
-            //   child: Container(
-            //     width: 50,
-            //     height: 5,
-            //     decoration: BoxDecoration(
-            //       color: Colors.grey[400],
-            //       borderRadius: BorderRadius.circular(10),
-            //     ),
-            //   ),
-            // ),
-
-            // SizedBox(height: 12),
-
-            /// **Profile Section**
-            Row(
-              children: [
-                CircleAvatar(
-                  radius: 24,
-                  backgroundColor: Colors.grey[300], // Light grey background
-                  child: Icon(Icons.person,
-                      size: 28, color: Colors.black54), // Person icon
-                ),
-                SizedBox(width: 12),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(booking.customerName,
-                        style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.w600)),
-                    Text("Added on 10 Feb 2025",
-                        style: TextStyle(color: Colors.grey)),
-                  ],
-                ),
-              ],
-            ),
-
-            SizedBox(height: 4),
-
-            /// **Action Buttons (Call & WhatsApp)**
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: () {},
-                    icon: Icon(Icons.call, color: Colors.black),
-                    label: Text(
-                      "Call",
-                      style: TextStyle(fontSize: 16),
-                    ),
-                    style: OutlinedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius:
-                            BorderRadius.circular(8), // Slightly curved corners
-                      ),
-                      // side:
-                      // BorderSide(color: Colors.black, width: 1.5), // Border
-                      padding:
-                          EdgeInsets.symmetric(vertical: 5), // Better padding
-                    ),
-                  ),
-                ),
-                SizedBox(width: 8),
-                Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: () {},
-                    icon: Icon(Icons.chat, color: Colors.black),
-                    label: Text(
-                      "WhatsApp",
-                      style: TextStyle(fontSize: 16),
-                    ),
-                    style: OutlinedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      // side: BorderSide(color: Colors.black, width: 1.5),
-                      padding: EdgeInsets.symmetric(vertical: 5),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(
-              height: 10,
-            ),
-
-            /// **Clickable Tiles**
-            _bottomSheetTile(
-                icon: Icons.schedule,
-                title: "Time",
-                subtitle:
-                    "${DateFormat('h:mm a').format(booking.startTime)} - ${DateFormat('h:mm a').format(booking.endTime)}",
-                onTap: () => showBookingServiceSheetTime(context, booking)),
-            _bottomSheetTile(
-                icon: Icons.calendar_month,
-                title: "Date",
-                subtitle: DateFormat("dd MMMM yyyy").format(booking.date),
-                onTap: () => showBookingServiceSheetDate(context, booking)),
-            _bottomSheetTile(
-                icon: Icons.location_on,
-                title: "Location",
-                subtitle: "Client Location",
-                onTap: () {}),
-
-            _bottomSheetTile(
-                icon: Icons.cut,
-                title: "Services",
-                subtitle: booking.serviceName,
-                onTap: () => editService(context)),
-            _bottomSheetTile(
-                icon: Icons.currency_rupee,
-                title: "Payment",
-                subtitle: booking.price.toString(),
-                onTap: () {}),
-
-            Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
+          /// **Scrollable Content**
+          Expanded(
+            child: SingleChildScrollView(
+              child: Column(
                 children: [
-                  // Title & Close Button
+                  /// **Profile Section**
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text("Notes",
-                          style: TextStyle(
-                              fontSize: 15, fontWeight: FontWeight.bold)),
-                      // IconButton(icon: Icon(Icons.close), onPressed: () => Navigator.pop(context)),
+                      CircleAvatar(
+                        radius: 24,
+                        backgroundColor: Colors.grey[300],
+                        child: Icon(Icons.person, size: 28, color: Colors.black54),
+                      ),
+                      SizedBox(width: 12),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(booking.customerName,
+                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                          Text("Added on 10 Feb 2025", style: TextStyle(color: Colors.grey)),
+                        ],
+                      ),
                     ],
                   ),
-                  SizedBox(
-                    height: 5,
+
+                  SizedBox(height: 8),
+
+                  /// **Action Buttons (Call & WhatsApp)**
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed: () {},
+                          icon: Icon(Icons.call, color: Colors.black),
+                          label: Text("Call", style: TextStyle(fontSize: 16)),
+                          style: OutlinedButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            padding: EdgeInsets.symmetric(vertical: 5),
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 8),
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed: () {},
+                          icon: Icon(Icons.chat, color: Colors.black),
+                          label: Text("WhatsApp", style: TextStyle(fontSize: 16)),
+                          style: OutlinedButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            padding: EdgeInsets.symmetric(vertical: 5),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 10),
+
+                  /// **Clickable Tiles**
+                  _bottomSheetTile(
+                      icon: Icons.schedule,
+                      title: "Time",
+                      subtitle:
+                          "${DateFormat('h:mm a').format(booking.startTime)} - ${DateFormat('h:mm a').format(booking.endTime)}",
+                      onTap: () => showBookingServiceSheetTime(context, booking)),
+                  _bottomSheetTile(
+                      icon: Icons.calendar_month,
+                      title: "Date",
+                      subtitle: DateFormat("dd MMMM yyyy").format(booking.date),
+                      onTap: () => showBookingServiceSheetDate(context, booking)),
+                  _bottomSheetTile(
+                      icon: Icons.location_on, title: "Location", subtitle: "Client Location", onTap: () {}),
+                  _bottomSheetTile(
+                      icon: Icons.cut, title: "Services", subtitle: booking.serviceName, onTap: () => editService(context)),
+                  _bottomSheetTile(
+                      icon: Icons.currency_rupee, title: "Payment", subtitle: booking.price.toString(), onTap: () {}),
+
+                  SizedBox(height: 8),
+
+                  /// **Notes Section**
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text("Notes", style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+                      SizedBox(height: 5),
+                      TextField(
+                        controller: notesController,
+                        maxLines: 3,
+                        decoration: InputDecoration(
+                          hintText: "Add appointment notes...",
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                      SizedBox(height: 4),
+                    ],
                   ),
 
-                  // Notes Text Field
-                  // CustomTextInputField(hintText: "Write your notes here ...", icon: Icons.,),
-                  TextField(
-                    controller: notesController,
-                    maxLines: 3,
-                    decoration: InputDecoration(
-                      hintText: "Add appointment notes...",
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
-                  SizedBox(height: 4),
-
-                  // Display Selected Images
-                ]),
-
-            // SizedBox(height: 16),
-
-            ImageSelectionRow(),
-          ],
-        ),
+                  /// **Image Selection Row**
+                  ImageSelectionRow(),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
-    );
-  }
+    ),
+  );
+}
+
 
   Widget _bottomSheetTile({
     required IconData icon,

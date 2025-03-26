@@ -1,3 +1,4 @@
+import 'package:dropdown_textfield/dropdown_textfield.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -15,9 +16,9 @@ class _NewBookingScreenState extends State<NewBookingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFE5E7EB), // Updated background color
+      backgroundColor: Color.fromARGB(255, 236, 237, 238), // Updated background color
       appBar: AppBar(
-        backgroundColor: Color(0xFFE5E7EB),
+        backgroundColor: Color.fromARGB(255, 236, 237, 238),
         elevation: 0,
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.black),
@@ -181,61 +182,82 @@ class _NewBookingScreenState extends State<NewBookingScreen> {
 
   /// Standard Input Field
   Widget _textInputField(String label, String hint) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(top: 10, bottom: 5),
-          child: Text(label, style: TextStyle(fontSize: 14)),
-        ),
-        TextField(
-          decoration: InputDecoration(
-            hintText: hint,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
-            filled: true,
-            fillColor: Colors.grey[100],
-          ),
-        ),
-      ],
-    );
-  }
-
-  /// Dropdown for Service Type
-  Widget _dropdownField(String label, String defaultValue) {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
+      /// **Label Text**
       Padding(
         padding: const EdgeInsets.only(top: 10, bottom: 5),
-        child: Text(label, style: TextStyle(fontSize: 14)),
-      ),
-      SizedBox(
-        width: double.infinity, // Ensure it takes the full width
-        child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 12),
-          decoration: BoxDecoration(
-            color: Colors.grey[100],
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: Colors.grey[400]!),
-          ),
-          child: DropdownButtonHideUnderline(
-            child: DropdownButton<String>(
-              isExpanded: true, // Ensures dropdown expands fully
-              value: defaultValue,
-              items: ["Bridal Makeup", "Hair Styling", "Facial"]
-                  .map((String value) =>
-                      DropdownMenuItem<String>(value: value, child: Text(value)))
-                  .toList(),
-              onChanged: (newValue) {},
-            ),
-          ),
+        child: Text(
+          label,
+          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.black),
         ),
+      ),
+
+      /// **Text Field**
+      TextField(
+        decoration: InputDecoration(
+          hintText: hint,
+          hintStyle: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.grey[500]),
+          filled: true,
+          fillColor: Color(0xFFF7F7F8), // Light background color
+          contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+          border: InputBorder.none, // Removes border
+          enabledBorder: InputBorder.none, // No border when enabled
+          focusedBorder: InputBorder.none, // No border when focused
+        ),
+        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.black),
       ),
     ],
   );
 }
+
+
+  /// Dropdown for Service Type
+// import 'package:dropdown_textfield/dropdown_textfield.dart';
+final _dropdownController = SingleValueDropDownController(
+  data: DropDownValueModel(name: "Bridal Makeup", value: "Bridal Makeup"),
+);
+
+Widget _dropdownField(String label, String defaultValue) {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      /// **Label Text**
+      Padding(
+        padding: const EdgeInsets.only(top: 10, bottom: 5),
+        child: Text(
+          label,
+          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.black),
+        ),
+      ),
+
+      /// **Dropdown Field**
+      DropDownTextField(
+        controller: _dropdownController,
+        textFieldDecoration: InputDecoration(
+          filled: true,
+          fillColor: Color(0xFFF7F7F8), // Matches the text field background
+          contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+          border: InputBorder.none, // No border
+          enabledBorder: InputBorder.none, // No border when enabled
+          focusedBorder: InputBorder.none, // No border when focused
+          hintStyle: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.grey[500]),
+        ),
+        dropDownList: [
+          DropDownValueModel(name: "Bridal Makeup", value: "Bridal Makeup"),
+          DropDownValueModel(name: "Hair Styling", value: "Hair Styling"),
+          DropDownValueModel(name: "Facial", value: "Facial"),
+        ],
+        onChanged: (val) {
+          print(val);
+        },
+        dropdownRadius: 8,
+      ),
+    ],
+  );
+}
+
 
 
   /// Location Selection UI
@@ -264,28 +286,34 @@ class _NewBookingScreenState extends State<NewBookingScreen> {
         });
       },
       style: ElevatedButton.styleFrom(
-        backgroundColor: isSelected ? Colors.purple : Colors.white,
-        foregroundColor: isSelected ? Colors.white : Colors.black,
+        backgroundColor: isSelected ? Color(0xFFF8EAFB) : Colors.grey[100],
+        foregroundColor: isSelected ? Colors.purple : Colors.black87,
         side: BorderSide(color: Colors.purple),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
         ),
-        padding: EdgeInsets.symmetric(vertical: 12), // Added padding for spacing
+        padding: EdgeInsets.symmetric(vertical: 14), // Increased for better spacing
+        elevation: 0, // Removing shadow to match flat UI
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, color: isSelected ? Colors.white : Colors.black, size: 24),
-          SizedBox(height: 4), // Spacing between icon and text
+          Icon(icon, color: isSelected ? Colors.purple : Colors.black54, size: 22),
+          SizedBox(height: 4), // Space between icon and text
           Text(
             title,
-            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600, // Slightly bolder to match UI
+              color: isSelected ? Colors.purple : Colors.black87,
+            ),
           ),
         ],
       ),
     ),
   );
 }
+
 
 
   /// Notes Input Field

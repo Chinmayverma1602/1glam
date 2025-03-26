@@ -39,23 +39,30 @@ class _LeadDetailsButtonState extends State<LeadDetailsButton> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    "Priya Shah",
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black87,
-                        ),
+                  Padding(
+                    padding: EdgeInsets.only(left: 15, top: 15),
+                    child: Text(
+                      "Priya Shah",
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87,
+                          ),
+                    ),
                   ),
-                  CustomSubTitle(
-                      subtitle: "Bridal Makeup",
-                      color: AppColors.hintText),
+                  Padding(
+                    padding: EdgeInsets.only(left: 15),
+                    child: CustomSubTitle(
+                        subtitle: "Bridal Makeup",
+                        color: AppColors.hintText),
+                  ),
                 ],
               ),
               Container(
+                margin: EdgeInsets.only(right: 10),
                 padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
                   color: AppColors.inquiryButtonColor, 
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(13),
                 ),
                 child: Text(
                   "Inquiry Received",
@@ -72,7 +79,7 @@ class _LeadDetailsButtonState extends State<LeadDetailsButton> {
 
          
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               _infoContainer(
                 icon: FontAwesomeIcons.calendar,
@@ -93,7 +100,7 @@ class _LeadDetailsButtonState extends State<LeadDetailsButton> {
 
           
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               _actionButton(
                 icon: FontAwesomeIcons.whatsapp,

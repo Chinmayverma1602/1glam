@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:glam1/constants/AppColors.dart';
 import 'package:glam1/widgets/CustomHeader.dart';
+import 'package:glam1/widgets/CustomHeaderLeadsPage.dart';
 import 'package:glam1/widgets/CustomSubtitle.dart';
 import 'package:glam1/widgets/LeadDetailsButton.dart';
 import 'package:glam1/widgets/BottomNavBar.dart';
+import 'package:glam1/widgets/LeadsPageFilterBar.dart';
 
 class LeadsPage extends StatefulWidget {
   const LeadsPage({super.key});
@@ -43,13 +45,23 @@ class _LeadsPageState extends State<LeadsPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
+
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            CustomHeader(),
-            CustomSubTitle(
-                subtitle: "Tuesday, 15 Feb 2025", color: AppColors.hintText),
-            SizedBox(height: MediaQuery.of(context).size.height * 0.2),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.03,),
+            CustomHeaderLeadsPage(),
+            Padding(
+              padding: EdgeInsets.only(left: 16),
+              child: CustomSubTitle(
+                  subtitle: "Tuesday, 15 Feb 2025", color: AppColors.hintText),
+            ),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.03),
+            Padding(
+              padding: const EdgeInsets.only(left: 9.0),
+              child: LeadsPageFilterBar(onFilterSelected: (){}),
+            ),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.05),
             LeadDetailsButton(),
             LeadDetailsButton(),
             LeadDetailsButton(),
