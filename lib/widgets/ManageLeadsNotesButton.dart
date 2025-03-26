@@ -43,7 +43,7 @@ class ManageLeadsNotes extends StatelessWidget {
                     Icon(Icons.edit, color: AppColors.primary, size: 20),
                     SizedBox(width: 4),
                     Text(
-                      'Edit Notes',
+                      'Edit Booking',
                       style: TextStyle(color: AppColors.primary, fontSize: 16),
                     ),
                   ],
@@ -67,10 +67,11 @@ class ManageLeadsNotes extends StatelessWidget {
 
           // Image placeholders
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              _buildImagePlaceholder(),
+              _buildImagePlaceholder(context),
               SizedBox(width: 10),
-              _buildImagePlaceholder(),
+              _buildImagePlaceholder(context),
 
             ],
           ),
@@ -80,10 +81,10 @@ class ManageLeadsNotes extends StatelessWidget {
   }
 
   // Placeholder Widget for images
-  Widget _buildImagePlaceholder() {
+  Widget _buildImagePlaceholder(BuildContext context) {
     return Container(
-      width: 159,
-      height: 128,
+      width: MediaQuery.of(context).size.width*0.4,
+      height: MediaQuery.of(context).size.height*0.15,
       decoration: BoxDecoration(
         color: Colors.grey.shade300,
         borderRadius: BorderRadius.circular(8),

@@ -119,4 +119,3 @@ class ManageLeadNameButton extends StatelessWidget {
     );
   }
 }
-
