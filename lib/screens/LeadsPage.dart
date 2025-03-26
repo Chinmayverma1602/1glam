@@ -16,6 +16,10 @@ class LeadsPage extends StatefulWidget {
 
 class _LeadsPageState extends State<LeadsPage> {
   int _selectedIndex = 1; 
+  final List<String> leadsPageFilters = [
+    "All Leads", "New", "In Progress", "Confirmed",
+    "Inquiry Recieved", "Qualified Lead", "Accepted Leads"
+  ]; 
 
   void _onItemTapped(int index) {
     if (index == _selectedIndex) return;
@@ -59,7 +63,7 @@ class _LeadsPageState extends State<LeadsPage> {
             SizedBox(height: MediaQuery.of(context).size.height * 0.03),
             Padding(
               padding: const EdgeInsets.only(left: 9.0),
-              child: LeadsPageFilterBar(onFilterSelected: (){}),
+              child: LeadsPageFilterBar(onFilterSelected: (String newFilter){}, filters: leadsPageFilters, selectedFilter: 'All Leads',),
             ),
             SizedBox(height: MediaQuery.of(context).size.height * 0.05),
             LeadDetailsButton(),

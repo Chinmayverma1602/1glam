@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:glam1/constants/AppColors.dart';
+import 'package:glam1/screens/ManageLeadPage.dart';
 import 'package:glam1/widgets/CustomSubtitle.dart';
 
 class LeadDetailsButton extends StatefulWidget {
@@ -13,112 +14,117 @@ class LeadDetailsButton extends StatefulWidget {
 class _LeadDetailsButtonState extends State<LeadDetailsButton> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      height: MediaQuery.of(context).size.height * 0.25,
-      decoration: BoxDecoration(
-        color: Colors.white, 
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 6,
-            spreadRadius: 1,
-            offset: Offset(0, 3),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: EdgeInsets.only(left: 15, top: 15),
-                    child: Text(
-                      "Priya Shah",
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black87,
-                          ),
+    return InkWell(
+      onTap: (){
+        Navigator.push(context, MaterialPageRoute(builder: (context) => ManageLeadPage() ));
+      },
+      child: Container(
+        
+        margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        height: MediaQuery.of(context).size.height * 0.25,
+        decoration: BoxDecoration(
+          color: Colors.white, 
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 6,
+              spreadRadius: 1,
+              offset: Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(left: 15, top: 15),
+                      child: Text(
+                        "Priya Shah",
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black87,
+                            ),
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(left: 15),
+                      child: CustomSubTitle(
+                          subtitle: "Bridal Makeup",
+                          color: AppColors.hintText),
+                    ),
+                  ],
+                ),
+                Container(
+                  margin: EdgeInsets.only(right: 10),
+                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: AppColors.inquiryButtonColor, 
+                    borderRadius: BorderRadius.circular(13),
+                  ),
+                  child: Text(
+                    "Inquiry Received",
+                    style: TextStyle(
+                      color: AppColors.inquiryTextColor,
+                      // fontWeight: FontWeight.bold,
                     ),
                   ),
-                  Padding(
-                    padding: EdgeInsets.only(left: 15),
-                    child: CustomSubTitle(
-                        subtitle: "Bridal Makeup",
-                        color: AppColors.hintText),
-                  ),
-                ],
-              ),
-              Container(
-                margin: EdgeInsets.only(right: 10),
-                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: AppColors.inquiryButtonColor, 
-                  borderRadius: BorderRadius.circular(13),
                 ),
-                child: Text(
-                  "Inquiry Received",
-                  style: TextStyle(
-                    color: AppColors.inquiryTextColor,
-                    // fontWeight: FontWeight.bold,
-                  ),
+              ],
+            ),
+      
+            SizedBox(height: 16),
+      
+           
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _infoContainer(
+                  icon: FontAwesomeIcons.calendar,
+                  text: "20 Feb 2025",
+                  
+                  iconColor: AppColors.primary
                 ),
-              )
-            ],
-          ),
-
-          SizedBox(height: 16),
-
-         
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              _infoContainer(
-                icon: FontAwesomeIcons.calendar,
-                text: "20 Feb 2025",
-                
-                iconColor: AppColors.primary
-              ),
-              _infoContainer(
-                icon: FontAwesomeIcons.clock,
-                text: "10:00 AM",
-                // bgColor: Colors.green.shade50,
-                iconColor: AppColors.primary
-              ),
-            ],
-          ),
-
-          SizedBox(height: 16),
-
-          
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              _actionButton(
-                icon: FontAwesomeIcons.whatsapp,
-                text: "Message",
-                bgColor: AppColors.primary,
-                iconColor: Colors.white,
-                textColor: Colors.white,
-              ),
-              _actionButton(
-                icon: FontAwesomeIcons.telegram,
-                text: "Send Form",
-                bgColor: AppColors.primary.withOpacity(0.1),
-                iconColor: AppColors.primary,
-                textColor:  AppColors.primary,
-              ),
-            ],
-          ),
-        ],
+                _infoContainer(
+                  icon: FontAwesomeIcons.clock,
+                  text: "10:00 AM",
+                  // bgColor: Colors.green.shade50,
+                  iconColor: AppColors.primary
+                ),
+              ],
+            ),
+      
+            SizedBox(height: 16),
+      
+            
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _actionButton(
+                  icon: FontAwesomeIcons.whatsapp,
+                  text: "Message",
+                  bgColor: AppColors.primary,
+                  iconColor: Colors.white,
+                  textColor: Colors.white,
+                ),
+                _actionButton(
+                  icon: FontAwesomeIcons.telegram,
+                  text: "Send Form",
+                  bgColor: AppColors.primary.withOpacity(0.1),
+                  iconColor: AppColors.primary,
+                  textColor:  AppColors.primary,
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

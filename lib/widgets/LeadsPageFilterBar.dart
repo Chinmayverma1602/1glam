@@ -1,23 +1,31 @@
+
 import 'package:flutter/material.dart';
 import 'package:glam1/constants/AppColors.dart';
 
 class LeadsPageFilterBar extends StatefulWidget {
+  final void Function(String) onFilterSelected; 
+  final List<String> filters;
+  final String selectedFilter;
 
-  final VoidCallback onFilterSelected;
-  const LeadsPageFilterBar({super.key, required this.onFilterSelected});
+  const LeadsPageFilterBar({
+    super.key, 
+    required this.onFilterSelected, 
+    required this.filters, 
+    required this.selectedFilter,
+  });
 
   @override
   State<LeadsPageFilterBar> createState() => _LeadsPageFilterBarState();
 }
 
 class _LeadsPageFilterBarState extends State<LeadsPageFilterBar> {
+  late String currentFilter; // Store the selected filter in state
 
-  String selectedFilter = "All Leads"; 
-
-  final List<String> filters = [
-    "All Leads", "New", "In Progress", "Confirmed",
-    "Inquiry Recieved", "Qualified Lead", "Accepted Leads"
-  ]; 
+  @override
+  void initState() {
+    super.initState();
+    currentFilter = widget.selectedFilter; // Initialize with the passed filter
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,22 +33,22 @@ class _LeadsPageFilterBarState extends State<LeadsPageFilterBar> {
       height: 35, 
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        itemCount: filters.length,
+        itemCount: widget.filters.length,
         itemBuilder: (context, index) {
-          String filter = filters[index];
-          bool isSelected = filter == selectedFilter;
+          String filter = widget.filters[index];
+          bool isSelected = filter == currentFilter; // Compare with local state
 
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 6),
             child: GestureDetector(
               onTap: () {
                 setState(() {
-                  selectedFilter = filter;
+                  currentFilter = filter; // Update local state
                 });
-                widget.onFilterSelected();
+                widget.onFilterSelected(filter); // Pass the selected filter
               },
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
                   color: isSelected ? AppColors.primary : AppColors.light,
                   borderRadius: BorderRadius.circular(17),
@@ -48,6 +56,7 @@ class _LeadsPageFilterBarState extends State<LeadsPageFilterBar> {
                 child: Text(
                   filter,
                   style: TextStyle(
+                    fontSize: 16,
                     color: isSelected ? AppColors.light : AppColors.secondaryText,
                     fontWeight: FontWeight.w500,
                   ),
