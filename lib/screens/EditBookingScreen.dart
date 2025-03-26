@@ -9,6 +9,7 @@ import 'package:glam1/screens/EditServicesInfo.dart';
 import 'package:glam1/screens/EditTime.dart';
 import 'package:glam1/services/BookingController.dart';
 import 'package:glam1/widgets/CustomTextInputField.dart';
+import 'package:glam1/widgets/CustomeNewBooking.dart';
 import 'package:glam1/widgets/ImageSelectionRow.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -366,7 +367,8 @@ class _EditBookingScreenState extends State<EditBookingScreen> {
                 ],
               ),
             ),
-            Icon(Icons.arrow_forward_ios, size: 18, color: const Color.fromARGB(255, 208, 204, 204)),
+            Icon(Icons.arrow_forward_ios,
+                size: 18, color: const Color.fromARGB(255, 208, 204, 204)),
           ],
         ),
       ),
@@ -471,184 +473,243 @@ class _EditBookingScreenState extends State<EditBookingScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title:Text("Edit Booking"
-              ),
+        backgroundColor: Color(0xFFE5E7EB),
+        title: Text("Edit Booking"),
       ),
-      backgroundColor: Colors.white,
+      backgroundColor: Color(0xFFE5E7EB),
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 10,top: 10),
-              child: Text(
-                'Select Date',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: TableCalendar(
-                firstDay: DateTime.utc(2024, 1, 1),
-                lastDay: DateTime.utc(2025, 12, 31),
-                focusedDay: _focusedDay,
-                calendarFormat: _calendarFormat,
-                selectedDayPredicate: (day) {
-                  return isSameDay(_selectedDay, day);
-                },
-                onDaySelected: (selectedDay, focusedDay) {
-                  setState(() {
-                    _selectedDay = selectedDay;
-                    _focusedDay = focusedDay;
-                  });
-                },
-                onFormatChanged: (format) {
-                  setState(() {
-                    _calendarFormat = format;
-                  });
-                },
-                calendarStyle: CalendarStyle(
-                  todayDecoration: BoxDecoration(
-                    color: Colors.purple.withOpacity(0.3),
-                    shape: BoxShape.circle,
-                  ),
-                  selectedDecoration: BoxDecoration(
-                    color: Colors.purple,
-                    shape: BoxShape.circle,
-                  ),
-                  markerDecoration: BoxDecoration(
-                    color: Colors.purple,
-                    shape: BoxShape.circle,
-                  ),
-                ),
-                calendarBuilders: CalendarBuilders(
-                  markerBuilder: (context, date, events) {
-                    // Check if there are bookings for this date
-                    final hasBookings =
-                        _bookingController.bookings.any((booking) {
-                      return booking.date.year == date.year &&
-                          booking.date.month == date.month &&
-                          booking.date.day == date.day;
-                    });
-
-                    if (hasBookings) {
-                      return Positioned(
-                        bottom: 1,
-                        child: Container(
-                          width: 8,
-                          height: 8,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.purple,
+            Container(
+              //CONTAINER 1
+              margin: EdgeInsets.symmetric(horizontal: 20),
+              // padding: EdgeInsets.symmetric(horizontal: 20),
+              decoration: BoxDecoration(
+                  color: Colors.white, borderRadius: BorderRadius.circular(20)),
+              child: Column(
+                children: [
+                  Padding(
+                    padding:
+                        const EdgeInsets.only(left: 18, right: 10, top: 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Select Date',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
-                      );
-                    }
-                    return null;
-                  },
-                ),
-                headerStyle: HeaderStyle(
-                  titleCentered: true,
-                  formatButtonVisible: false,
-                  leftChevronIcon:
-                      Icon(Icons.chevron_left, color: Colors.black),
-                  rightChevronIcon:
-                      Icon(Icons.chevron_right, color: Colors.black),
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 10,top: 10),
-              child: Text(
-                'Select Time',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: ListView.builder(
-                  itemCount: _timeSlots.length,
-                  itemBuilder: (context, index) {
-                    final hour = _timeSlots[index];
-                    final timeText = _formatTimeSlot(hour);
-                    final hasBookingsForHour = bookingsByHour.containsKey(hour);
-
-                    return Column(
-                      children: [
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SizedBox(
-                              width: 60,
-                              child: Text(
-                                timeText,
-                                style: TextStyle(color: Colors.grey[700]),
-                              ),
-                            ),
-                            Expanded(
-                              child: hasBookingsForHour
-                                  ? Column(
-                                      children: bookingsByHour[hour]!
-                                          .map((booking) =>
-                                              _buildBookingItem(booking))
-                                          .toList(),
-                                    )
-                                  : Container(
-                                      height: 50,
-                                      decoration: BoxDecoration(
-                                        color: Colors.grey[200],
-                                        borderRadius: BorderRadius.circular(8),
-                                      ),
-                                    ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 10),
+                        NewBookingButton()
                       ],
-                    );
-                  },
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      icon: Icon(Icons.close),
-                      label: Text('Cancel'),
-                      onPressed: () => Navigator.of(context).pop(),
-                      style: OutlinedButton.styleFrom(
-                        padding: EdgeInsets.symmetric(vertical: 12),
-                      ),
                     ),
                   ),
-                  SizedBox(width: 16),
-                  Expanded(
-                    child: ElevatedButton(
-                      child: Text(
-                        'Save Changes',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                      onPressed: () {
-                        // Save the updated booking
-                        Navigator.of(context).pop();
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 0),
+                    child: TableCalendar(
+                      firstDay: DateTime.utc(2024, 1, 1),
+                      lastDay: DateTime.utc(2025, 12, 31),
+                      focusedDay: _focusedDay,
+                      calendarFormat: _calendarFormat,
+                      selectedDayPredicate: (day) {
+                        return isSameDay(_selectedDay, day);
                       },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.purple,
-                        padding: EdgeInsets.symmetric(vertical: 12),
+                      onDaySelected: (selectedDay, focusedDay) {
+                        setState(() {
+                          _selectedDay = selectedDay;
+                          _focusedDay = focusedDay;
+                        });
+                      },
+                      onFormatChanged: (format) {
+                        setState(() {
+                          _calendarFormat = format;
+                        });
+                      },
+                      rowHeight: 40,
+                      calendarStyle: CalendarStyle(
+                        todayDecoration: BoxDecoration(
+                          color: Colors.purple.withOpacity(0.3),
+                          shape: BoxShape.circle,
+                        ),
+                        selectedDecoration: BoxDecoration(
+                          color: Colors.purple,
+                          shape: BoxShape.circle,
+                        ),
+                        markerDecoration: BoxDecoration(
+                          color: Colors.purple,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                      calendarBuilders: CalendarBuilders(
+                        markerBuilder: (context, date, events) {
+                          final hasBookings =
+                              _bookingController.bookings.any((booking) {
+                            return booking.date.year == date.year &&
+                                booking.date.month == date.month &&
+                                booking.date.day == date.day;
+                          });
+
+                          if (hasBookings) {
+                            return Positioned(
+                              bottom:
+                                  2, // Reduced from 1 to give better alignment
+                              child: Container(
+                                width: 6, // Reduced from 8
+                                height: 6, // Reduced from 8
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: Colors.purple,
+                                ),
+                              ),
+                            );
+                          }
+                          return null;
+                        },
+                      ),
+                      headerStyle: HeaderStyle(
+                        titleCentered: true,
+                        formatButtonVisible: false,
+                        leftChevronIcon: Icon(Icons.chevron_left,
+                            color: Colors.black, size: 18), // Reduced size
+                        rightChevronIcon: Icon(Icons.chevron_right,
+                            color: Colors.black, size: 18), // Reduced size
                       ),
                     ),
                   ),
                 ],
+              ),
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            Flexible(
+              //CONTAINER 2
+              child: Container(
+                margin: EdgeInsets.symmetric(horizontal: 20),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius:
+                      BorderRadius.circular(12), // Added curved borders
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding:
+                          const EdgeInsets.only(left: 18, top: 10, bottom: 10),
+                      child: Text(
+                        'Select Time',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                    Expanded(
+  // Ensures ListView takes available space
+  child: Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 20),
+    child: Stack(
+      children: [
+        // Vertical Line
+        Positioned(
+          left: 30, // Adjust to align with hour labels
+          top: 0,
+          bottom: 0,
+          child: Container(
+            width: 2, // Line thickness
+            color: Colors.grey[400], // Line color
+          ),
+        ),
+
+        // ListView with Time Slots & Bookings
+        ListView.builder(
+          itemCount: _timeSlots.length,
+          itemBuilder: (context, index) {
+            final hour = _timeSlots[index];
+            final timeText = _formatTimeSlot(hour);
+            final hasBookingsForHour = bookingsByHour.containsKey(hour);
+
+            return Column(
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      width: 60,
+                      child: Text(
+                        timeText,
+                        style: TextStyle(color: Colors.grey[700]),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    SizedBox(width: 10), // Space between label and bookings
+                    Expanded(
+                      child: hasBookingsForHour
+                          ? Column(
+                              children: bookingsByHour[hour]!
+                                  .map((booking) => _buildBookingItem(booking))
+                                  .toList(),
+                            )
+                          : Container(
+                              height: 50,
+                              decoration: BoxDecoration(
+                                color: Colors.grey[200],
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 10), // Space after each row
+              ],
+            );
+          },
+        ),
+      ],
+    ),
+  ),
+),
+
+                    // SizedBox(height: 10,),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20 , vertical: 10),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: OutlinedButton.icon(
+                              icon: Icon(Icons.close),
+                              label: Text('Cancel'),
+                              onPressed: () => Navigator.of(context).pop(),
+                              style: OutlinedButton.styleFrom(
+                                padding: EdgeInsets.symmetric(vertical: 12),
+                              ),
+                            ),
+                          ),
+                          SizedBox(width: 16),
+                          Expanded(
+                            child: ElevatedButton(
+                              child: Text(
+                                'Save Changes',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                              onPressed: () {
+                                // Save the updated booking
+                                Navigator.of(context).pop();
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.purple,
+                                padding: EdgeInsets.symmetric(vertical: 12),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ],

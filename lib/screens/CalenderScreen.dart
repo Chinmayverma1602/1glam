@@ -7,6 +7,7 @@ import 'package:glam1/screens/EditBookingScreen.dart';
 import 'package:glam1/screens/HomePage.dart';
 import 'package:glam1/services/BookingController.dart';
 import 'package:glam1/widgets/BottomNavBar.dart';
+import 'package:glam1/widgets/CustomeNewBooking.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
 
@@ -123,26 +124,7 @@ class _CalendarPageState extends State<CalenderPage> {
                 onPressed: () {},
               ),
               SizedBox(width: 8),
-              ElevatedButton.icon(
-                onPressed: () {
-                  // TODO: Add your onPressed action here
-                },
-                icon: Icon(Icons.add, color: Colors.white, size: 19),
-                label: Text(
-                  "New Booking",
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold),
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.purple,
-                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                ),
-              )
+              NewBookingButton()
             ],
           ),
         ],
