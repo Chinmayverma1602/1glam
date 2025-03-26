@@ -46,13 +46,12 @@ class ManageLeadsPaymentButton extends StatelessWidget {
                         Text(
                           'New Estimate',
                           style:
-                              TextStyle(color: AppColors.primary, fontSize: 15),
+                              TextStyle(color: AppColors.primary, fontSize: 12),
                         ),
                       ],
                     ),
                   ),
                   SizedBox(width: MediaQuery.of(context).size.width * 0.015),
-
                   GestureDetector(
                     onTap: () {},
                     child: Row(
@@ -62,7 +61,7 @@ class ManageLeadsPaymentButton extends StatelessWidget {
                         Text(
                           'New Invoice',
                           style:
-                              TextStyle(color: AppColors.primary, fontSize: 15),
+                              TextStyle(color: AppColors.primary, fontSize: 12),
                         ),
                       ],
                     ),

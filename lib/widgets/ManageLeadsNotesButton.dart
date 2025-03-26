@@ -31,10 +31,9 @@ class ManageLeadsNotes extends StatelessWidget {
               Text(
                 "Notes",
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
-                      fontSize: 18
-                    ),
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                    fontSize: 18),
               ),
               GestureDetector(
                 onTap: () {},
@@ -72,7 +71,6 @@ class ManageLeadsNotes extends StatelessWidget {
               _buildImagePlaceholder(context),
               SizedBox(width: 10),
               _buildImagePlaceholder(context),
-
             ],
           ),
         ],
@@ -83,15 +81,13 @@ class ManageLeadsNotes extends StatelessWidget {
   // Placeholder Widget for images
   Widget _buildImagePlaceholder(BuildContext context) {
     return Container(
-      width: MediaQuery.of(context).size.width*0.4,
-      height: MediaQuery.of(context).size.height*0.15,
-      decoration: BoxDecoration(
-        color: Colors.grey.shade300,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      alignment: Alignment.center,
-      child: Text(
-        'any images goes here')
-    );
+        width: MediaQuery.of(context).size.width * 0.39,
+        height: MediaQuery.of(context).size.height * 0.16,
+        decoration: BoxDecoration(
+          color: Colors.grey.shade300,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        alignment: Alignment.center,
+        child: Text('any images goes here'));
   }
 }

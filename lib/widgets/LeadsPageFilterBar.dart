@@ -1,16 +1,15 @@
-
 import 'package:flutter/material.dart';
 import 'package:glam1/constants/AppColors.dart';
 
 class LeadsPageFilterBar extends StatefulWidget {
-  final void Function(String) onFilterSelected; 
+  final void Function(String) onFilterSelected;
   final List<String> filters;
   final String selectedFilter;
 
   const LeadsPageFilterBar({
-    super.key, 
-    required this.onFilterSelected, 
-    required this.filters, 
+    super.key,
+    required this.onFilterSelected,
+    required this.filters,
     required this.selectedFilter,
   });
 
@@ -30,7 +29,7 @@ class _LeadsPageFilterBarState extends State<LeadsPageFilterBar> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 35, 
+      height: 35,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: widget.filters.length,
@@ -48,7 +47,8 @@ class _LeadsPageFilterBarState extends State<LeadsPageFilterBar> {
                 widget.onFilterSelected(filter); // Pass the selected filter
               },
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
                   color: isSelected ? AppColors.primary : AppColors.light,
                   borderRadius: BorderRadius.circular(17),
@@ -57,7 +57,8 @@ class _LeadsPageFilterBarState extends State<LeadsPageFilterBar> {
                   filter,
                   style: TextStyle(
                     fontSize: 16,
-                    color: isSelected ? AppColors.light : AppColors.secondaryText,
+                    color:
+                        isSelected ? AppColors.light : AppColors.secondaryText,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
