@@ -5,6 +5,7 @@ import 'package:glam1/firebase_options.dart';
 import 'package:glam1/screens/EditBookingScreen.dart';
 import 'package:glam1/screens/LoginScreen.dart';
 import 'package:glam1/screens/NewEstimatePage.dart';
+import 'package:glam1/screens/NewInvoice.dart';
 import 'package:glam1/screens/TravellingInfo.dart';
 import 'package:glam1/screens/PreviewPage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -60,7 +61,8 @@ class MyApp extends StatelessWidget {
         GetPage(name: '/travelInfo', page: () => const TravellingInfoPage()),
         GetPage(name: '/calender', page: () => const CalenderPage()),
         GetPage(name: '/PreviewPage', page: () => const EstimatePreviewScreen()),
-        GetPage(name: '/newPage', page: () => const EstimateScreen()),
+        GetPage(name: '/EstimatePage', page: () => const EstimateScreen()),
+        GetPage(name: '/newPage', page: () => const NewInvoicePage()),
       ],
     );
   }

@@ -261,44 +261,48 @@ class EstimateScreen extends StatelessWidget {
   }
 
   Widget _depositContent() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Row(
-        //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        //   children: [
-        //     Text("Required", style: GoogleFonts.poppins(fontSize: 14)),
-        //     Switch(value: true, onChanged: (val) {}),
-        //   ],
-        // ),
-        Row(
-          children: [
-            Expanded(
-              child: TextField(
-                decoration: InputDecoration(
-                  hintText: "5000",
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8)),
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Row(
+        children: [
+          Expanded(
+            child: TextField(
+              style: TextStyle(fontSize: 14),
+              decoration: InputDecoration(
+                hintText: "5000",
+                hintStyle: TextStyle(color: Colors.black, fontSize: 14),
+                contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(6),
+                  borderSide: BorderSide(color: Colors.grey.shade300),
                 ),
               ),
             ),
-            const SizedBox(width: 10),
-            Text("or", style: GoogleFonts.poppins(fontSize: 14)),
-            const SizedBox(width: 10),
-            Expanded(
-              child: TextField(
-                decoration: InputDecoration(
-                  hintText: "30",
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8)),
+          ),
+          const SizedBox(width: 8),
+          Text("or", style: GoogleFonts.poppins(fontSize: 14, color: Colors.black)),
+          const SizedBox(width: 8),
+          Expanded(
+            child: TextField(
+              style: TextStyle(fontSize: 14),
+              decoration: InputDecoration(
+                hintText: "30",
+                hintStyle: TextStyle(color: Colors.black, fontSize: 14),
+                contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(6),
+                  borderSide: BorderSide(color: Colors.grey.shade300),
                 ),
               ),
             ),
-          ],
-        ),
-      ],
-    );
-  }
+          ),
+        ],
+      ),
+    ],
+  );
+}
+
 
   Widget _attachmentsContent() {
     return Row(
