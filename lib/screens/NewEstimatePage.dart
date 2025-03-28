@@ -39,25 +39,112 @@ class EstimateScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildCard("Business Details", _businessDetailsContent(), true),
-            _buildCard("Services", _servicesContent(), true),
-            _buildCard("Deposit", _depositContent(), true),
-            _buildCard("Attachments", _attachmentsContent(), true),
-            _buildCard("Settings", _settingsContent(), false),
+            _buildCard(
+              "Business Details",
+              _businessDetailsContent(),
+              trailingWidget:
+                  const Icon(Icons.edit, color: Colors.purpleAccent, size: 18),
+            ),
+            _buildCard("Services", _servicesContent(),
+                trailingWidget: addServiceButton("Add Service")),
+            _buildCard("Deposit", _depositContent(),
+                trailingWidget: addDepositButton(true)),
+            _buildCard("Attachments", _attachmentsContent(),
+                trailingWidget: addServiceButton("Add File")),
+            _buildCard(
+              "Settings",
+              _settingsContent(),
+            ),
             const SizedBox(height: 16),
           ],
         ),
       ),
-      bottomNavigationBar: SafeArea(
-        child: BottomActionBar(
-          leftButtonText: "Save Draft",
-          rightButtonText: "Send Estimate",
-        ),
+      bottomNavigationBar: BottomActionBar(
+        leftButtonText: "Save Draft",
+        rightButtonText: "Send Estimate",
       ),
     );
   }
 
-  Widget _buildCard(String title, Widget content, bool showEditIcon) {
+  Widget addServiceButton(String text) {
+    return GestureDetector(
+      onTap: () {},
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.add, color: Colors.purpleAccent, size: 16),
+          const SizedBox(width: 4),
+          Text(
+            text,
+            style: GoogleFonts.poppins(
+              color: Colors.purpleAccent,
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+ Widget addDepositButton(bool value) {
+  return StatefulBuilder(
+    builder: (context, setState) {
+      bool isSwitched = true; // Persistent state for toggle
+
+      return GestureDetector(
+        onTap: () {
+          setState(() {
+            isSwitched = !isSwitched; // Toggle switch on tap
+          });
+        },
+        child: Row(
+          children: [
+            Text(
+              "Required",
+              style: GoogleFonts.poppins(
+                color: Colors.grey[600],
+                fontSize: 13, // Slightly smaller size
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            SizedBox(width: 6),
+            StatefulBuilder(
+        builder: (context, setState) {
+          return GestureDetector(
+            onTap: () {
+              setState(() {
+                value = !value;
+                // onChanged(value); // Callback for external state handling
+              });
+            },
+            child: Transform.scale(
+              scale: 0.8, // Reduce switch size
+              child: Switch(
+                value: value,
+                onChanged: (val) {
+                  setState(() {
+                    value = val;
+                   
+                  });
+                },
+                activeColor: Colors.white,
+                activeTrackColor: Color(0xFFC026D3),
+              ),
+            ),
+          );
+        },
+      ),
+          ],
+        ),
+      );
+    },
+  );
+}
+
+
+
+  Widget _buildCard(String title, Widget content, {Widget? trailingWidget}) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(12),
@@ -82,8 +169,8 @@ class EstimateScreen extends StatelessWidget {
               Text(title,
                   style: GoogleFonts.poppins(
                       fontSize: 16, fontWeight: FontWeight.w600)),
-              if (showEditIcon)
-                const Icon(Icons.edit, color: Colors.purpleAccent, size: 18)
+              if (trailingWidget != null)
+                trailingWidget, // ✅ Show only if passed
             ],
           ),
           const SizedBox(height: 8),
@@ -164,11 +251,11 @@ class EstimateScreen extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(title,
-            style: GoogleFonts.poppins(
-                fontSize: 14, fontWeight: FontWeight.w500)),
+            style:
+                GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w500)),
         Text(amount,
-            style: GoogleFonts.poppins(
-                fontSize: 14, fontWeight: FontWeight.w600)),
+            style:
+                GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w600)),
       ],
     );
   }
@@ -177,13 +264,13 @@ class EstimateScreen extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text("Required", style: GoogleFonts.poppins(fontSize: 14)),
-            Switch(value: true, onChanged: (val) {}),
-          ],
-        ),
+        // Row(
+        //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        //   children: [
+        //     Text("Required", style: GoogleFonts.poppins(fontSize: 14)),
+        //     Switch(value: true, onChanged: (val) {}),
+        //   ],
+        // ),
         Row(
           children: [
             Expanded(
@@ -244,12 +331,41 @@ class EstimateScreen extends StatelessWidget {
   }
 
   Widget _settingSwitch(String title, bool value) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(title, style: GoogleFonts.poppins(fontSize: 14)),
-        Switch(value: value, onChanged: (val) {}),
-      ],
-    );
-  }
+  return Row(
+    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    children: [
+      Text(
+        title,
+        style: GoogleFonts.poppins(fontSize: 14),
+      ),
+      StatefulBuilder(
+        builder: (context, setState) {
+          return GestureDetector(
+            onTap: () {
+              setState(() {
+                value = !value;
+                // onChanged(value); // Callback for external state handling
+              });
+            },
+            child: Transform.scale(
+              scale: 0.8, // Reduce switch size
+              child: Switch(
+                value: value,
+                onChanged: (val) {
+                  setState(() {
+                    value = val;
+                   
+                  });
+                },
+                activeColor: Colors.white,
+                activeTrackColor: Color(0xFFC026D3),
+              ),
+            ),
+          );
+        },
+      ),
+    ],
+  );
+}
+
 }
