@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:glam1/firebase_options.dart';
+import 'package:glam1/screens/ConfirmBooking.dart';
 import 'package:glam1/screens/EditBookingScreen.dart';
 import 'package:glam1/screens/LoginScreen.dart';
 import 'package:glam1/screens/NewEstimatePage.dart';
@@ -32,7 +33,7 @@ void main() async {
 
 Future<String> getInitialRoute() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  return prefs.getString('user_email') != null ? '/home' : '/leads';
+  return prefs.getString('user_email') != null ? '/home' : '/newPage';
 }
 
 class MyApp extends StatelessWidget {
@@ -65,6 +66,7 @@ class MyApp extends StatelessWidget {
         GetPage(name: '/EstimatePage', page: () => const EstimateScreen()),
         GetPage(name: '/newInvoicePgae', page: () => const NewInvoicePage()),
         GetPage(name: '/ShowInvoice', page: () => const InvoiceScreen()),
+        GetPage(name: '/newPage', page: () =>  BookingConfirmationScreen()),
       ],
     );
   }
