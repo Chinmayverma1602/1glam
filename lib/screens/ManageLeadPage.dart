@@ -10,7 +10,8 @@ import 'package:glam1/widgets/ManageLeadsPaymentButton.dart';
 import 'package:glam1/widgets/ManageLeadsServicesButton.dart';
 
 class ManageLeadPage extends StatefulWidget {
-  const ManageLeadPage({super.key});
+  final LeadsResponse lead;
+  const ManageLeadPage({super.key, required this.lead});
 
   @override
   State<ManageLeadPage> createState() => _ManageLeadPageState();

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:glam1/constants/AppColors.dart';
-import 'package:glam1/widgets/CustomHeader.dart';
-import 'package:glam1/widgets/CustomHeaderLeadsPage.dart';
-import 'package:glam1/widgets/CustomSubtitle.dart';
-import 'package:glam1/widgets/LeadDetailsButton.dart';
+import 'package:glam1/services/leads_services.dart';
 import 'package:glam1/widgets/BottomNavBar.dart';
+import 'package:glam1/widgets/CustomHeaderLeadsPage.dart';
+import 'package:glam1/widgets/LeadDetailsButton.dart';
+import 'package:glam1/model/leadsRes_model.dart';
 import 'package:glam1/widgets/LeadsPageFilterBar.dart';
 
 class LeadsPage extends StatefulWidget {
@@ -15,11 +15,29 @@ class LeadsPage extends StatefulWidget {
 }
 
 class _LeadsPageState extends State<LeadsPage> {
-  int _selectedIndex = 1; 
+  int _selectedIndex = 1;
+  final LeadsApiService _leadsApiService = LeadsApiService();
+  List<LeadsResponse> _leads = [];
+  bool _isLoading = true;
+  // int _selectedIndex = 1; 
   final List<String> leadsPageFilters = [
     "All Leads", "New", "In Progress", "Confirmed",
     "Inquiry Recieved", "Qualified Lead", "Accepted Leads"
   ]; 
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchLeads();
+  }
+
+  Future<void> _fetchLeads() async {
+    await Future.delayed(Duration(seconds: 1)); 
+    setState(() {
+      _leads = sampleLeads; // Using sample data for now
+      _isLoading = false;
+    });
+  }
 
   void _onItemTapped(int index) {
     if (index == _selectedIndex) return;
@@ -48,29 +66,38 @@ class _LeadsPageState extends State<LeadsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: SingleChildScrollView(
-
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(height: MediaQuery.of(context).size.height * 0.03,),
-            CustomHeaderLeadsPage(),
-            Padding(
-              padding: EdgeInsets.only(left: 16),
-              child: CustomSubTitle(
-                  subtitle: "Tuesday, 15 Feb 2025", color: AppColors.hintText),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(height: MediaQuery.of(context).size.height * 0.03),
+          CustomHeaderLeadsPage(),
+          Padding(
+            padding: EdgeInsets.only(left: 16),
+            child: Text(
+              "Tuesday, 15 Feb 2025",
+              style: TextStyle(color: AppColors.hintText, fontSize: 16),
             ),
-            SizedBox(height: MediaQuery.of(context).size.height * 0.03),
-            Padding(
+          ),
+          SizedBox(height: MediaQuery.of(context).size.height * 0.03),
+
+          Padding(
               padding: const EdgeInsets.only(left: 9.0),
               child: LeadsPageFilterBar(onFilterSelected: (String newFilter){}, filters: leadsPageFilters, selectedFilter: 'All Leads',),
             ),
-            SizedBox(height: MediaQuery.of(context).size.height * 0.05),
-            LeadDetailsButton(),
-            LeadDetailsButton(),
-            LeadDetailsButton(),
-          ],
-        ),
+          SizedBox(height: MediaQuery.of(context).size.height * 0.02),
+          Flexible(
+            
+            child: _isLoading
+                ? Center(child: CircularProgressIndicator()) // Loader while fetching leads
+                : ListView.builder(
+                  padding: EdgeInsets.only(top: 2),
+                    itemCount: _leads.length,
+                    itemBuilder: (context, index) {
+                      return LeadDetailsButton( lead: _leads[index],);
+                    },
+                  ),
+          ),
+        ],
       ),
       bottomNavigationBar: BottomNavBar(
         currentIndex: _selectedIndex,
