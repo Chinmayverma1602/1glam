@@ -3,7 +3,11 @@ import 'package:glam1/constants/AppColors.dart';
 import 'package:glam1/widgets/CustomSubtitle.dart';
 
 class ManageLeadNameButton extends StatelessWidget {
-  const ManageLeadNameButton({super.key});
+
+  final String clientName;
+  final String clientMobileNo;
+  final String currentStatus;
+  const ManageLeadNameButton({super.key, required this.clientName,required this.currentStatus,required this.clientMobileNo });
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -34,7 +38,7 @@ class ManageLeadNameButton extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Priya Shah",
+                      clientName,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.bold,
                             color: Colors.black87,
@@ -43,7 +47,7 @@ class ManageLeadNameButton extends StatelessWidget {
                     ),
                     SizedBox(height: MediaQuery.of(context).size.height*0.004),
                     CustomSubTitle(
-                      subtitle: "+91-987654321",
+                      subtitle: clientMobileNo,
                       color: AppColors.hintText,
                     ),
                   ],
@@ -58,7 +62,7 @@ class ManageLeadNameButton extends StatelessWidget {
                     borderRadius: BorderRadius.circular(13),
                   ),
                   child: Text(
-                    "Pending",
+                    currentStatus,
                     style: TextStyle(
                       color: AppColors.inquiryTextColor,
                     ),

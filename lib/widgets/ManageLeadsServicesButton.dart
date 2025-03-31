@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:glam1/constants/AppColors.dart';
+import 'package:glam1/model/leadsRes_model.dart';
 
 class ManageLeadsServicesButton extends StatelessWidget {
-  const ManageLeadsServicesButton({super.key});
+  final List<ServiceOptedres> services;
+  const ManageLeadsServicesButton({super.key , required this.services});
 
   @override
   Widget build(BuildContext context) {
@@ -57,8 +59,12 @@ class ManageLeadsServicesButton extends StatelessWidget {
           SizedBox(height: MediaQuery.of(context).size.height * 0.015),
 
           // Services List
-          _buildServiceItem("Bridal Makeup", "₹15,000"),
-          _buildServiceItem("Hair Styling", "₹5,000"),
+          Column(
+            children: services
+                .map((service) =>
+                    _buildServiceItem(service.serviceName, "₹${service.price}"))
+                .toList(),
+          ),
         ],
       ),
     );

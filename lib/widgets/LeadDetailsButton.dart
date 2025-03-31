@@ -3,7 +3,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:glam1/constants/AppColors.dart';
 import 'package:glam1/screens/ManageLeadPage.dart';
 import 'package:glam1/widgets/CustomSubtitle.dart';
-import 'package:glam1/model/leadsRes_model.dart'; // Import the model
+import 'package:glam1/model/leadsRes_model.dart';
+import 'package:intl/intl.dart'; // Import the model
 
 class LeadDetailsButton extends StatefulWidget {
   final LeadsResponse lead; // Accepts a lead object
@@ -14,6 +15,24 @@ class LeadDetailsButton extends StatefulWidget {
   State<LeadDetailsButton> createState() => _LeadDetailsButtonState();
 }
 
+String formatTime(String timeString) {
+  try {
+    DateTime dateTime = DateTime.parse("1970-01-01 $timeString"); // Add a dummy date
+    return DateFormat.jm().format(dateTime); // Converts to 12-hour AM/PM format
+  } catch (e) {
+    return timeString; // Fallback in case of error
+  }
+}
+
+String formatDate(String dateString) {
+  try {
+    DateTime date = DateTime.parse(dateString);
+    return DateFormat("d MMM yyyy").format(date).toUpperCase(); // "1 APR 2025"
+  } catch (e) {
+    return dateString; // Return as-is if parsing fails
+  }
+}
+
 class _LeadDetailsButtonState extends State<LeadDetailsButton> {
   @override
   Widget build(BuildContext context) {
@@ -21,7 +40,7 @@ class _LeadDetailsButtonState extends State<LeadDetailsButton> {
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => ManageLeadPage()),
+          MaterialPageRoute(builder: (context) => ManageLeadPage(lead:widget.lead.data  ,)),
         );
       },
       child: Container(
@@ -93,12 +112,12 @@ class _LeadDetailsButtonState extends State<LeadDetailsButton> {
               children: [
                 _infoContainer(
                   icon: FontAwesomeIcons.calendar,
-                  text: widget.lead.data.bookingDate, // Using dynamic data
+                  text: formatDate(widget.lead.data.bookingDate), // Using dynamic data
                   iconColor: AppColors.primary,
                 ),
                 _infoContainer(
                   icon: FontAwesomeIcons.clock,
-                  text: widget.lead.data.fromTime, // Using dynamic data
+                  text: formatTime(widget.lead.data.fromTime), // Using dynamic data
                   iconColor: AppColors.primary,
                 ),
               ],

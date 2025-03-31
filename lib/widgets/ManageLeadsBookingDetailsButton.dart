@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:glam1/constants/AppColors.dart';
 
 class ManageLeadsBookingDetailsButton extends StatelessWidget {
-  const ManageLeadsBookingDetailsButton({super.key});
+  final String bookingDate;
+  final String startTime;
+  final String endTime;
+  const ManageLeadsBookingDetailsButton({super.key , required this.bookingDate, required this.startTime , required this.endTime});
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +45,7 @@ class ManageLeadsBookingDetailsButton extends StatelessWidget {
               Icon(Icons.calendar_today, color: AppColors.primary, size: 20),
               SizedBox(width: 8),
               Text(
-                "15 February, 2025",
+                bookingDate,
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w300,
                       color: Colors.black87,
@@ -59,7 +62,7 @@ class ManageLeadsBookingDetailsButton extends StatelessWidget {
               Icon(Icons.access_time, color: AppColors.primary, size: 20),
               SizedBox(width: 8),
               Text(
-                "10:00 AM - 12:00 PM",
+                "${startTime} - ${endTime}",
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w300,
                       color: Colors.black87,
