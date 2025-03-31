@@ -7,7 +7,7 @@ class BookingConfirmationScreen extends StatelessWidget {
       backgroundColor: Color.fromARGB(255, 248, 248, 250),
       appBar: AppBar(
         title: Text(
-          "1Glam",
+          "1glam",
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
