@@ -33,7 +33,7 @@ class _LeadsPageState extends State<LeadsPage> {
 
   Future<void> _fetchLeads() async {
     await Future.delayed(Duration(seconds: 1)); 
-    setState(() async{
+    setState(()  {
       // _leads = await _leadsApiService.fetchAllLeads();//TODO : once the api is live we have to use this 
       _leads = sampleLeads; // fornow using sample data
       _isLoading = false;
