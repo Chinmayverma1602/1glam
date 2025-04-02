@@ -1,62 +1,76 @@
 import 'package:flutter/material.dart';
+import 'package:glam1/constants/AppColors.dart';
 
 class BookingConfirmationScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color.fromARGB(255, 248, 248, 250),
-      appBar: AppBar(
-        title: Text(
-          "1glam",
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: Colors.purple,
+      appBar: PreferredSize(
+        preferredSize: Size(double.infinity, 65),
+        child: AppBar(
+          title: Text(
+            "1glam",
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Colors.purple,
+            ),
           ),
+          actions: [Icon(Icons.more_vert)],
+          backgroundColor: Colors.white,
         ),
-        actions: [Icon(Icons.more_vert)],
-        backgroundColor: Colors.white,
       ),
       body: Column(
         children: [
           Expanded(
             child: SingleChildScrollView(
               child: Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Center(
-                      child: Column(
-                        children: [
-                          Container(
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Colors.green[100],
+                    Container(
+                      margin: const EdgeInsets.only(top: 24),
+                      height: 132,
+                      // padding: ,
+                      // decoration: BoxDecoration(
+                      //   // border: Border.all(color: Colors.red)
+                      // ),
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Container(
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Color(0xffDCFCE7),
+                              ),
+                              padding: EdgeInsets.all(10),
+                              child: Icon(
+                                Icons.check,
+                                color: Colors.green,
+                                size: 50,
+                              ),
                             ),
-                            padding: EdgeInsets.all(10),
-                            child: Icon(
-                              Icons.check,
-                              color: Colors.green,
-                              size: 40,
+                            SizedBox(height: 8),
+                            Text(
+                              "Booking Confirmed!",
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-                          ),
-                          SizedBox(height: 8),
-                          Text(
-                            "Booking Confirmed!",
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          Text("Your appointment has been scheduled"),
-                        ],
+                            Text("Your appointment has been scheduled"),
+                          ],
+                        ),
                       ),
                     ),
-                    SizedBox(height: 16),
+                    SizedBox(height: 24),
 
                     // Artist Details
                     Container(
+                      height: 100,
                       padding: EdgeInsets.all(12),
                       decoration: BoxDecoration(
                         color: Colors.white,
@@ -71,18 +85,27 @@ class BookingConfirmationScreen extends StatelessWidget {
                           ),
                           SizedBox(width: 12),
                           Column(
+                            // mainAxisAlignment: MainAxisAlignment.spaceAround,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
                                 "Sarah Anderson",
-                                style: TextStyle(fontWeight: FontWeight.bold),
+                                style: TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.w600),
                               ),
-                              Text("Professional Makeup Artist"),
+                              Text("Professional Makeup Artist",
+                                  style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w400,
+                                      color: Color(0xff4B5563))),
                               Row(
                                 children: [
                                   Icon(Icons.star,
                                       color: Colors.amber, size: 16),
-                                  Text(" 4.9  (120+ reviews)"),
+                                  Text(" 4.9  (120+ reviews)",
+                                      style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w400)),
                                 ],
                               ),
                             ],
@@ -90,10 +113,11 @@ class BookingConfirmationScreen extends StatelessWidget {
                         ],
                       ),
                     ),
-                    SizedBox(height: 16),
+                    SizedBox(height: 24),
 
                     // Appointment Details
                     Container(
+                      height: 215,
                       padding: EdgeInsets.all(16),
                       decoration: BoxDecoration(
                         color: Colors.white,
@@ -105,26 +129,30 @@ class BookingConfirmationScreen extends StatelessWidget {
                           Text(
                             "Appointment Details",
                             style: TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.bold),
+                                fontSize: 16, fontWeight: FontWeight.w600),
                           ),
                           SizedBox(height: 12),
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               Icon(Icons.calendar_today,
-                                  size: 21, color: Colors.purple),
+                                  size: 21, color: AppColors.primary),
                               SizedBox(width: 8),
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
                                     "15 February, 2025",
-                                    style: TextStyle(fontSize: 14),
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w400),
                                   ),
                                   SizedBox(height: 2),
                                   Text(
                                     "10:00 AM - 12:00 PM",
-                                    style: TextStyle(fontSize: 14),
+                                    style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w400),
                                   ),
                                 ],
                               ),
@@ -134,11 +162,12 @@ class BookingConfirmationScreen extends StatelessWidget {
                           Row(
                             children: [
                               Icon(Icons.location_on,
-                                  size: 20, color: Colors.purple),
+                                  size: 20, color: AppColors.primary),
                               SizedBox(width: 8),
                               Text(
                                 "At your location",
-                                style: TextStyle(fontSize: 14),
+                                style: TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.w400),
                               ),
                             ],
                           ),
@@ -148,15 +177,15 @@ class BookingConfirmationScreen extends StatelessWidget {
                             child: OutlinedButton.icon(
                               onPressed: () {},
                               icon: Icon(Icons.calendar_today,
-                                  color: Colors.purple, size: 18),
+                                  color: AppColors.primary, size: 18),
                               label: Text(
                                 "Add to Calendar",
                                 style: TextStyle(
-                                    fontSize: 14, color: Colors.purple),
+                                    fontSize: 14, color: AppColors.primary),
                               ),
                               style: OutlinedButton.styleFrom(
                                 padding: EdgeInsets.symmetric(vertical: 12),
-                                side: BorderSide(color: Colors.purple),
+                                side: BorderSide(color: AppColors.primary),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(8),
                                 ),
@@ -166,7 +195,7 @@ class BookingConfirmationScreen extends StatelessWidget {
                         ],
                       ),
                     ),
-                    SizedBox(height: 16),
+                    SizedBox(height: 24),
 
                     // Service Details
                     Container(
@@ -221,11 +250,12 @@ class BookingConfirmationScreen extends StatelessWidget {
 
                     // Recommended Products
                     Container(
+                      height: 300,
                       width: double.infinity,
                       padding: EdgeInsets.all(12),
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(8),
+                        // borderRadius: BorderRadius.circular(8),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -238,11 +268,12 @@ class BookingConfirmationScreen extends StatelessWidget {
                             scrollDirection: Axis.horizontal,
                             child: Row(
                               children: [
-                                _buildProductCard("Long-wear Foundation",
+                                // _buildProductCard("Long-wear Foundation",
+                                _buildProductCard("Product 1",
                                     "assets/foundation.jpg"),
                                 SizedBox(width: 12),
                                 _buildProductCard(
-                                    "Matte Lipstick", "assets/lipstick.jpg"),
+                                    "Product 2", "assets/lipstick.jpg"),
                               ],
                             ),
                           ),
@@ -259,7 +290,7 @@ class BookingConfirmationScreen extends StatelessWidget {
           // Fixed Bottom Buttons
           Container(
             color: Colors.white,
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            padding: EdgeInsets.only(left: 16, right: 16, top: 12),
             child: Column(
               children: [
                 Row(
@@ -269,14 +300,25 @@ class BookingConfirmationScreen extends StatelessWidget {
                       child: OutlinedButton(
                         onPressed: () {},
                         style: OutlinedButton.styleFrom(
-                          foregroundColor: Colors.black,
-                          side: BorderSide(color: Colors.black),
-                          padding: EdgeInsets.symmetric(vertical: 14),
+                          backgroundColor:
+                              Color(0xffFEF2F2), // Moved from Container
+                          side: BorderSide(color: Colors.transparent),
+                          padding: EdgeInsets.symmetric(vertical: 12),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius: BorderRadius.circular(
+                                20), // Properly applied now
                           ),
                         ),
-                        child: Text("Cancel Booking"),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.not_interested,
+                                color: Color(0xffDC2626)),
+                            SizedBox(width: 4),
+                            Text("Cancel Booking",
+                                style: TextStyle(color: Color(0xffDC2626))),
+                          ],
+                        ),
                       ),
                     ),
                     SizedBox(width: 16),
@@ -284,27 +326,53 @@ class BookingConfirmationScreen extends StatelessWidget {
                       child: ElevatedButton(
                         onPressed: () {},
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.purple,
+                          backgroundColor: AppColors.primary,
                           foregroundColor: Colors.white,
-                          padding: EdgeInsets.symmetric(vertical: 14),
+                          padding: EdgeInsets.symmetric(vertical: 12),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius: BorderRadius.circular(20),
                           ),
                         ),
-                        child: Text("Download Invoice"),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          spacing: 2,
+                          children: [
+                            Icon(Icons.download),
+                            Text("Download Invoice"),
+                          ],
+                        ),
                       ),
                     ),
                   ],
                 ),
-                SizedBox(height: 8),
-                TextButton(
-                  onPressed: () {},
-                  child: Text(
-                    "Need Help?",
-                    style: TextStyle(
-                      color: Colors.purple,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
+                // SizedBox(height: 8),
+                Container(
+                  width: double.infinity,
+                  margin: const EdgeInsets.only(
+                      left: 16, right: 16, bottom: 16, top: 12),
+                  decoration: BoxDecoration(
+                      color: Color(0xffF3F4F6),
+                      // border: Border.all(color: Colors.red),
+                      borderRadius: BorderRadius.circular(20)),
+                  child: TextButton(
+                    onPressed: () {},
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      spacing: 2,
+                      children: [
+                        Icon(
+                          Icons.help_outline,
+                          size: 18,
+                        ),
+                        Text(
+                          "Need Help?",
+                          style: TextStyle(
+                            color: Color(0xff374151),
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
