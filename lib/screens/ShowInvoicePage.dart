@@ -10,30 +10,28 @@ class InvoiceScreen extends StatelessWidget {
       backgroundColor: Colors.white,
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(110),
-        
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           decoration: const BoxDecoration(
             color: Color(0xFFC026D3),
-            // borderRadius: BorderRadius.only(
-            //   bottomLeft: Radius.circular(15),
-            //   bottomRight: Radius.circular(15),
-            // ),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: 20,),
+              const SizedBox(height: 20),
               Row(
                 children: [
-                  Row(
-                    children: [
-                      IconButton(
-                        icon: const Icon(Icons.arrow_back, color: Colors.white),
-                        onPressed: () {},
-                      ),
-                      Text("Invoice",style: TextStyle(fontSize: 26,color: Colors.white),)
-                    ],
+                  IconButton(
+                    icon: const Icon(Icons.arrow_back, color: Colors.white),
+                    onPressed: () {},
+                  ),
+                  const SizedBox(width: 5),
+                  Flexible(
+                    child: Text(
+                      "Invoice",
+                      style: TextStyle(fontSize: 26, color: Colors.white),
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
                   const Spacer(),
                   ElevatedButton.icon(
@@ -56,33 +54,37 @@ class InvoiceScreen extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    "Invoice Number",
-                    style: GoogleFonts.poppins(fontSize: 13, color: Colors.white70),
+                  Expanded(
+                    child: Text(
+                      "Invoice Number",
+                      style: GoogleFonts.poppins(fontSize: 13, color: Colors.white70),
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
-                  Text(
-                    "Amount Due",
-                    style: GoogleFonts.poppins(fontSize: 13, color: Colors.white70),
+                  Expanded(
+                    child: Text(
+                      "Amount Due",
+                      style: GoogleFonts.poppins(fontSize: 13, color: Colors.white70),
+                      textAlign: TextAlign.right,
+                    ),
                   ),
                 ],
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    "INV-2025-001",
-                    style: GoogleFonts.poppins(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
+                  Expanded(
+                    child: Text(
+                      "INV-2025-001",
+                      style: GoogleFonts.poppins(fontSize: 15, fontWeight: FontWeight.w600, color: Colors.white),
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                  Text(
-                    "₹17,700",
-                    style: GoogleFonts.poppins(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
+                  Expanded(
+                    child: Text(
+                      "₹17,700",
+                      style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white),
+                      textAlign: TextAlign.right,
                     ),
                   ),
                 ],
@@ -98,50 +100,22 @@ class InvoiceScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildTwoColumnRow("Issue Date", "Due Date", "Jan 15, 2025", "Jan 30, 2025"),
-              
-              Divider(),
+              const Divider(thickness:0.4),
               const SizedBox(height: 10),
               _buildInfoCard("From", "Glamour Studio", "+91 98765 43210\nglamour@studio.com"),
               _buildInfoCard("Bill To", "Sarah Johnson", "+91 98765 43210\nsarah@email.com"),
-              Divider(),
+              const Divider(thickness:0.4),
               _buildItemsSection(),
-              const Divider(),
+              const Divider(thickness:0.4),
               _buildTotalSection(),
-              Divider(),
+              const Divider(thickness:0.4),
               _buildTermsAndConditions(),
               const SizedBox(height: 20),
             ],
           ),
         ),
       ),
-      bottomNavigationBar: _buildBottomButton(),
-    );
-  }
-
-  Widget _buildTwoColumnRow(String title1, String title2, String value1, String value2) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        _buildColumnText(title1, value1),
-        _buildColumnText(title2, value2),
-      ],
-    );
-  }
-
-  Widget _buildColumnText(String title, String value) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: GoogleFonts.poppins(fontSize: 13, color: Colors.grey[600]),
-        ),
-        const SizedBox(height: 2),
-        Text(
-          value,
-          style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w500),
-        ),
-      ],
+      bottomNavigationBar: SafeArea(child: _buildBottomButton()),
     );
   }
 
@@ -170,7 +144,95 @@ class InvoiceScreen extends StatelessWidget {
     );
   }
 
-Widget _buildItemsSection() {
+  Widget _buildItemsSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "Items",
+          style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w600),
+        ),
+        const SizedBox(height: 8),
+        Container(
+          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "Bridal Makeup",
+                    style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w600),
+                  ),
+                  Text(
+                    "₹15,000",
+                    style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 2),
+              Text(
+                "1 x ₹15,000",
+                style: GoogleFonts.poppins(fontSize: 12, color: Colors.grey[600]),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+Widget _buildBottomButton() {
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(15),
+          topRight: Radius.circular(15),
+        ),
+        boxShadow: [
+          BoxShadow(color: Colors.black12, blurRadius: 10, spreadRadius: 2),
+        ],
+      ),
+      child: ElevatedButton(
+        onPressed: () {},
+        style: ElevatedButton.styleFrom(
+          backgroundColor: const Color(0xFFC026D3),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        ),
+        child: Text(
+          "Pay Now",
+          style: GoogleFonts.poppins(fontSize: 14, color: Colors.white),
+        ),
+      ),
+    );
+  }
+
+
+   Widget _buildTermsAndConditions() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "Terms & Conditions",
+          style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w600),
+        ),
+        const SizedBox(height: 6),
+        Text(
+          "1. Payment is due within 15 days\n"
+          "2. Late payment will incur a 5% penalty\n"
+          "3. All prices are inclusive of taxes",
+          style: GoogleFonts.poppins(fontSize: 13, color: Colors.grey[700]),
+        ),
+      ],
+    );
+  }
+
+
+  Widget _buildItemsSection() {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
@@ -220,7 +282,7 @@ Widget _buildItemsSection() {
         children: [
           _buildTotalRow("Subtotal", "₹15,000"),
           _buildTotalRow("Tax (18%)", "₹2,700"),
-          const Divider(),
+          const Divider(thickness:0.4),
           _buildTotalRow("Total", "₹17,700", isBold: true),
         ],
       ),
@@ -252,49 +314,30 @@ Widget _buildItemsSection() {
     );
   }
 
-  Widget _buildTermsAndConditions() {
+    Widget _buildTwoColumnRow(String title1, String title2, String value1, String value2) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        _buildColumnText(title1, value1),
+        _buildColumnText(title2, value2),
+      ],
+    );
+  }
+
+  Widget _buildColumnText(String title, String value) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "Terms & Conditions",
-          style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w600),
+          title,
+          style: GoogleFonts.poppins(fontSize: 13, color: Colors.grey[600]),
         ),
-        const SizedBox(height: 6),
+        const SizedBox(height: 2),
         Text(
-          "1. Payment is due within 15 days\n"
-          "2. Late payment will incur a 5% penalty\n"
-          "3. All prices are inclusive of taxes",
-          style: GoogleFonts.poppins(fontSize: 13, color: Colors.grey[700]),
+          value,
+          style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w500),
         ),
       ],
     );
   }
 
-  Widget _buildBottomButton() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(15),
-          topRight: Radius.circular(15),
-        ),
-        boxShadow: [
-          BoxShadow(color: Colors.black12, blurRadius: 10, spreadRadius: 2),
-        ],
-      ),
-      child: ElevatedButton(
-        onPressed: () {},
-        style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFFC026D3),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        ),
-        child: Text(
-          "Pay Now",
-          style: GoogleFonts.poppins(fontSize: 14, color: Colors.white),
-        ),
-      ),
-    );
-  }
-}

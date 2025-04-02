@@ -34,6 +34,10 @@ class BottomNavBar extends StatelessWidget {
           label: 'Calendar',
         ),
         BottomNavigationBarItem(
+          icon: Icon(Icons.payments),
+          label: 'Payments',
+),
+        BottomNavigationBarItem(
           icon: Icon(Icons.settings),
           label: 'Settings',
         ),

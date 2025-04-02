@@ -1,5 +1,6 @@
 import 'package:dropdown_textfield/dropdown_textfield.dart';
 import 'package:flutter/material.dart';
+import 'package:glam1/constants/AppColors.dart';
 import 'package:intl/intl.dart';
 
 class NewBookingScreen extends StatefulWidget {
@@ -31,7 +32,7 @@ class _NewBookingScreenState extends State<NewBookingScreen> {
             child: ElevatedButton(
               onPressed: () {},
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.purple,
+                backgroundColor: AppColors.primary,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
@@ -287,8 +288,8 @@ Widget _dropdownField(String label, String defaultValue) {
       },
       style: ElevatedButton.styleFrom(
         backgroundColor: isSelected ? Color(0xFFF8EAFB) : Colors.grey[100],
-        foregroundColor: isSelected ? Colors.purple : Colors.black87,
-        side: BorderSide(color: Colors.purple),
+        foregroundColor: isSelected ? AppColors.primary : Colors.black87,
+        side: BorderSide(color: AppColors.primary),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
         ),
@@ -298,14 +299,14 @@ Widget _dropdownField(String label, String defaultValue) {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, color: isSelected ? Colors.purple : Colors.black54, size: 22),
+          Icon(icon, color: isSelected ? AppColors.primary : Colors.black54, size: 22),
           SizedBox(height: 4), // Space between icon and text
           Text(
             title,
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w600, // Slightly bolder to match UI
-              color: isSelected ? Colors.purple : Colors.black87,
+              color: isSelected ? AppColors.primary : Colors.black87,
             ),
           ),
         ],

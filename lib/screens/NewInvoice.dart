@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:glam1/constants/AppColors.dart';
 import 'package:glam1/widgets/BottomActionBar.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -8,7 +9,7 @@ class NewInvoicePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[100], // Light background
+      backgroundColor: Color(0xffE5E7EB), // Light background
       appBar: AppBar(
         backgroundColor: Colors.grey[100],
         elevation: 0,
@@ -32,7 +33,7 @@ class NewInvoicePage extends StatelessWidget {
               style: GoogleFonts.poppins(
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
-                color: Colors.purple,
+                color: AppColors.primary,
               ),
             ),
           )
@@ -43,6 +44,7 @@ class NewInvoicePage extends StatelessWidget {
         child: SingleChildScrollView(
           child: Column(
             children: [
+              SizedBox(height: 10,),
               _buildInfoCard("Business Details", [
                 _buildInfoRow("Business Name", "Glamour Studio"),
                 _buildInfoRow("Contact Details", "+91 98765 43210\nglamour@studio.com"),
@@ -112,9 +114,10 @@ class NewInvoicePage extends StatelessWidget {
 
   Widget _buildInfoCard(String title, List<Widget> children, {bool showEditIcon = true}) {
     return Card(
+      
       margin: const EdgeInsets.only(bottom: 12),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      elevation: 1,
+      elevation: 0,
       child: Padding(
         padding: const EdgeInsets.all(12),
         child: Column(
@@ -128,7 +131,7 @@ class NewInvoicePage extends StatelessWidget {
                   style: GoogleFonts.poppins(fontSize: 15, fontWeight: FontWeight.w600),
                 ),
                 if (showEditIcon)
-                  const Icon(Icons.edit, color: Colors.purple, size: 18),
+                  const Icon(Icons.edit, color: AppColors.primary, size: 18),
               ],
             ),
             const SizedBox(height: 8),
@@ -158,7 +161,7 @@ class NewInvoicePage extends StatelessWidget {
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      elevation: 1,
+      elevation: 0,
       child: Padding(
         padding: const EdgeInsets.all(12),
         child: Column(
@@ -170,9 +173,9 @@ class NewInvoicePage extends StatelessWidget {
                 Text("Items", style: GoogleFonts.poppins(fontSize: 15, fontWeight: FontWeight.w600)),
                 Row(
                   children: [
-                    const Icon(Icons.add, color: Colors.purple, size: 16),
+                    const Icon(Icons.add, color: AppColors.primary, size: 16),
                     Text(" Add Item",
-                        style: GoogleFonts.poppins(fontSize: 13, color: Colors.purple)),
+                        style: GoogleFonts.poppins(fontSize: 13, color: AppColors.primary)),
                   ],
                 )
               ],
@@ -195,7 +198,7 @@ class NewInvoicePage extends StatelessWidget {
                       Text("₹15,000", style: GoogleFonts.poppins(fontSize: 13, color: Colors.grey[700])),
                     ],
                   ),
-                  const Icon(Icons.edit, color: Colors.purple, size: 18),
+                  const Icon(Icons.edit, color: AppColors.primary, size: 18),
                 ],
               ),
             ),
@@ -209,7 +212,7 @@ class NewInvoicePage extends StatelessWidget {
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      elevation: 1,
+      elevation: 0,
       child: Padding(
         padding: const EdgeInsets.all(12),
         child: Column(
@@ -268,7 +271,7 @@ class NewInvoicePage extends StatelessWidget {
   //       Expanded(
   //         child: ElevatedButton(
   //           onPressed: () {},
-  //           style: ElevatedButton.styleFrom(backgroundColor: Colors.purple),
+  //           style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary),
   //           child: Text("Send Invoice", style: GoogleFonts.poppins(fontSize: 13, color: Colors.white)),
   //         ),
   //       ),

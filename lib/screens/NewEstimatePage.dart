@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:glam1/constants/AppColors.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:glam1/widgets/BottomActionBar.dart';
 
@@ -8,7 +9,7 @@ class EstimateScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Color(0xffE5E7EB),
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
@@ -29,7 +30,7 @@ class EstimateScreen extends StatelessWidget {
               style: GoogleFonts.poppins(
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
-                  color: Colors.purpleAccent),
+                  color: AppColors.primary),
             ),
           )
         ],
@@ -43,7 +44,7 @@ class EstimateScreen extends StatelessWidget {
               "Business Details",
               _businessDetailsContent(),
               trailingWidget:
-                  const Icon(Icons.edit, color: Colors.purpleAccent, size: 18),
+                  const Icon(Icons.edit, color: AppColors.primary, size: 18),
             ),
             _buildCard("Services", _servicesContent(),
                 trailingWidget: addServiceButton("Add Service")),
@@ -72,12 +73,12 @@ class EstimateScreen extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(Icons.add, color: Colors.purpleAccent, size: 16),
+          const Icon(Icons.add, color: AppColors.primary, size: 16),
           const SizedBox(width: 4),
           Text(
             text,
             style: GoogleFonts.poppins(
-              color: Colors.purpleAccent,
+              color: AppColors.primary,
               fontSize: 14,
               fontWeight: FontWeight.w500,
             ),
@@ -151,14 +152,14 @@ class EstimateScreen extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.shade300,
-            blurRadius: 5,
-            spreadRadius: 1,
-            offset: const Offset(0, 3),
-          )
-        ],
+        // boxShadow: [
+        //   BoxShadow(
+        //     color: Colors.grey.shade300,
+        //     blurRadius: 5,
+        //     spreadRadius: 1,
+        //     offset: const Offset(0, 3),
+        //   )
+        // ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -236,7 +237,7 @@ class EstimateScreen extends StatelessWidget {
           ),
           Row(
             children: const [
-              Icon(Icons.edit, color: Colors.purpleAccent, size: 18),
+              Icon(Icons.edit, color: AppColors.primary ,size: 18),
               SizedBox(width: 6),
               Icon(Icons.delete, color: Colors.red, size: 18),
             ],

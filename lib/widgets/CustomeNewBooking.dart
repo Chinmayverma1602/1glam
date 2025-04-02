@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/utils.dart';
+import 'package:glam1/constants/AppColors.dart';
 import 'package:glam1/screens/NewBookingPage.dart';
 
 Widget NewBookingButton() {
@@ -16,7 +17,7 @@ Widget NewBookingButton() {
           color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
     ),
     style: ElevatedButton.styleFrom(
-      backgroundColor: Colors.purple,
+      backgroundColor: AppColors.primary,
       padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(15),

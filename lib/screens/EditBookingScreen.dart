@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:glam1/constants/AppColors.dart';
 import 'package:glam1/screens/EditDate.dart';
 import 'package:glam1/screens/EditCustomerInfo.dart';
 import 'package:glam1/screens/EditNodesInfo.dart';
@@ -85,9 +86,9 @@ class _EditBookingScreenState extends State<EditBookingScreen> {
         padding: const EdgeInsets.only(top: 8, left: 8, right: 8, bottom: 80),
         width: double.infinity,
         decoration: BoxDecoration(
-          color: Colors.purple.shade100,
+          color: AppColors.primary,
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: Colors.purple.shade300),
+          border: Border.all(color: AppColors.primary),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -95,7 +96,7 @@ class _EditBookingScreenState extends State<EditBookingScreen> {
             Text(
               'Current Booking',
               style: TextStyle(
-                color: Colors.purple,
+                color: AppColors.primary,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -163,7 +164,7 @@ class _EditBookingScreenState extends State<EditBookingScreen> {
                 child: Text(
                   "Save",
                   style: TextStyle(
-                      fontSize: 15, color: Colors.purple, fontWeight: FontWeight.bold),
+                      fontSize: 15, color: AppColors.primary, fontWeight: FontWeight.bold),
                 ),
               ),
             ],
@@ -304,8 +305,8 @@ class _EditBookingScreenState extends State<EditBookingScreen> {
           children: [
             CircleAvatar(
               radius: 20,
-              backgroundColor: Colors.purple.withOpacity(0.1),
-              child: Icon(icon, color: Colors.purple),
+              backgroundColor: AppColors.primary.withOpacity(0.1),
+              child: Icon(icon, color: AppColors.primary),
             ),
             SizedBox(width: 12),
             Expanded(
@@ -381,7 +382,7 @@ class _EditBookingScreenState extends State<EditBookingScreen> {
   //                     // with form fields to edit the booking
   //                   },
   //                   style: ElevatedButton.styleFrom(
-  //                     backgroundColor: Colors.purple,
+  //                     backgroundColor: AppColors.primary,
   //                   ),
   //                 ),
   //               ],
@@ -480,15 +481,15 @@ class _EditBookingScreenState extends State<EditBookingScreen> {
                       rowHeight: 40,
                       calendarStyle: CalendarStyle(
                         todayDecoration: BoxDecoration(
-                          color: Colors.purple.withOpacity(0.3),
+                          color: AppColors.primary.withOpacity(0.3),
                           shape: BoxShape.circle,
                         ),
                         selectedDecoration: BoxDecoration(
-                          color: Colors.purple,
+                          color: AppColors.primary,
                           shape: BoxShape.circle,
                         ),
                         markerDecoration: BoxDecoration(
-                          color: Colors.purple,
+                          color: AppColors.primary,
                           shape: BoxShape.circle,
                         ),
                       ),
@@ -510,7 +511,7 @@ class _EditBookingScreenState extends State<EditBookingScreen> {
                                 height: 6, // Reduced from 8
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
-                                  color: Colors.purple,
+                                  color: AppColors.primary,
                                 ),
                               ),
                             );
@@ -650,7 +651,7 @@ class _EditBookingScreenState extends State<EditBookingScreen> {
                                 Navigator.of(context).pop();
                               },
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.purple,
+                                backgroundColor: AppColors.primary,
                                 padding: EdgeInsets.symmetric(vertical: 12),
                               ),
                             ),

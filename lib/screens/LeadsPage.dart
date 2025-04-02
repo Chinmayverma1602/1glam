@@ -58,7 +58,7 @@ class _LeadsPageState extends State<LeadsPage> {
         Navigator.pushReplacementNamed(context, '/calendar');
         break;
       case 3:
-        Navigator.pushReplacementNamed(context, '/settings');
+        Navigator.pushReplacementNamed(context, '/SettingsScreen');
         break;
     }
   }

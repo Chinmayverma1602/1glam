@@ -4,9 +4,12 @@ import 'package:get/get.dart';
 import 'package:glam1/firebase_options.dart';
 import 'package:glam1/screens/ConfirmBooking.dart';
 import 'package:glam1/screens/EditBookingScreen.dart';
+import 'package:glam1/screens/GeneralSettingScreen.dart';
 import 'package:glam1/screens/LoginScreen.dart';
 import 'package:glam1/screens/NewEstimatePage.dart';
 import 'package:glam1/screens/NewInvoice.dart';
+import 'package:glam1/screens/PaymentSettingsScreen.dart';
+import 'package:glam1/screens/SettingsScreen.dart';
 import 'package:glam1/screens/ShowInvoicePage.dart';
 import 'package:glam1/screens/TravellingInfo.dart';
 import 'package:glam1/screens/PreviewPage.dart';
@@ -33,7 +36,7 @@ void main() async {
 
 Future<String> getInitialRoute() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  return prefs.getString('user_email') != null ? '/home' : '/newPage';
+  return prefs.getString('user_email') != null ? '/home' : '/home';
 }
 
 class MyApp extends StatelessWidget {
@@ -51,7 +54,7 @@ class MyApp extends StatelessWidget {
       getPages: [
         GetPage(name: '/home', page: () => const HomePage()),
         GetPage(name: '/leads', page: () => const LeadsPage()),
-        GetPage(name: '/settings', page: () => const HomePage()),
+        // GetPage(name: '/settings', page: () => const HomePage()),
         GetPage(name: '/about', page: () => const AboutMePage()),
         GetPage(name: '/address', page: () => const AddressDetailsPage()),
         GetPage(name: '/bundle', page: () => const BundleServicePage()),
@@ -66,7 +69,11 @@ class MyApp extends StatelessWidget {
         GetPage(name: '/EstimatePage', page: () => const EstimateScreen()),
         GetPage(name: '/newInvoicePgae', page: () => const NewInvoicePage()),
         GetPage(name: '/ShowInvoice', page: () => const InvoiceScreen()),
-        GetPage(name: '/newPage', page: () => BookingConfirmationScreen()),
+        GetPage(name: '/BookingConfirmed', page: () => const BookingConfirmationScreen()),
+        GetPage(name: '/SettingsScreen', page: () => const SettingsScreen()),
+        GetPage(name: '/GeneralSettings', page: () => const GeneralSettingsScreen()),
+        GetPage(name: '/PaymentSettings', page: () => const PaymentSettingsScreen()),
+
       ],
     );
   }

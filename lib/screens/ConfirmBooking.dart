@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:glam1/constants/AppColors.dart';
 
 class BookingConfirmationScreen extends StatelessWidget {
+
+  const BookingConfirmationScreen({super.key});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -14,7 +16,7 @@ class BookingConfirmationScreen extends StatelessWidget {
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: Colors.purple,
+              color: AppColors.primary,
             ),
           ),
           actions: [Icon(Icons.more_vert)],
@@ -229,7 +231,7 @@ class BookingConfirmationScreen extends StatelessWidget {
                                   color: Color(0xff4B5563),
                                   fontSize: 14,
                                   fontWeight: FontWeight.w400)),
-                          Divider(),
+                          Divider(thickness: 0.4,),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -421,7 +423,7 @@ class BookingConfirmationScreen extends StatelessWidget {
                 ElevatedButton(
                   onPressed: () {},
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.purple,
+                    backgroundColor: AppColors.primary,
                     foregroundColor: Colors.white,
                     minimumSize: Size(double.infinity, 36),
                   ),
