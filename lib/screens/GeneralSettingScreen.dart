@@ -9,9 +9,10 @@ class GeneralSettingsScreen extends StatefulWidget {
   @override
   State<GeneralSettingsScreen> createState() => _GeneralSettingsScreenState();
 }
-int _selectedIndex = 4;
-class _GeneralSettingsScreenState extends State<GeneralSettingsScreen> {
 
+int _selectedIndex = 4;
+
+class _GeneralSettingsScreenState extends State<GeneralSettingsScreen> {
   void _onItemTapped(int index) {
     if (index == _selectedIndex) return;
 
@@ -38,6 +39,7 @@ class _GeneralSettingsScreenState extends State<GeneralSettingsScreen> {
         break;
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -184,9 +186,6 @@ class _GeneralSettingsScreenState extends State<GeneralSettingsScreen> {
           ],
         ),
       ),
-
-
-
       bottomNavigationBar: BottomNavBar(
         currentIndex: 4,
         onTap: _onItemTapped,

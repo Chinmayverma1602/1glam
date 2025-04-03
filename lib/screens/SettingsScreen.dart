@@ -4,10 +4,10 @@ import 'package:get/route_manager.dart';
 import 'package:glam1/constants/AppColors.dart';
 import 'package:glam1/screens/GeneralSettingScreen.dart';
 import 'package:glam1/screens/PaymentSettingsScreen.dart';
+import 'package:glam1/screens/TeamManagement.dart';
 import 'package:glam1/widgets/BottomNavBar.dart';
 
 class SettingsScreen extends StatefulWidget {
-
   const SettingsScreen({super.key});
   @override
   State<SettingsScreen> createState() => _SettingsScreenState();
@@ -50,7 +50,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       appBar: AppBar(
         title: Text(
           'Settings',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
         ),
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.black),
@@ -69,7 +69,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               padding: EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(17),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withOpacity(0.05),
@@ -90,7 +90,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
                 subtitle: Text(
                   'john@company.com',
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400,color:Color(0xff6B7280)),
+                  style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                      color: Color(0xff6B7280)),
                 ),
                 trailing: Icon(Icons.arrow_forward_ios,
                     size: 16, color: AppColors.primary),
@@ -98,12 +101,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
             ),
             SizedBox(height: 20),
-            _buildSettingsTile(
-                Icons.settings, 'General Settings', Colors.blue, () =>Get.to(()=> GeneralSettingsScreen())),
-            _buildSettingsTile(
-                Icons.payment, 'Payment Settings', AppColors.primary,  () =>Get.to(()=> PaymentSettingsScreen())),
-            _buildSettingsTile(
-                Icons.group, 'Team Management', Colors.green, () {},
+            _buildSettingsTile(Icons.settings, 'General Settings', Colors.blue,
+                () => Get.to(() => GeneralSettingsScreen())),
+            _buildSettingsTile(Icons.payment, 'Payment Settings',
+                AppColors.primary, () => Get.to(() => PaymentSettingsScreen())),
+            _buildSettingsTile(Icons.group, 'Team Management', Colors.green,
+                () => Get.to(() => TeamMembersScreen()),
                 subtitle: '5 members'),
             _buildSettingsTile(
                 Icons.person, 'Profile Settings', Colors.orange, () {}),
@@ -121,14 +124,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
       IconData icon, String title, Color color, VoidCallback onTap,
       {String? subtitle}) {
     return Container(
-      height: 72,
+      height: 80,
       padding: const EdgeInsets.only(bottom: 12.0),
       child: ListTile(
         tileColor: Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         leading: CircleAvatar(
           backgroundColor: color.withOpacity(0.1),
-          child: Icon(icon, color: color , ),
+          child: Icon(
+            icon,
+            color: color,
+          ),
           radius: 20,
         ),
         title: Text(
@@ -137,7 +143,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ),
         subtitle: subtitle != null
             ? Text(subtitle,
-                style: TextStyle(fontSize: 14, color: Colors.grey[600]))
+                style: TextStyle(fontSize: 12, color: Colors.grey[600]))
             : null,
         trailing: Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
         onTap: onTap,
