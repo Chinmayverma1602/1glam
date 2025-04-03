@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:glam1/constants/AppColors.dart';
 import 'package:glam1/widgets/BottomNavBar.dart';
 
@@ -69,7 +70,8 @@ class _GeneralSettingsScreenState extends State<GeneralSettingsScreen> {
               child: Column(
                 children: [
                   _buildSettingTile(
-                      icon: Icons.camera_alt, // Instagram icon placeholder
+                      icon: FontAwesomeIcons
+                          .instagram, // Instagram icon placeholder
                       color: Colors.pink,
                       title: 'Instagram Account',
                       subtitle: 'Connect your business account',
@@ -95,8 +97,8 @@ class _GeneralSettingsScreenState extends State<GeneralSettingsScreen> {
                         ),
                       )),
                   _buildSettingTile(
-                      icon: Icons
-                          .chat, //TODO: later change it with the actual icon of whatsapp
+                      icon: FontAwesomeIcons
+                          .whatsapp, //TODO: later change it with the actual icon of whatsapp
                       color: Colors.green,
                       title: 'WhatsApp Business',
                       subtitle: 'Connect your business number',
@@ -211,12 +213,12 @@ class _GeneralSettingsScreenState extends State<GeneralSettingsScreen> {
         ),
         title: Text(
           title,
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+          style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
         ),
         subtitle: Text(
           subtitle,
           style: TextStyle(
-              fontSize: 14,
+              fontSize: 10,
               color: Color(0xff6B7280),
               fontWeight: FontWeight.w400),
         ),
@@ -247,11 +249,11 @@ class _GeneralSettingsScreenState extends State<GeneralSettingsScreen> {
             ),
             title: Text(
               title,
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
             ),
             subtitle: Text(
               subtitle,
-              style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+              style: TextStyle(fontSize: 11, color: Colors.grey[600]),
             ),
             trailing: Switch(
               value: value,
