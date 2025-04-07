@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:glam1/constants/AppColors.dart';
 import 'package:glam1/screens/HomePage.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:get/get.dart';
+
 
 class CustomHeaderManageLeadsPage extends StatelessWidget {
   const CustomHeaderManageLeadsPage({super.key});
@@ -15,7 +17,7 @@ class CustomHeaderManageLeadsPage extends StatelessWidget {
         children: [
           IconButton(
             onPressed: () {
-              Navigator.pop(context);
+              Get.back();
             },
             icon: Icon(
               Icons.arrow_back,

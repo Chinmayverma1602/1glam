@@ -40,7 +40,7 @@ class _CustomScheduleButtonState extends State<CustomScheduleButton> {
                 widget.time,
                 style: const TextStyle(
                   fontSize: 16,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
               Text(
@@ -51,7 +51,7 @@ class _CustomScheduleButtonState extends State<CustomScheduleButton> {
               ),
             ],
           ),
-          SizedBox(width: 10,),
+          SizedBox(width: 10),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -59,7 +59,7 @@ class _CustomScheduleButtonState extends State<CustomScheduleButton> {
                 widget.userName,
                 style: const TextStyle(
                   fontSize: 16,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
               Text(

@@ -47,7 +47,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     // You can also adapt your Theme for consistent text styles, etc.
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color.fromARGB(255, 247, 247, 247),
       bottomNavigationBar: BottomNavBar(
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
@@ -148,8 +148,8 @@ class _HomePageState extends State<HomePage> {
         
                 // Section: Today's Schedule
                 Card(
-                  color: Colors.white,
-                  elevation: 3,
+                  color: Colors.white,  
+                  elevation: 0,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -224,18 +224,18 @@ class _HomePageState extends State<HomePage> {
                   child: Row(
                     children: [
                       CustomHomeServicesButton(
-                        label: "Add New Booking",
+                        label: "Add New\nBooking",
                         iconPath: 'assets/images/i3.svg',
                       ),
                       const SizedBox(width: 16),
                       CustomHomeServicesButton(
-                        label: "Add New Booking",
-                        iconPath: 'assets/images/i-2.svg',
+                        label: "Send Follow\nUp",
+                        iconPath: 'assets/images/i-1.svg',
                       ),
                       const SizedBox(width: 16),
                       CustomHomeServicesButton(
-                        label: "Add New Booking",
-                        iconPath: 'assets/images/i-1.svg',
+                        label: "Send\nInvoice",
+                        iconPath: 'assets/images/i-2.svg',
                       ),
                     ],
                   ),

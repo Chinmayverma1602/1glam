@@ -8,6 +8,8 @@ import 'package:glam1/widgets/ManageLeadsBottomNavBar.dart';
 import 'package:glam1/widgets/ManageLeadsNotesButton.dart';
 import 'package:glam1/widgets/ManageLeadsPaymentButton.dart';
 import 'package:glam1/widgets/ManageLeadsServicesButton.dart';
+import 'package:get/get.dart';
+
 
 class ManageLeadPage extends StatefulWidget {
   const ManageLeadPage({super.key});
@@ -52,7 +54,7 @@ class _ManageLeadPageState extends State<ManageLeadPage> {
           ],
         ),
       ),
-      bottomNavigationBar: ManageLeadsBottomNavBar(onBack: (){Navigator.pop(context);}, onSendEstimate: (){}),
+      bottomNavigationBar: ManageLeadsBottomNavBar(onBack: (){Get.back();}, onSendEstimate: (){}),
     );
   }
 }

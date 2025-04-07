@@ -3,6 +3,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:glam1/constants/AppColors.dart';
 import 'package:glam1/screens/ManageLeadPage.dart';
 import 'package:glam1/widgets/CustomSubtitle.dart';
+import 'package:get/get.dart';
+
 
 class LeadDetailsButton extends StatefulWidget {
   const LeadDetailsButton({super.key});
@@ -16,7 +18,7 @@ class _LeadDetailsButtonState extends State<LeadDetailsButton> {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: (){
-        Navigator.push(context, MaterialPageRoute(builder: (context) => ManageLeadPage() ));
+       Get.to(ManageLeadPage());
       },
       child: Container(
         

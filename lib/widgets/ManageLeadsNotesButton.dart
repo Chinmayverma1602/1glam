@@ -69,7 +69,7 @@ class ManageLeadsNotes extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               _buildImagePlaceholder(context),
-              SizedBox(width: 10),
+              SizedBox(width: MediaQuery.of(context).size.width*0.01),
               _buildImagePlaceholder(context),
             ],
           ),

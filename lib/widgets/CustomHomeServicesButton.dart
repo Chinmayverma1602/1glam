@@ -18,36 +18,39 @@ class CustomHomeServicesButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 2),
       child: Container(
-        height: MediaQuery.of(context).size.height * 0.11,
+        height: MediaQuery.of(context).size.height * 0.13,
         width: MediaQuery.of(context).size.width * 0.30,
         decoration: BoxDecoration(
+          
           color: backgroundColor,
           borderRadius: BorderRadius.circular(12),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 6,
-              offset: const Offset(0, 3),
-            ),
-          ],
+          
+          // boxShadow: [
+          //   BoxShadow(
+          //     color: Colors.black.withOpacity(0.1),
+          //     blurRadius: 3,
+          //     offset: const Offset(0, 0),
+          //   ),
+          // ],
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            SizedBox(height: MediaQuery.of(context).size.height*0.01),
             SvgPicture.asset(
               iconPath,
-              height: 32,
-              width: 32,
+              height: 28,
+              width: 28,
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: MediaQuery.of(context).size.height*0.015),
             Text(
               label,
               style: TextStyle(
                 color: textColor,
                 fontSize: 16,
-                fontWeight: FontWeight.w600,
+                fontWeight: FontWeight.w400,
               ),
               textAlign: TextAlign.center,
             ),
