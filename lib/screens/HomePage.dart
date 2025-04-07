@@ -38,14 +38,16 @@ class _HomePageState extends State<HomePage> {
         Navigator.pushReplacementNamed(context, '/calender');
         break;
       case 3:
-        Navigator.pushReplacementNamed(context, '/settings');
+        Navigator.pushReplacementNamed(context, '/SettingsScreen');
+        break;
+      case 4:
+        Navigator.pushReplacementNamed(context, '/SettingsScreen');
         break;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    // You can also adapt your Theme for consistent text styles, etc.
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 247, 247, 247),
       bottomNavigationBar: BottomNavBar(

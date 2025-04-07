@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:glam1/constants/AppColors.dart';
 import 'package:glam1/model/booking_model.dart'; 
 
 void showServiceBottomSheet(BuildContext context , Booking booking) {
@@ -74,7 +75,7 @@ void showServiceBottomSheet(BuildContext context , Booking booking) {
                 Expanded(
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.purple,
+                      backgroundColor: AppColors.primary,
                       padding: EdgeInsets.symmetric(vertical: 14),
                     ),
                     onPressed: () {

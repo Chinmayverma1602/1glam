@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:glam1/constants/AppColors.dart';
 import 'package:glam1/screens/EditDate.dart';
 import 'package:glam1/screens/EditCustomerInfo.dart';
 import 'package:glam1/screens/EditNodesInfo.dart';
@@ -9,6 +10,7 @@ import 'package:glam1/screens/EditServicesInfo.dart';
 import 'package:glam1/screens/EditTime.dart';
 import 'package:glam1/services/BookingController.dart';
 import 'package:glam1/widgets/CustomTextInputField.dart';
+import 'package:glam1/widgets/CustomeNewBooking.dart';
 import 'package:glam1/widgets/ImageSelectionRow.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -84,9 +86,9 @@ class _EditBookingScreenState extends State<EditBookingScreen> {
         padding: const EdgeInsets.only(top: 8, left: 8, right: 8, bottom: 80),
         width: double.infinity,
         decoration: BoxDecoration(
-          color: Colors.purple.shade100,
+          color: AppColors.primary,
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: Colors.purple.shade300),
+          border: Border.all(color: AppColors.primary),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -94,7 +96,7 @@ class _EditBookingScreenState extends State<EditBookingScreen> {
             Text(
               'Current Booking',
               style: TextStyle(
-                color: Colors.purple,
+                color: AppColors.primary,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -127,211 +129,161 @@ class _EditBookingScreenState extends State<EditBookingScreen> {
     }
   }
 
-  void _showBookingEditSheet(BuildContext context, Booking booking) {
-    showMaterialModalBottomSheet(
-      context: context,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+ void _showBookingEditSheet(BuildContext context, Booking booking) {
+  showMaterialModalBottomSheet(
+    context: context,
+    // isScrollControlled: true, // Allows better height control
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+    ),
+    builder: (context) => Container(
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * 0.7, // Limits height to 80%
       ),
-      builder: (context) => Padding(
-        padding: EdgeInsets.all(8),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            /// **Header Section**
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                /// **Close Button**
-                IconButton(
-                  icon: Icon(Icons.close, color: Colors.black),
-                  onPressed: () => Navigator.pop(context),
+      padding: EdgeInsets.all(8),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          /// **Header Section**
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              IconButton(
+                icon: Icon(Icons.close, color: Colors.black),
+                onPressed: () => Navigator.pop(context),
+              ),
+              Text(
+                "Edit Appointment",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  // TODO: Implement save logic
+                },
+                child: Text(
+                  "Save",
+                  style: TextStyle(
+                      fontSize: 15, color: AppColors.primary, fontWeight: FontWeight.bold),
                 ),
+              ),
+            ],
+          ),
+          Divider(thickness: 1.2),
+          SizedBox(height: 8),
 
-                /// **Title**
-                Text(
-                  "Edit Appointment",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-                ),
-
-                /// **Save Button**
-                TextButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                    // TODO: Implement save logic
-                  },
-                  child: Text(
-                    "Save",
-                    style: TextStyle(
-                        fontSize: 15,
-                        color: Colors.purple,
-                        fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ],
-            ),
-            Divider(
-              thickness: 1.2,
-            ),
-
-            SizedBox(height: 8),
-
-            /// **Draggable Indicator**
-            // Center(
-            //   child: Container(
-            //     width: 50,
-            //     height: 5,
-            //     decoration: BoxDecoration(
-            //       color: Colors.grey[400],
-            //       borderRadius: BorderRadius.circular(10),
-            //     ),
-            //   ),
-            // ),
-
-            // SizedBox(height: 12),
-
-            /// **Profile Section**
-            Row(
-              children: [
-                CircleAvatar(
-                  radius: 24,
-                  backgroundColor: Colors.grey[300], // Light grey background
-                  child: Icon(Icons.person,
-                      size: 28, color: Colors.black54), // Person icon
-                ),
-                SizedBox(width: 12),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(booking.customerName,
-                        style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.w600)),
-                    Text("Added on 10 Feb 2025",
-                        style: TextStyle(color: Colors.grey)),
-                  ],
-                ),
-              ],
-            ),
-
-            SizedBox(height: 4),
-
-            /// **Action Buttons (Call & WhatsApp)**
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: () {},
-                    icon: Icon(Icons.call, color: Colors.black),
-                    label: Text(
-                      "Call",
-                      style: TextStyle(fontSize: 16),
-                    ),
-                    style: OutlinedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius:
-                            BorderRadius.circular(8), // Slightly curved corners
-                      ),
-                      // side:
-                      // BorderSide(color: Colors.black, width: 1.5), // Border
-                      padding:
-                          EdgeInsets.symmetric(vertical: 5), // Better padding
-                    ),
-                  ),
-                ),
-                SizedBox(width: 8),
-                Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: () {},
-                    icon: Icon(Icons.chat, color: Colors.black),
-                    label: Text(
-                      "WhatsApp",
-                      style: TextStyle(fontSize: 16),
-                    ),
-                    style: OutlinedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      // side: BorderSide(color: Colors.black, width: 1.5),
-                      padding: EdgeInsets.symmetric(vertical: 5),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(
-              height: 10,
-            ),
-
-            /// **Clickable Tiles**
-            _bottomSheetTile(
-                icon: Icons.schedule,
-                title: "Time",
-                subtitle:
-                    "${DateFormat('h:mm a').format(booking.startTime)} - ${DateFormat('h:mm a').format(booking.endTime)}",
-                onTap: () => showBookingServiceSheetTime(context, booking)),
-            _bottomSheetTile(
-                icon: Icons.calendar_month,
-                title: "Date",
-                subtitle: DateFormat("dd MMMM yyyy").format(booking.date),
-                onTap: () => showBookingServiceSheetDate(context, booking)),
-            _bottomSheetTile(
-                icon: Icons.location_on,
-                title: "Location",
-                subtitle: "Client Location",
-                onTap: () {}),
-
-            _bottomSheetTile(
-                icon: Icons.cut,
-                title: "Services",
-                subtitle: booking.serviceName,
-                onTap: () => editService(context)),
-            _bottomSheetTile(
-                icon: Icons.currency_rupee,
-                title: "Payment",
-                subtitle: booking.price.toString(),
-                onTap: () {}),
-
-            Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
+          /// **Scrollable Content**
+          Expanded(
+            child: SingleChildScrollView(
+              child: Column(
                 children: [
-                  // Title & Close Button
+                  /// **Profile Section**
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text("Notes",
-                          style: TextStyle(
-                              fontSize: 15, fontWeight: FontWeight.bold)),
-                      // IconButton(icon: Icon(Icons.close), onPressed: () => Navigator.pop(context)),
+                      CircleAvatar(
+                        radius: 24,
+                        backgroundColor: Colors.grey[300],
+                        child: Icon(Icons.person, size: 28, color: Colors.black54),
+                      ),
+                      SizedBox(width: 12),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(booking.customerName,
+                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                          Text("Added on 10 Feb 2025", style: TextStyle(color: Colors.grey)),
+                        ],
+                      ),
                     ],
                   ),
-                  SizedBox(
-                    height: 5,
+
+                  SizedBox(height: 8),
+
+                  /// **Action Buttons (Call & WhatsApp)**
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed: () {},
+                          icon: Icon(Icons.call, color: Colors.black),
+                          label: Text("Call", style: TextStyle(fontSize: 16)),
+                          style: OutlinedButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            padding: EdgeInsets.symmetric(vertical: 5),
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 8),
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed: () {},
+                          icon: Icon(Icons.chat, color: Colors.black),
+                          label: Text("WhatsApp", style: TextStyle(fontSize: 16)),
+                          style: OutlinedButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            padding: EdgeInsets.symmetric(vertical: 5),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 10),
+
+                  /// **Clickable Tiles**
+                  _bottomSheetTile(
+                      icon: Icons.schedule,
+                      title: "Time",
+                      subtitle:
+                          "${DateFormat('h:mm a').format(booking.startTime)} - ${DateFormat('h:mm a').format(booking.endTime)}",
+                      onTap: () => showBookingServiceSheetTime(context, booking)),
+                  _bottomSheetTile(
+                      icon: Icons.calendar_month,
+                      title: "Date",
+                      subtitle: DateFormat("dd MMMM yyyy").format(booking.date),
+                      onTap: () => showBookingServiceSheetDate(context, booking)),
+                  _bottomSheetTile(
+                      icon: Icons.location_on, title: "Location", subtitle: "Client Location", onTap: () {}),
+                  _bottomSheetTile(
+                      icon: Icons.cut, title: "Services", subtitle: booking.serviceName, onTap: () => editService(context)),
+                  _bottomSheetTile(
+                      icon: Icons.currency_rupee, title: "Payment", subtitle: booking.price.toString(), onTap: () {}),
+
+                  SizedBox(height: 8),
+
+                  /// **Notes Section**
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text("Notes", style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+                      SizedBox(height: 5),
+                      TextField(
+                        controller: notesController,
+                        maxLines: 3,
+                        decoration: InputDecoration(
+                          hintText: "Add appointment notes...",
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                      SizedBox(height: 4),
+                    ],
                   ),
 
-                  // Notes Text Field
-                  // CustomTextInputField(hintText: "Write your notes here ...", icon: Icons.,),
-                  TextField(
-                    controller: notesController,
-                    maxLines: 3,
-                    decoration: InputDecoration(
-                      hintText: "Add appointment notes...",
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
-                  SizedBox(height: 4),
-
-                  // Display Selected Images
-                ]),
-
-            // SizedBox(height: 16),
-
-            ImageSelectionRow(),
-          ],
-        ),
+                  /// **Image Selection Row**
+                  ImageSelectionRow(),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
-    );
-  }
+    ),
+  );
+}
+
 
   Widget _bottomSheetTile({
     required IconData icon,
@@ -353,8 +305,8 @@ class _EditBookingScreenState extends State<EditBookingScreen> {
           children: [
             CircleAvatar(
               radius: 20,
-              backgroundColor: Colors.purple.withOpacity(0.1),
-              child: Icon(icon, color: Colors.purple),
+              backgroundColor: AppColors.primary.withOpacity(0.1),
+              child: Icon(icon, color: AppColors.primary),
             ),
             SizedBox(width: 12),
             Expanded(
@@ -366,7 +318,8 @@ class _EditBookingScreenState extends State<EditBookingScreen> {
                 ],
               ),
             ),
-            Icon(Icons.arrow_forward_ios, size: 18, color: const Color.fromARGB(255, 208, 204, 204)),
+            Icon(Icons.arrow_forward_ios,
+                size: 18, color: const Color.fromARGB(255, 208, 204, 204)),
           ],
         ),
       ),
@@ -429,7 +382,7 @@ class _EditBookingScreenState extends State<EditBookingScreen> {
   //                     // with form fields to edit the booking
   //                   },
   //                   style: ElevatedButton.styleFrom(
-  //                     backgroundColor: Colors.purple,
+  //                     backgroundColor: AppColors.primary,
   //                   ),
   //                 ),
   //               ],
@@ -471,184 +424,243 @@ class _EditBookingScreenState extends State<EditBookingScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title:Text("Edit Booking"
-              ),
+        backgroundColor: Color(0xFFE5E7EB),
+        title: Text("Edit Booking"),
       ),
-      backgroundColor: Colors.white,
+      backgroundColor: Color(0xFFE5E7EB),
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 10,top: 10),
-              child: Text(
-                'Select Date',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: TableCalendar(
-                firstDay: DateTime.utc(2024, 1, 1),
-                lastDay: DateTime.utc(2025, 12, 31),
-                focusedDay: _focusedDay,
-                calendarFormat: _calendarFormat,
-                selectedDayPredicate: (day) {
-                  return isSameDay(_selectedDay, day);
-                },
-                onDaySelected: (selectedDay, focusedDay) {
-                  setState(() {
-                    _selectedDay = selectedDay;
-                    _focusedDay = focusedDay;
-                  });
-                },
-                onFormatChanged: (format) {
-                  setState(() {
-                    _calendarFormat = format;
-                  });
-                },
-                calendarStyle: CalendarStyle(
-                  todayDecoration: BoxDecoration(
-                    color: Colors.purple.withOpacity(0.3),
-                    shape: BoxShape.circle,
-                  ),
-                  selectedDecoration: BoxDecoration(
-                    color: Colors.purple,
-                    shape: BoxShape.circle,
-                  ),
-                  markerDecoration: BoxDecoration(
-                    color: Colors.purple,
-                    shape: BoxShape.circle,
-                  ),
-                ),
-                calendarBuilders: CalendarBuilders(
-                  markerBuilder: (context, date, events) {
-                    // Check if there are bookings for this date
-                    final hasBookings =
-                        _bookingController.bookings.any((booking) {
-                      return booking.date.year == date.year &&
-                          booking.date.month == date.month &&
-                          booking.date.day == date.day;
-                    });
-
-                    if (hasBookings) {
-                      return Positioned(
-                        bottom: 1,
-                        child: Container(
-                          width: 8,
-                          height: 8,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.purple,
+            Container(
+              //CONTAINER 1
+              margin: EdgeInsets.symmetric(horizontal: 20),
+              // padding: EdgeInsets.symmetric(horizontal: 20),
+              decoration: BoxDecoration(
+                  color: Colors.white, borderRadius: BorderRadius.circular(20)),
+              child: Column(
+                children: [
+                  Padding(
+                    padding:
+                        const EdgeInsets.only(left: 18, right: 10, top: 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Select Date',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
-                      );
-                    }
-                    return null;
-                  },
-                ),
-                headerStyle: HeaderStyle(
-                  titleCentered: true,
-                  formatButtonVisible: false,
-                  leftChevronIcon:
-                      Icon(Icons.chevron_left, color: Colors.black),
-                  rightChevronIcon:
-                      Icon(Icons.chevron_right, color: Colors.black),
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 10,top: 10),
-              child: Text(
-                'Select Time',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: ListView.builder(
-                  itemCount: _timeSlots.length,
-                  itemBuilder: (context, index) {
-                    final hour = _timeSlots[index];
-                    final timeText = _formatTimeSlot(hour);
-                    final hasBookingsForHour = bookingsByHour.containsKey(hour);
-
-                    return Column(
-                      children: [
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SizedBox(
-                              width: 60,
-                              child: Text(
-                                timeText,
-                                style: TextStyle(color: Colors.grey[700]),
-                              ),
-                            ),
-                            Expanded(
-                              child: hasBookingsForHour
-                                  ? Column(
-                                      children: bookingsByHour[hour]!
-                                          .map((booking) =>
-                                              _buildBookingItem(booking))
-                                          .toList(),
-                                    )
-                                  : Container(
-                                      height: 50,
-                                      decoration: BoxDecoration(
-                                        color: Colors.grey[200],
-                                        borderRadius: BorderRadius.circular(8),
-                                      ),
-                                    ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 10),
+                        NewBookingButton()
                       ],
-                    );
-                  },
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      icon: Icon(Icons.close),
-                      label: Text('Cancel'),
-                      onPressed: () => Navigator.of(context).pop(),
-                      style: OutlinedButton.styleFrom(
-                        padding: EdgeInsets.symmetric(vertical: 12),
-                      ),
                     ),
                   ),
-                  SizedBox(width: 16),
-                  Expanded(
-                    child: ElevatedButton(
-                      child: Text(
-                        'Save Changes',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                      onPressed: () {
-                        // Save the updated booking
-                        Navigator.of(context).pop();
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 0),
+                    child: TableCalendar(
+                      firstDay: DateTime.utc(2024, 1, 1),
+                      lastDay: DateTime.utc(2025, 12, 31),
+                      focusedDay: _focusedDay,
+                      calendarFormat: _calendarFormat,
+                      selectedDayPredicate: (day) {
+                        return isSameDay(_selectedDay, day);
                       },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.purple,
-                        padding: EdgeInsets.symmetric(vertical: 12),
+                      onDaySelected: (selectedDay, focusedDay) {
+                        setState(() {
+                          _selectedDay = selectedDay;
+                          _focusedDay = focusedDay;
+                        });
+                      },
+                      onFormatChanged: (format) {
+                        setState(() {
+                          _calendarFormat = format;
+                        });
+                      },
+                      rowHeight: 40,
+                      calendarStyle: CalendarStyle(
+                        todayDecoration: BoxDecoration(
+                          color: AppColors.primary.withOpacity(0.3),
+                          shape: BoxShape.circle,
+                        ),
+                        selectedDecoration: BoxDecoration(
+                          color: AppColors.primary,
+                          shape: BoxShape.circle,
+                        ),
+                        markerDecoration: BoxDecoration(
+                          color: AppColors.primary,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                      calendarBuilders: CalendarBuilders(
+                        markerBuilder: (context, date, events) {
+                          final hasBookings =
+                              _bookingController.bookings.any((booking) {
+                            return booking.date.year == date.year &&
+                                booking.date.month == date.month &&
+                                booking.date.day == date.day;
+                          });
+
+                          if (hasBookings) {
+                            return Positioned(
+                              bottom:
+                                  2, // Reduced from 1 to give better alignment
+                              child: Container(
+                                width: 6, // Reduced from 8
+                                height: 6, // Reduced from 8
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: AppColors.primary,
+                                ),
+                              ),
+                            );
+                          }
+                          return null;
+                        },
+                      ),
+                      headerStyle: HeaderStyle(
+                        titleCentered: true,
+                        formatButtonVisible: false,
+                        leftChevronIcon: Icon(Icons.chevron_left,
+                            color: Colors.black, size: 18), // Reduced size
+                        rightChevronIcon: Icon(Icons.chevron_right,
+                            color: Colors.black, size: 18), // Reduced size
                       ),
                     ),
                   ),
                 ],
+              ),
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            Flexible(
+              //CONTAINER 2
+              child: Container(
+                margin: EdgeInsets.symmetric(horizontal: 20),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius:
+                      BorderRadius.circular(12), // Added curved borders
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding:
+                          const EdgeInsets.only(left: 18, top: 10, bottom: 10),
+                      child: Text(
+                        'Select Time',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                    Expanded(
+  // Ensures ListView takes available space
+  child: Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 20),
+    child: Stack(
+      children: [
+        // Vertical Line
+        Positioned(
+          left: 30, // Adjust to align with hour labels
+          top: 0,
+          bottom: 0,
+          child: Container(
+            width: 2, // Line thickness
+            color: Colors.grey[400], // Line color
+          ),
+        ),
+
+        // ListView with Time Slots & Bookings
+        ListView.builder(
+          itemCount: _timeSlots.length,
+          itemBuilder: (context, index) {
+            final hour = _timeSlots[index];
+            final timeText = _formatTimeSlot(hour);
+            final hasBookingsForHour = bookingsByHour.containsKey(hour);
+
+            return Column(
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      width: 60,
+                      child: Text(
+                        timeText,
+                        style: TextStyle(color: Colors.grey[700]),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    SizedBox(width: 10), // Space between label and bookings
+                    Expanded(
+                      child: hasBookingsForHour
+                          ? Column(
+                              children: bookingsByHour[hour]!
+                                  .map((booking) => _buildBookingItem(booking))
+                                  .toList(),
+                            )
+                          : Container(
+                              height: 50,
+                              decoration: BoxDecoration(
+                                color: Colors.grey[200],
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 10), // Space after each row
+              ],
+            );
+          },
+        ),
+      ],
+    ),
+  ),
+),
+
+                    // SizedBox(height: 10,),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20 , vertical: 10),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: OutlinedButton.icon(
+                              icon: Icon(Icons.close),
+                              label: Text('Cancel'),
+                              onPressed: () => Navigator.of(context).pop(),
+                              style: OutlinedButton.styleFrom(
+                                padding: EdgeInsets.symmetric(vertical: 12),
+                              ),
+                            ),
+                          ),
+                          SizedBox(width: 16),
+                          Expanded(
+                            child: ElevatedButton(
+                              child: Text(
+                                'Save Changes',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                              onPressed: () {
+                                // Save the updated booking
+                                Navigator.of(context).pop();
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppColors.primary,
+                                padding: EdgeInsets.symmetric(vertical: 12),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ],

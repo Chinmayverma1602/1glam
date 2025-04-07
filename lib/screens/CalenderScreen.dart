@@ -2,11 +2,13 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:glam1/constants/AppColors.dart';
 import 'package:glam1/model/booking_model.dart';
 import 'package:glam1/screens/EditBookingScreen.dart';
-import 'package:glam1/screens/HomePage.dart';
+// import 'package:glam1/screens/HomePage.dart';
 import 'package:glam1/services/BookingController.dart';
 import 'package:glam1/widgets/BottomNavBar.dart';
+import 'package:glam1/widgets/CustomeNewBooking.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
 
@@ -80,7 +82,10 @@ class _CalendarPageState extends State<CalenderPage> {
           Navigator.pushReplacementNamed(context, '/calender');
           break;
         case 3:
-          Navigator.pushReplacementNamed(context, '/settings');
+          Navigator.pushReplacementNamed(context, '/SettingsScreen');
+          break;
+        case 4:
+          Navigator.pushReplacementNamed(context, '/SettingsScreen');
           break;
       }
     }
@@ -123,26 +128,7 @@ class _CalendarPageState extends State<CalenderPage> {
                 onPressed: () {},
               ),
               SizedBox(width: 8),
-              ElevatedButton.icon(
-                onPressed: () {
-                  // TODO: Add your onPressed action here
-                },
-                icon: Icon(Icons.add, color: Colors.white, size: 19),
-                label: Text(
-                  "New Booking",
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold),
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.purple,
-                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                ),
-              )
+              NewBookingButton()
             ],
           ),
         ],
@@ -168,7 +154,7 @@ class _CalendarPageState extends State<CalenderPage> {
       margin: EdgeInsets.only(right: 8),
       padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: isSelected ? Colors.purple : Colors.transparent,
+        color: isSelected ? AppColors.primary : Colors.transparent,
         borderRadius: BorderRadius.circular(20),
       ),
       child: Text(
@@ -279,7 +265,7 @@ class _CalendarPageState extends State<CalenderPage> {
                                   style: const TextStyle(
                                     fontSize: 10,
                                     fontWeight: FontWeight.bold,
-                                    color: Colors.purple,
+                                    color: AppColors.primary,
                                   ),
                                 ),
                               ),
@@ -287,7 +273,7 @@ class _CalendarPageState extends State<CalenderPage> {
                               //   'events',
                               //   style: TextStyle(
                               //     fontSize: 10,
-                              //     color: Colors.purple,
+                              //     color: AppColors.primary,
                               //   ),
                               // ),
                             ],
@@ -317,7 +303,7 @@ class _CalendarPageState extends State<CalenderPage> {
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 10,
-                                  color: Colors.purple,
+                                  color: AppColors.primary,
                                 ),
                               ),
                             ),
@@ -459,7 +445,7 @@ class _CalendarPageState extends State<CalenderPage> {
                 Icon(
                   Icons.access_time,
                   size: 16,
-                  color: Colors.purple,
+                  color: AppColors.primary,
                 ),
                 SizedBox(width: 4),
                 Text(

@@ -2,9 +2,18 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:glam1/firebase_options.dart';
+import 'package:glam1/screens/ConfirmBooking.dart';
 import 'package:glam1/screens/EditBookingScreen.dart';
+import 'package:glam1/screens/GeneralSettingScreen.dart';
 import 'package:glam1/screens/LoginScreen.dart';
+import 'package:glam1/screens/NewEstimatePage.dart';
+import 'package:glam1/screens/NewInvoice.dart';
+import 'package:glam1/screens/PaymentSettingsScreen.dart';
+import 'package:glam1/screens/SettingsScreen.dart';
+import 'package:glam1/screens/ShowInvoicePage.dart';
+import 'package:glam1/screens/TeamManagement.dart';
 import 'package:glam1/screens/TravellingInfo.dart';
+import 'package:glam1/screens/PreviewPage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:glam1/screens/AboutMePage.dart';
 import 'package:glam1/screens/AddServicesPage.dart';
@@ -28,7 +37,7 @@ void main() async {
 
 Future<String> getInitialRoute() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  return prefs.getString('user_email') != null ? '/home' : '/home';
+  return prefs.getString('user_email') != null ? '/home' : '/SettingsScreen';
 }
 
 class MyApp extends StatelessWidget {
@@ -46,7 +55,7 @@ class MyApp extends StatelessWidget {
       getPages: [
         GetPage(name: '/home', page: () => const HomePage()),
         GetPage(name: '/leads', page: () => const LeadsPage()),
-        GetPage(name: '/settings', page: () => const HomePage()),
+        // GetPage(name: '/settings', page: () => const HomePage()),
         GetPage(name: '/about', page: () => const AboutMePage()),
         GetPage(name: '/address', page: () => const AddressDetailsPage()),
         GetPage(name: '/bundle', page: () => const BundleServicePage()),
@@ -57,6 +66,23 @@ class MyApp extends StatelessWidget {
         GetPage(name: '/verify', page: () => const VerifyEmailPage()),
         GetPage(name: '/travelInfo', page: () => const TravellingInfoPage()),
         GetPage(name: '/calender', page: () => const CalenderPage()),
+        GetPage(
+            name: '/PreviewPage', page: () => const EstimatePreviewScreen()),
+        GetPage(name: '/EstimatePage', page: () => const EstimateScreen()),
+        GetPage(name: '/newInvoicePgae', page: () => const NewInvoicePage()),
+        GetPage(name: '/ShowInvoice', page: () => const InvoiceScreen()),
+        GetPage(
+            name: '/BookingConfirmed',
+            page: () => const BookingConfirmationScreen()),
+        GetPage(name: '/SettingsScreen', page: () => const SettingsScreen()),
+        GetPage(
+            name: '/GeneralSettings',
+            page: () => const GeneralSettingsScreen()),
+        GetPage(
+            name: '/PaymentSettings',
+            page: () => const PaymentSettingsScreen()),
+        GetPage(
+            name: '/TeamMembersScreen', page: () => const TeamMembersScreen()),
       ],
     );
   }

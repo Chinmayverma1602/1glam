@@ -235,7 +235,7 @@ Widget _buildInfoRow(IconData icon, String text) {
     padding: EdgeInsets.only(top: 4),
     child: Row(
       children: [
-        Icon(icon, size: 16, color: Colors.purple),
+        Icon(icon, size: 16, color: AppColors.primary),
         SizedBox(width: 6),
         Text(text, style: TextStyle(fontSize: 14)),
       ],

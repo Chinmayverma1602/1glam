@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:glam1/constants/AppColors.dart';
 import 'package:glam1/model/booking_model.dart';
 import 'package:intl/intl.dart';
 
@@ -94,7 +95,7 @@ void showBookingServiceSheetTime(BuildContext context, Booking booking) {
                     Expanded(
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.purple,
+                          backgroundColor: AppColors.primary,
                           padding: EdgeInsets.symmetric(vertical: 14),
                         ),
                         onPressed: () {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:glam1/constants/AppColors.dart';
 import 'package:glam1/model/booking_model.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
@@ -66,7 +67,7 @@ Widget _buildEditContactSheet(BuildContext context, Booking booking) {
             Expanded(
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.purple,
+                  backgroundColor: AppColors.primary,
                   padding: EdgeInsets.symmetric(vertical: 14),
                 ),
                 onPressed: () {

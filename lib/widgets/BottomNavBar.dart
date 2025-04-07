@@ -26,15 +26,19 @@ class BottomNavBar extends StatelessWidget {
           label: 'Home',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.search),
+          icon: Icon(Icons.contact_mail),
           label: 'Leads',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.shopping_cart),
+          icon: Icon(Icons.calendar_month_outlined),
           label: 'Calendar',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.person),
+          icon: Icon(Icons.payments),
+          label: 'Payments',
+),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.settings),
           label: 'Settings',
         ),
       ],

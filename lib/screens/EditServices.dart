@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:glam1/constants/AppColors.dart';
 
 void editService(BuildContext context) {
   showModalBottomSheet(
@@ -28,7 +29,7 @@ void editService(BuildContext context) {
                   },
                   child: Text(
                     "+ Add Service",
-                    style: TextStyle(color: Colors.purple, fontWeight: FontWeight.bold),
+                    style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold),
                   ),
                 ),
               ],
@@ -58,7 +59,7 @@ Widget _serviceItem(String title, String price) {
         mainAxisSize: MainAxisSize.min,
         children: [
           IconButton(
-            icon: Icon(Icons.edit, color: Colors.purple),
+            icon: Icon(Icons.edit, color: AppColors.primary),
             onPressed: () {
               // TODO: Handle edit action
             },

@@ -246,7 +246,7 @@ class _LoginPageState extends State<LoginPage> {
                   child: Text(
                     "Streamline your bookings with WhatsApp & Instagram \nintegration",
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 15, color: Colors.purple),
+                    style: TextStyle(fontSize: 15, color: AppColors.primary),
                   ),
                 ),
               ),
@@ -344,7 +344,7 @@ class _LoginPageState extends State<LoginPage> {
                 child: Text(
                   "By continuing, you agree to our Terms of Service and Privacy Policy",
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 15, color: Colors.purple),
+                  style: TextStyle(fontSize: 15, color: AppColors.primary),
                 ),
               ),
               const SizedBox(height: 24),
