@@ -14,6 +14,7 @@ import 'package:glam1/screens/ShowInvoicePage.dart';
 import 'package:glam1/screens/TeamManagement.dart';
 import 'package:glam1/screens/TravellingInfo.dart';
 import 'package:glam1/screens/PreviewPage.dart';
+import 'package:glam1/services/leads_services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:glam1/screens/AboutMePage.dart';
 import 'package:glam1/screens/AddServicesPage.dart';
@@ -53,7 +54,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       initialRoute: initialRoute,
       getPages: [
-        GetPage(name: '/home', page: () => const HomePage()),
+        GetPage(name: '/home', page: () => HomePage(lead: sampleLeads,)),
         GetPage(name: '/leads', page: () => const LeadsPage()),
         // GetPage(name: '/settings', page: () => const HomePage()),
         GetPage(name: '/about', page: () => const AboutMePage()),

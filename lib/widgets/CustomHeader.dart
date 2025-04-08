@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:glam1/constants/AppColors.dart';
 import 'package:glam1/screens/HomePage.dart';
+import 'package:glam1/services/leads_services.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class CustomHeader extends StatelessWidget {
@@ -23,7 +24,7 @@ class CustomHeader extends StatelessWidget {
           GestureDetector(
               onTap: () {
                 Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => HomePage()));
+                    MaterialPageRoute(builder: (context) => HomePage(lead: sampleLeads,)));
               },
               child: Text(
                 "Skip",

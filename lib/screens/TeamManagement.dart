@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:glam1/screens/AddTeamMembersPage.dart';
 
 class TeamMembersScreen extends StatelessWidget {
   const TeamMembersScreen({Key? key}) : super(key: key);
@@ -19,7 +21,9 @@ class TeamMembersScreen extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.add, color: Colors.purple),
-            onPressed: () {},
+            onPressed: () {
+              Get.to(() => AddTeamMembersPage());
+            },
           ),
         ],
       ),

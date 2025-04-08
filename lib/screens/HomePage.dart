@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:glam1/constants/AppColors.dart';
+import 'package:glam1/services/leads_services.dart';
 import 'package:glam1/widgets/BottomNavBar.dart';
 import 'package:glam1/widgets/CustomButton3.dart';
 import 'package:glam1/widgets/CustomHomeServicesButton.dart';
@@ -11,7 +12,9 @@ import 'package:glam1/widgets/CustomTitle.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+  final dynamic lead;
+
+  const HomePage({Key? key, required this.lead}) : super(key: key);
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -19,6 +22,32 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
+
+  int _totalBooking=0;
+  int _totalProposalSent=0;
+  int _totalInquiryRecieved=0;
+
+  @override
+  void initState() {
+    super.initState();
+    _countStatusTypes();
+  }
+
+  void _countStatusTypes() {
+    for (var lead in sampleLeads) {
+      final status = lead.data.leadStatus;
+
+      if (status == 'Inquiry Received') {
+        _totalInquiryRecieved++;
+      } else if (status == 'Consultation Scheduled' || status == 'Follow-up Required') {
+        _totalProposalSent++;
+      } else if (status == 'Pending Payment' || status == 'Confirmed') {
+        _totalBooking++;
+      }
+    }
+  }
+
+
 
   void _onItemTapped(int index) {
     if (index == _selectedIndex) return;
@@ -259,21 +288,21 @@ class _HomePageState extends State<HomePage> {
                     children: [
                       CustomStatsButton(
                         label: "Inquiry Received",
-                        stats: "12",
+                        stats: _totalInquiryRecieved.toString(),
                         textColor: AppColors.primary,
                         labelColor: Colors.grey,
                       ),
                       const SizedBox(width: 16),
                       CustomStatsButton(
                         label: "Proposal Sent",
-                        stats: "8",
+                        stats: _totalProposalSent.toString(),
                         textColor: AppColors.primary,
                         labelColor: Colors.grey,
                       ),
                       const SizedBox(width: 16),
                       CustomStatsButton(
                         label: "Booked",
-                        stats: "5",
+                        stats: _totalBooking.toString(),
                         textColor: AppColors.primary,
                         labelColor: Colors.grey,
                       ),
