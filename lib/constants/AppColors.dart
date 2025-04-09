@@ -21,7 +21,9 @@ class AppColors {
   static const Color proposalButtonColor = Color(0xFFDCFCE7);
   static const Color qualifiedLeadTextColor = Color(0xFF1D4ED8);
   static const Color qualifiedButtonColor = Color(0xFFDBEAFE);
-  static const Color borderTextField = Color.fromARGB(167, 227, 227, 227)
+  static const Color borderTextField = Color.fromARGB(167, 227, 227, 227);
+  static const Color travelFeeTextFields = Color.fromARGB(51, 189, 37, 209);
+  static const Color travelFeeIconColor = Color.fromARGB(153, 192, 38, 211)
 ;
   
 }

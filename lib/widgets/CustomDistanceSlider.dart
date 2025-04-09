@@ -22,7 +22,7 @@ class CustomDistanceSlider extends StatefulWidget {
     this.textSize = 16,
     this.sliderActiveColor = AppColors.sliderColor,
     this.sliderInactiveColor = Colors.grey,
-    this.textColor = Colors.black,
+    this.textColor = AppColors.secondaryText,
   }) : super(key: key);
 
   @override
@@ -43,7 +43,6 @@ class _CustomDistanceSliderState extends State<CustomDistanceSlider> {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         // Optional: Add border or background color if needed
-        border: Border.all(color: Colors.grey.shade300),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(

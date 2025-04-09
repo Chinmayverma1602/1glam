@@ -287,7 +287,8 @@ class _AddressDetailsPageState extends State<AddressDetailsPage> {
               onTap: isLoadingLocation ? null : _getCurrentLocation,
               child: Container(
                 height: MediaQuery.of(context).size.height * 0.045,
-                width: MediaQuery.of(context).size.width * 0.50,
+                width: MediaQuery.of(context).size.width * 0.48,
+                alignment: Alignment.center,
                 decoration: BoxDecoration(
                   color: AppColors.primary.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(8),
@@ -297,7 +298,7 @@ class _AddressDetailsPageState extends State<AddressDetailsPage> {
                   child: Row(children: [
                     Icon(isLoadingLocation ? Icons.sync : Icons.pin_drop,
                         color: AppColors.subtitle, size: 18),
-                    SizedBox(width: 10),
+                    SizedBox(width: MediaQuery.of(context).size.width*0.025),
                     Text(
                         isLoadingLocation
                             ? "Getting location..."
@@ -320,7 +321,7 @@ class _AddressDetailsPageState extends State<AddressDetailsPage> {
                     ),
                     SizedBox(height: 15),
                     CustomTextInputField(
-                      hintText: "Select address line 2(optional)",
+                      hintText: "Select address line 2 (optional)",
                       icon: Icons.padding_outlined,
                       controller: addressLine2Controller,
                       keyboardType: TextInputType.streetAddress,

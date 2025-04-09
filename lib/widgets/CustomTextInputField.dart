@@ -31,12 +31,12 @@ class CustomTextInputField extends StatelessWidget {
           ),
           prefixIcon: Icon(
             icon,
-            color: AppColors.primary.withOpacity(0.6),
+            color: AppColors.travelFeeIconColor,
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
             borderSide: BorderSide(
-              color: AppColors.primary.withOpacity(0.2),
+              color: AppColors.travelFeeTextFields,
               width: 1.5,
             ),
           ),

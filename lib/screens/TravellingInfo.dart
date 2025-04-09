@@ -23,6 +23,7 @@ class TravellingInfoPage extends StatefulWidget {
 
 class _TravellingInfoPageState extends State<TravellingInfoPage> {
   late SingleValueDropDownController _paymentController;
+  TextEditingController addressController = TextEditingController();
   late SingleValueDropDownController _travelFeeController;
   final TravelFeeService _travelFeeService = TravelFeeService();
   SliderController sliderController = Get.put(SliderController());
@@ -85,6 +86,7 @@ class _TravellingInfoPageState extends State<TravellingInfoPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              const SizedBox(height: 5),
               CustomHeader(),
               const SizedBox(height: 35),
               CustomTitle(title: "What is your travel fee?"),
@@ -94,22 +96,28 @@ class _TravellingInfoPageState extends State<TravellingInfoPage> {
                 listSpace: 2,
                 dropdownRadius: 12,
                 textFieldDecoration: InputDecoration(
+                  enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide:
+                          BorderSide(color: AppColors.travelFeeTextFields, width: 1.5),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide:
+                          BorderSide(color: AppColors.primary, width: 1.5),
+                    ),
+                  
                   hintText: "Select Payment Method",
                   prefixIcon: Padding(
                     padding: const EdgeInsets.all(12.0),
                     child: SvgPicture.asset(
-                      'assets/icons/leading.svg',
+                      'assets/images/leading.svg',
                       width: 24,
                       height: 24,
+                      color: AppColors.primary,
                     ),
                   ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(
-                      color: AppColors.primary.withOpacity(0.4),
-                      width: 1.5,
-                    ),
-                  ),
+                  
                 ),
                 dropDownList: _paymentMethods,
               ),
@@ -123,29 +131,61 @@ class _TravellingInfoPageState extends State<TravellingInfoPage> {
                   prefixIcon: const Icon(
                     Icons.monetization_on,
                     size: 24,
+                    color: AppColors.primary,
                   ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(
-                      color: AppColors.primary.withOpacity(0.4),
-                      width: 1.5,
+                  enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide:
+                          BorderSide(color: AppColors.travelFeeTextFields, width: 1.5),
                     ),
-                  ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide:
+                          BorderSide(color: AppColors.primary, width: 1.5),
+                    ),
                 ),
                 dropDownList: _travelFeeOptions,
               ),
               const SizedBox(height: 15),
               CustomDistanceSlider(),
               const SizedBox(height: 15),
+              TextFormField(
+                controller: addressController,
+                decoration: InputDecoration(
+                  hintText: 'Enter Address',
+                  prefixIcon: Icon(Icons.location_on, color: AppColors.primary),
+                 
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(
+                      color: AppColors.travelFeeTextFields,
+                      width: 1.5,
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(
+                      color: AppColors.travelFeeTextFields,
+                      width: 1.5,
+                    ),
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 15),
+              
               Container(
                 height: MediaQuery.of(context).size.height * 0.2,
+                
                 width: double.infinity,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: AppColors.hintText, width: 0.4)
                 ),
                 child: SvgPicture.asset(
-                  'assets/images/globe.svg',
+                  'assets/images/Frame.svg',
                   fit: BoxFit.contain,
+                  color: Colors.grey,
                 ),
               ),
               const SizedBox(height: 15),
@@ -159,13 +199,15 @@ class _TravellingInfoPageState extends State<TravellingInfoPage> {
                 width: double.infinity,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: AppColors.primary),
+                  border: Border.all(color: AppColors.travelFeeTextFields, width: 1.4),
                 ),
                 child: const Padding(
-                  padding: EdgeInsets.all(8.0),
+                  padding: EdgeInsets.all(8),
                   child: Text(
-                    "Travel to restricted areas, congested zone,...",
-                    style: TextStyle(color: AppColors.hintText),
+                    "Travel to restricted areas, congested zone...",
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: AppColors.hintText),
                   ),
                 ),
               ),
@@ -183,7 +225,8 @@ class _TravellingInfoPageState extends State<TravellingInfoPage> {
                 text: "Continue",
                 color: AppColors.subtitle,
                 onPressed: _submitTravelFee,
-              )
+              ),
+              const SizedBox(height: 20),
             ],
           ),
         ),

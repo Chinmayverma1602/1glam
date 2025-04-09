@@ -1,23 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:glam1/constants/AppColors.dart';
-
 import 'package:google_fonts/google_fonts.dart';
 
 class CustomCheckBox extends StatefulWidget {
   final String location;
   final bool isRequired;
-  CustomCheckBox(
-      {required this.location,
-      this.isRequired = false,
-      super.key,
-      required Null Function(bool? value) onChanged,
-      required Color activeColor});
+  final Function(bool? value) onChanged;
+  final Color activeColor;
+
+  CustomCheckBox({
+    required this.location,
+    this.isRequired = false,
+    super.key,
+    required this.onChanged,
+    required this.activeColor,
+  });
 
   @override
   State<CustomCheckBox> createState() => _CustomCheckBoxState();
 }
 
 class _CustomCheckBoxState extends State<CustomCheckBox> {
+  bool isChecked = false;
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -33,8 +38,23 @@ class _CustomCheckBoxState extends State<CustomCheckBox> {
         padding: const EdgeInsets.all(8.0),
         child: Row(
           children: [
-            Icon(Icons.check_box_outline_blank,
-                color: AppColors.primary.withOpacity(0.4)),
+            GestureDetector(
+              onTap: () {
+                setState(() {
+                  isChecked = !isChecked;
+                });
+                widget.onChanged(isChecked);
+              },
+              child: isChecked
+                  ? Icon(
+                      Icons.check_box,
+                      color: widget.activeColor,
+                    )
+                  : Icon(
+                      Icons.check_box_outline_blank,
+                      color: AppColors.primary.withOpacity(0.4),
+                    ),
+            ),
             SizedBox(
               width: 10,
             ),
@@ -46,6 +66,5 @@ class _CustomCheckBoxState extends State<CustomCheckBox> {
         ),
       ),
     );
-    ;
   }
 }
