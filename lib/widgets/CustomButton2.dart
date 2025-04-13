@@ -37,14 +37,15 @@ class CustomButton2 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton(
-      style: ElevatedButton.styleFrom(
+    print("borderColor in build: $borderColor");
+    return OutlinedButton(
+      style: OutlinedButton.styleFrom(
         minimumSize: const Size(175, 60),
-        elevation: 0,
+        elevation: 10,
         backgroundColor: fillColor,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
-          side: BorderSide(color: borderColor, width: 1.5),
+          side: BorderSide(color: borderColor, width: 2),
         ),
         padding: const EdgeInsets.all(8.0),
       ),

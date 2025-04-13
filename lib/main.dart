@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -14,6 +15,7 @@ import 'package:glam1/screens/ShowInvoicePage.dart';
 import 'package:glam1/screens/TeamManagement.dart';
 import 'package:glam1/screens/TravellingInfo.dart';
 import 'package:glam1/screens/PreviewPage.dart';
+import 'package:glam1/services/BookingController.dart';
 import 'package:glam1/services/leads_services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:glam1/screens/AboutMePage.dart';
@@ -32,13 +34,15 @@ import 'package:glam1/screens/CalenderScreen.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  Get.put(BookingController());
   String initialRoute = await getInitialRoute();
   runApp(MyApp(initialRoute: initialRoute));
+
 }
 
 Future<String> getInitialRoute() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  return prefs.getString('user_email') != null ? '/home' : '/travelInfo';
+  return prefs.getString('user_email') != null ? '/home' : '/calender';
 }
 
 class MyApp extends StatelessWidget {
@@ -59,13 +63,13 @@ class MyApp extends StatelessWidget {
         // GetPage(name: '/settings', page: () => const HomePage()),
         GetPage(name: '/about', page: () => const AboutMePage()),
         GetPage(name: '/address', page: () => const AddressDetailsPage()),
-        GetPage(name: '/bundle', page: () => const BundleServicePage()),
+        // GetPage(name: '/bundle', page: () => const BundleServicePage()),
         GetPage(name: '/details', page: () => const EnterDetailsPage()),
         GetPage(name: '/login', page: () => const LoginPage()),
         GetPage(name: '/loginScreen', page: () => const LoginScreen()),
         GetPage(name: '/services', page: () => const ServicesInfoPage()),
         GetPage(name: '/verify', page: () => const VerifyEmailPage()),
-        GetPage(name: '/travelInfo', page: () => const TravellingInfoPage()),
+        GetPage(name: '/travelInfo', page: () => const TravellingInfoPage(fullAddress: "",)),
         GetPage(name: '/calender', page: () => const CalenderPage()),
         GetPage(
             name: '/PreviewPage', page: () => const EstimatePreviewScreen()),

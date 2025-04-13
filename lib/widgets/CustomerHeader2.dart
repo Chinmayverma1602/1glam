@@ -5,8 +5,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:get/get.dart';
 
 
-class CustomHeaderManageLeadsPage extends StatelessWidget {
-  const CustomHeaderManageLeadsPage({super.key});
+class CustomHeader2 extends StatelessWidget {
+  final String textValue;
+  const CustomHeader2({super.key, required this.textValue});
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +26,7 @@ class CustomHeaderManageLeadsPage extends StatelessWidget {
             ),
           ),
           Text(
-            "Manage Lead",
+            textValue,
             textAlign: TextAlign.start,
             style: GoogleFonts.inter(
                 fontSize: 25, fontWeight: FontWeight.w600, color: Colors.black),

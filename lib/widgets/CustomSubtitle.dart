@@ -13,7 +13,7 @@ class CustomSubTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Text(subtitle, style: GoogleFonts.inter(fontSize: 14,  color:color ),)
+        Text(subtitle, style: GoogleFonts.inter(fontSize: 14,  color:color),)
       ],
     );
   }

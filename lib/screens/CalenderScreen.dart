@@ -205,10 +205,10 @@ class _CalendarPageState extends State<CalenderPage> {
             final bookingsForDay = _getBookingsForDay(day);
             bool isSelected = isSameDay(_selectedDay, day);
             bool isToday = isSameDay(day, DateTime.now());
-      
+
             return Container(
               margin: const EdgeInsets.all(4),
-              padding: const EdgeInsets.only(left : 10),
+              padding: const EdgeInsets.only(left: 10),
               alignment: Alignment.center,
               child: Stack(
                 children: [
@@ -220,12 +220,13 @@ class _CalendarPageState extends State<CalenderPage> {
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(10),
                         color: isToday
-                            ? const Color(0xFFE8CFFF) // Slightly darker for today
+                            ? const Color(
+                                0xFFE8CFFF) // Slightly darker for today
                             : const Color(
                                 0xFFF9EBFF), // Light purple for selected & events
                       ),
                     ),
-      
+
                   // Date Text
                   Align(
                     alignment: Alignment.topLeft,
@@ -240,7 +241,7 @@ class _CalendarPageState extends State<CalenderPage> {
                       ),
                     ),
                   ),
-      
+
                   // Event Indicator (Only if there are events)
                   if (bookingsForDay.isNotEmpty)
                     Align(
@@ -281,7 +282,7 @@ class _CalendarPageState extends State<CalenderPage> {
                         ),
                       ),
                     ),
-      
+
                   // "No Events" Label for Selected Day without Events
                   if (isSelected && bookingsForDay.isEmpty)
                     Align(
@@ -297,7 +298,8 @@ class _CalendarPageState extends State<CalenderPage> {
                           ),
                           child: const Center(
                             child: Padding(
-                              padding: const EdgeInsets.only(left: 4.0, top: 4.0),
+                              padding:
+                                  const EdgeInsets.only(left: 4.0, top: 4.0),
                               child: Text(
                                 'No events',
                                 style: TextStyle(
@@ -329,82 +331,80 @@ class _CalendarPageState extends State<CalenderPage> {
 
     return Expanded(
       child: Container(
-        
         padding: EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              _getBookingsSectionTitle(),
-              // "HEY HARSH",
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-              ),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text(
+            _getBookingsSectionTitle(),
+            // "HEY HARSH",
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
             ),
-            // SizedBox(
-            //   height: 25,
-            //   child: Container(
-            //     decoration: BoxDecoration(color: Colors.blue),
-            //   ),
-            // ),
-            bookingsForSelectedDay.isEmpty
-                ? Flexible(
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          SizedBox(height: 16),
-                          Text(
-                            "No bookings for this date",
-                            style: TextStyle(
-                              color: Colors.grey[600],
-                              fontSize: 16,
-                            ),
+          ),
+          // SizedBox(
+          //   height: 25,
+          //   child: Container(
+          //     decoration: BoxDecoration(color: Colors.blue),
+          //   ),
+          // ),
+          bookingsForSelectedDay.isEmpty
+              ? Flexible(
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(height: 16),
+                        Text(
+                          "No bookings for this date",
+                          style: TextStyle(
+                            color: Colors.grey[600],
+                            fontSize: 16,
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                  )
-                : 
-                // decoration: BoxDecoration(
-                //   border: Border.all(
-                //       color: Colors.red, width: 2), // 🔴 Add Border
-                //   borderRadius: BorderRadius.circular(
-                //       8), // 🔵 Optional: Rounded Corners
-                // ),
-                Flexible(
-                  child: ListView.builder(
-                    shrinkWrap:
-                        true, // ✅ Ensures it only takes necessary space
-                    //physics:                          NeverScrollableScrollPhysics(), // ✅ Prevents nested scrolling issues
-                    itemCount: bookingsForSelectedDay.length,
-                    itemBuilder: (context, index) {
-                      final booking = bookingsForSelectedDay[index];
-                      // return Text("Hello");
-                      return _buildBookingItem(booking);
-                    },
                   ),
-                ),]
-                                  
-          
-        ),
+                )
+              :
+              Flexible(
+                  child: Obx(() {
+                    print('I ran again lets go');
+                    var bookingsForSelectedDay = bookingController.bookings
+                        .where(
+                            (booking) => isSameDay(booking.date, _selectedDay))
+                        .toList();
+                    return ListView.builder(
+                      shrinkWrap:
+                          true, // ✅ Ensures it only takes necessary space
+                      itemCount: bookingsForSelectedDay.length,
+                      itemBuilder: (context, index) {
+                        final booking = bookingsForSelectedDay[index];
+                        // return Text("Hello");
+                        return _buildBookingItem(context,
+                            booking); // Pass context as the first parameter
+                      },
+                    );
+                  }),
+                ),
+        ]),
       ),
     );
   }
 
-  Widget _buildBookingItem(Booking booking) {
+  Widget _buildBookingItem(BuildContext context, Booking booking) {
     return GestureDetector(
       onTap: () {
-        log("TAPPED"); //debugging purposes
-        Navigator.push(context,
-            MaterialPageRoute(builder: (context) => EditBookingScreen(booking: booking,)));
+        print("TAPPED"); // for debugging purposes
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => EditBookingScreen(booking: booking)),
+        );
       },
       child: Container(
         margin: EdgeInsets.only(bottom: 16),
         padding: EdgeInsets.all(16),
         decoration: BoxDecoration(
-          // border: Border.all(color: Colors.black),
           color: Colors.white,
           borderRadius: BorderRadius.circular(8),
           boxShadow: [
@@ -429,7 +429,8 @@ class _CalendarPageState extends State<CalenderPage> {
                     fontSize: 16,
                   ),
                 ),
-                //_buildStatusChip(booking.services[1]),
+                // If you want to add status chip later
+                // _buildStatusChip(booking.status),
               ],
             ),
             SizedBox(height: 4),
@@ -449,8 +450,7 @@ class _CalendarPageState extends State<CalenderPage> {
                 ),
                 SizedBox(width: 4),
                 Text(
-                  "${DateFormat('h:mm a').format(booking.startTime)} - ${DateFormat('h:mm a').format(booking.endTime)}"
-                  ,
+                  "${DateFormat('h:mm a').format(booking.startTime)} - ${DateFormat('h:mm a').format(booking.endTime)}",
                   style: TextStyle(
                     color: Colors.grey[700],
                   ),
@@ -504,3 +504,4 @@ enum BookingStatus {
   pending,
   confirmed,
 }
+

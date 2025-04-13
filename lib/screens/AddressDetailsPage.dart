@@ -247,7 +247,7 @@ class _AddressDetailsPageState extends State<AddressDetailsPage> {
       final savedAddress = await _addressService.saveAddress(address);
       if (savedAddress != null) {
         Navigator.push(context,
-            MaterialPageRoute(builder: (context) => TravellingInfoPage()));
+            MaterialPageRoute(builder: (context) => TravellingInfoPage(fullAddress: address.toString(),)));
       }
     } catch (e) {
       print(e);
@@ -270,7 +270,7 @@ class _AddressDetailsPageState extends State<AddressDetailsPage> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) {;
     return Scaffold(
       backgroundColor: Colors.white,
       body: Padding(
@@ -298,7 +298,7 @@ class _AddressDetailsPageState extends State<AddressDetailsPage> {
                   child: Row(children: [
                     Icon(isLoadingLocation ? Icons.sync : Icons.pin_drop,
                         color: AppColors.subtitle, size: 18),
-                    SizedBox(width: MediaQuery.of(context).size.width*0.025),
+                    SizedBox(width: MediaQuery.of(context).size.width * 0.025),
                     Text(
                         isLoadingLocation
                             ? "Getting location..."

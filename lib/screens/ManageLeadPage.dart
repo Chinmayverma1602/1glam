@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:glam1/constants/AppColors.dart';
 import 'package:glam1/model/leadsRes_model.dart';
-import 'package:glam1/widgets/CustomerHeaderManageLeadsPage.dart';
+import 'package:glam1/widgets/CustomerHeader2.dart';
 import 'package:glam1/widgets/LeadDetailsButton.dart';
 import 'package:glam1/widgets/LeadsPageFilterBar.dart';
 import 'package:glam1/widgets/ManageLeadNameButton.dart';
@@ -36,7 +36,7 @@ class _ManageLeadPageState extends State<ManageLeadPage> {
         child: Column(
           children: [
             SizedBox(height: MediaQuery.of(context).size.height * 0.03),
-            CustomHeaderManageLeadsPage(),
+            CustomHeader2(textValue: "Manage Leads",),
             SizedBox(height: MediaQuery.of(context).size.height * 0.03),
             Padding(
               padding: EdgeInsets.only(left: 9.0),

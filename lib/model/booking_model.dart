@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class Booking {
   final String id;
   final String customerName;
@@ -19,16 +21,30 @@ class Booking {
     required this.startTime,
   });
 
-  factory Booking.fromJson(Map<String, dynamic> json) {
+  factory Booking.fromJson(Map<String, dynamic> json, String documentId) {
+    // Handle date and startTime from Firestore Timestamp
+    DateTime date;
+    DateTime startTime;
+    
+    try {
+      date = (json['date'] as Timestamp).toDate();
+      startTime = (json['start_time'] as Timestamp).toDate();
+    } catch (e) {
+      print('Error parsing date/time from Firestore: $e');
+      // Fallback in case of parsing errors
+      date = DateTime.now();
+      startTime = DateTime.now();
+    }
+    
     return Booking(
-      id: json['id'],
-      customerName: json['customer_name'],
-      phoneNo: json['phone_no'],
-      date: DateTime.parse(json['date']),
-      serviceName: json['service_name'],
-      price: json['price'],
-      duration: Duration(minutes: json['duration']),
-      startTime: DateTime.parse(json['start_time']),
+      id: documentId,
+      customerName: json['customer_name'] as String,
+      phoneNo: json['phone_no'] as String,
+      date: date,
+      serviceName: json['service_name'] as String,
+      price: json['price'] as int,
+      duration: Duration(minutes: json['duration'] as int),
+      startTime: startTime,
     );
   }
 
@@ -37,11 +53,11 @@ class Booking {
       'id': id,
       'customer_name': customerName,
       'phone_no': phoneNo,
-      'date': date.toIso8601String(),
+      'date': Timestamp.fromDate(date),
       'service_name': serviceName,
       'price': price,
       'duration': duration.inMinutes,
-      'start_time': startTime.toIso8601String(),
+      'start_time': Timestamp.fromDate(startTime),
     };
   }
 
