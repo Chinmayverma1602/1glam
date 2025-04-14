@@ -1,28 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:get/get_state_manager/src/rx_flutter/rx_getx_widget.dart';
 import 'package:glam1/constants/AppColors.dart';
 import 'package:switcher_button/switcher_button.dart';
 import 'package:dropdown_textfield/dropdown_textfield.dart';
 
-import '../services/add_services_controller.dart';
-
 class CustomServiceSelectionContainer extends StatefulWidget {
   final int id;
-  final String title;
-  final String serviceCategory;
-  final dynamic serviceCategoryDropDown;
+  final TextEditingController titleController;
+  final TextEditingController descriptionController;
+  final SingleValueDropDownController serviceCategoryController;
   final Color buttonBorderColor;
   final String hintText;
   final Color borderColor;
   final double borderRadius;
-  final String durationLabel;
-  final String priceLabel;
-  final String artistLabel;
-  final String changeLabel;
-  final String artistName;
-  final String artistSpecialization;
+  final TextEditingController durationController;
+  final TextEditingController priceController;
+  final TextEditingController artistNameController;
+  final TextEditingController artistSpecializationController;
   final String serviceType;
   final String serviceIcon;
   final Color textColor;
@@ -30,32 +25,30 @@ class CustomServiceSelectionContainer extends StatefulWidget {
   final Color trailingIconColor;
   final Color backgroundColor;
   final String artistImage;
-  final VoidCallback onDelete; // Callback function to remove widget
+  final VoidCallback onDelete;
 
   const CustomServiceSelectionContainer({
     Key? key,
-    required this.title,
-    required this.serviceCategory,
+    required this.id,
+    required this.titleController,
+    required this.descriptionController,
+    required this.serviceCategoryController,
     required this.buttonBorderColor,
     required this.hintText,
     required this.borderColor,
     required this.borderRadius,
-    required this.durationLabel,
-    required this.priceLabel,
-    this.artistLabel = "Select Artist (Optional)",
-    this.changeLabel = "Change",
-    required this.artistName,
-    required this.artistSpecialization,
+    required this.durationController,
+    required this.priceController,
+    required this.artistNameController,
+    required this.artistSpecializationController,
     required this.serviceType,
     required this.serviceIcon,
     this.textColor = Colors.black,
-    this.leadingIconColor = Colors.black,
-    this.trailingIconColor = Colors.black,
+    required this.leadingIconColor,
+    required this.trailingIconColor,
     this.backgroundColor = Colors.white,
     required this.artistImage,
-    required this.onDelete, // Deleting function
-    required this.id, // id to track it
-    this.serviceCategoryDropDown = "Hair Styling",
+    required this.onDelete,
   }) : super(key: key);
 
   @override
@@ -65,37 +58,23 @@ class CustomServiceSelectionContainer extends StatefulWidget {
 
 class _CustomServiceSelectionContainerState
     extends State<CustomServiceSelectionContainer> {
-  late SingleValueDropDownController serviceController;
-  TextEditingController titleController = TextEditingController();
-  final AddServicesController addServicesController = Get.find<AddServicesController>();
-  bool isEditing = false; // Track editing state
-  final FocusNode _titleFocusNode = FocusNode(); // Focus node for title field
-  
-  @override
-  void initState() {
-    super.initState();
-    titleController.text = widget.title;
-    serviceController = SingleValueDropDownController(
-        data: DropDownValueModel(name: "Hairstyling", value: "Hairstyling"));
-  }
+  bool isEditing = false;
+  final FocusNode _titleFocusNode = FocusNode();
 
   @override
   void dispose() {
-    serviceController.dispose();
-    titleController.dispose();
-    _titleFocusNode.dispose(); // Dispose focus node
+    _titleFocusNode.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: (){
-        // for debug
+      onTap: () {
         print("Tapped card with ID: ${widget.id}");
       },
       child: Padding(
-        padding: const EdgeInsets.only(bottom: 16.0), // Adds bottom padding
+        padding: const EdgeInsets.only(bottom: 16.0),
         child: Material(
           elevation: 1,
           borderRadius: BorderRadius.circular(widget.borderRadius),
@@ -109,16 +88,14 @@ class _CustomServiceSelectionContainerState
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Header Row with title, edit icon, and delete icon
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Expanded(
                       child: TextField(
-                        controller: titleController,
-                        focusNode: _titleFocusNode, // Assign focus node
-                        readOnly:
-                            !isEditing, // Make it read-only unless in edit mode
+                        controller: widget.titleController,
+                        focusNode: _titleFocusNode,
+                        readOnly: !isEditing,
                         decoration: const InputDecoration(
                           border: InputBorder.none,
                           contentPadding: EdgeInsets.zero,
@@ -138,19 +115,13 @@ class _CustomServiceSelectionContainerState
                               : const Color.fromARGB(255, 204, 103, 218)),
                       onPressed: () {
                         setState(() {
-                          isEditing = !isEditing; // Toggle editing state
-      
+                          isEditing = !isEditing;
                           if (isEditing) {
-                            // When starting edit (edit icon pressed)
-                            // Request focus on the text field
-      
                             _titleFocusNode.requestFocus();
-                            // Position cursor at the end of text
-                            titleController.selection =
+                            widget.titleController.selection =
                                 TextSelection.fromPosition(TextPosition(
-                                    offset: titleController.text.length));
+                                    offset: widget.titleController.text.length));
                           } else {
-                            // When finishing edit (check icon pressed)
                             _titleFocusNode.unfocus();
                           }
                         });
@@ -158,15 +129,14 @@ class _CustomServiceSelectionContainerState
                     ),
                     IconButton(
                       icon: const Icon(Icons.delete, color: Colors.red),
-                      onPressed: widget.onDelete, // Calls function to delete
+                      onPressed: widget.onDelete,
                     ),
                   ],
                 ),
                 const SizedBox(height: 8.0),
-      
-                // Dropdown TextField for service selection
+
                 DropDownTextField(
-                  controller: serviceController,
+                  controller: widget.serviceCategoryController,
                   clearOption: false,
                   textFieldDecoration: InputDecoration(
                     border: OutlineInputBorder(
@@ -185,8 +155,7 @@ class _CustomServiceSelectionContainerState
                     DropDownValueModel(name: "Makeup", value: "Makeup"),
                     DropDownValueModel(name: "Facial", value: "Facial"),
                     DropDownValueModel(name: "Massage", value: "Massage"),
-                    DropDownValueModel(
-                        name: "Hair Coloring", value: "Hair Coloring"),
+                    DropDownValueModel(name: "Hair Coloring", value: "Hair Coloring"),
                     DropDownValueModel(name: "Nail Art", value: "Nail Art"),
                   ],
                   onChanged: (val) {
@@ -195,8 +164,7 @@ class _CustomServiceSelectionContainerState
                 ),
                 const SizedBox(height: 16.0),
                 const Divider(),
-      
-                // Duration and Price fields
+
                 Row(
                   children: [
                     Text("  Duration",
@@ -212,8 +180,9 @@ class _CustomServiceSelectionContainerState
                     SizedBox(
                       width: MediaQuery.of(context).size.width * 0.2,
                       child: TextField(
+                        controller: widget.durationController,
                         decoration: InputDecoration(
-                          hintText: widget.durationLabel,
+                          hintText: "Duration",
                           enabledBorder: OutlineInputBorder(
                             borderRadius:
                                 BorderRadius.circular(widget.borderRadius),
@@ -229,8 +198,9 @@ class _CustomServiceSelectionContainerState
                     SizedBox(
                       width: MediaQuery.of(context).size.width * 0.4,
                       child: TextField(
+                        controller: widget.priceController,
                         decoration: InputDecoration(
-                          hintText: widget.priceLabel,
+                          hintText: "Price",
                           enabledBorder: OutlineInputBorder(
                             borderRadius:
                                 BorderRadius.circular(widget.borderRadius),
@@ -243,15 +213,14 @@ class _CustomServiceSelectionContainerState
                   ],
                 ),
                 const Divider(),
-      
-                // Artist selection row
+
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(widget.artistLabel,
+                    Text("Select Artist (Optional)",
                         style: TextStyle(color: widget.textColor)),
                     Text(
-                      widget.changeLabel,
+                      "Change",
                       style: TextStyle(
                         color: AppColors.primary,
                         fontWeight: FontWeight.bold,
@@ -268,14 +237,14 @@ class _CustomServiceSelectionContainerState
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          widget.artistName,
+                          widget.artistNameController.text,
                           style: TextStyle(
                             color: widget.textColor,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         Text(
-                          widget.artistSpecialization,
+                          widget.artistSpecializationController.text,
                           style:
                               TextStyle(color: widget.textColor.withOpacity(0.7)),
                         ),
@@ -285,14 +254,13 @@ class _CustomServiceSelectionContainerState
                 ),
                 const Divider(),
                 const SizedBox(height: 10),
-                // Service Type row with switcher button
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Row(
                       children: [
                         SvgPicture.asset(
-                          widget.serviceIcon,
+                            widget.serviceIcon,
                           width: 24,
                           height: 24,
                           color: widget.leadingIconColor,
@@ -320,6 +288,10 @@ class _CustomServiceSelectionContainerState
     );
   }
 }
+
+
+
+
 
 // import 'package:flutter/material.dart';
 // import 'package:get/get.dart';
