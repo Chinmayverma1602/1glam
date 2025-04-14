@@ -135,7 +135,7 @@ class AddServicesController extends GetxController {
 
   final RxBool _isLoading = false.obs;
   bool get isLoading => _isLoading.value;
-  
+
   @override
   void onInit() {
     super.onInit();
@@ -147,56 +147,49 @@ class AddServicesController extends GetxController {
 
   // Fetch services from Firebase
   Future<void> fetchServices() async {
-  try {
-    // Clear existing services
-    bundleServiceWidgets.clear();
-    singleServiceWidget.clear();
-    _serviceIdCounter = 0;
+    try {
+      // Clear existing services
+      bundleServiceWidgets.clear();
+      singleServiceWidget.clear();
+      _serviceIdCounter = 0;
 
-    // First, get all documents to see what's there
-    QuerySnapshot allSnapshot = await _firestore.collection('services').get();
-    print('Total documents found: ${allSnapshot.docs.length}');
-    
-    // Debug: print each document's content
-    for (var doc in allSnapshot.docs) {
-      print('Document ID: ${doc.id}');
-      print('Document data: ${doc.data()}');
-    }
-    
-    // Now try the filtered query
-    QuerySnapshot snapshot = await _firestore
-        .collection('services')
-        .where('user_email', isEqualTo: 'user_email1@gmail.com')
-        .get();
-    
-    print('Filtered documents found: ${snapshot.docs.length}');
+      // First, get all documents to see what's there
+      QuerySnapshot allSnapshot = await _firestore.collection('services').get();
+      print('Total documents found: ${allSnapshot.docs.length}');
 
-    // Process the filtered documents
-    for (var doc in snapshot.docs) {
-      final data = doc.data() as Map<String, dynamic>;
-      final isServiceBundle = data['isBundle'] == true;
-      
-      final serviceItem = ServiceItem.fromFirestore(doc, _serviceIdCounter++);
-      
-      if (isServiceBundle) {
-        bundleServiceWidgets.add(serviceItem);
-      } else {
-        singleServiceWidget.add(serviceItem);
+      // Debug: print each document's content
+      for (var doc in allSnapshot.docs) {
+        print('Document ID: ${doc.id}');
+        print('Document data: ${doc.data()}');
       }
+
+      // Now try the filtered query
+      QuerySnapshot snapshot = await _firestore
+          .collection('services')
+          .where('user_email', isEqualTo: 'user_email1@gmail.com')
+          .get();
+
+      print('Filtered documents found: ${snapshot.docs.length}');
+
+      // Process the filtered documents
+      for (var doc in snapshot.docs) {
+        final data = doc.data() as Map<String, dynamic>;
+        final isServiceBundle = data['isBundle'] == true;
+
+        final serviceItem = ServiceItem.fromFirestore(doc, _serviceIdCounter++);
+
+        if (isServiceBundle) {
+          bundleServiceWidgets.add(serviceItem);
+        } else {
+          singleServiceWidget.add(serviceItem);
+        }
+      }
+    } catch (e) {
+      print('Error fetching services: $e');
+    } finally {
+      _isLoading.value = false;
     }
-  } catch (e) {
-    Get.snackbar(
-      'Error',
-      'Failed to load services: $e',
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: Colors.red,
-      colorText: Colors.white,
-    );
-    print('Error fetching services: $e');
-  } finally {
-    _isLoading.value = false;
   }
-}
 
   // Toggle between Bundle and Single mode
   void toggleMode() {
@@ -347,7 +340,7 @@ class AddServicesController extends GetxController {
         bundleServiceWidgets[index].artistSpecializationController.dispose();
 
         // Remove from list
-        bundleServiceWidgets.removeAt(index);
+        tempbundleServiceWidgets.removeAt(index);
       }
     } else {
       final index = singleServiceWidget.indexWhere((item) => item.id == id);
@@ -389,7 +382,7 @@ class AddServicesController extends GetxController {
         singleServiceWidget[index].artistSpecializationController.dispose();
 
         // Remove from list
-        singleServiceWidget.removeAt(index);
+        tempsingleServiceWidget.removeAt(index);
       }
     }
   }
