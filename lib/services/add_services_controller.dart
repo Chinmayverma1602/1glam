@@ -332,54 +332,28 @@ class AddServicesController extends GetxController {
           tempbundleServiceWidgets.indexWhere((item) => item.id == id);
       if (index != -1) {
         // Dispose of controllers
-        bundleServiceWidgets[index].titleController.dispose();
-        bundleServiceWidgets[index].descriptionController.dispose();
-        bundleServiceWidgets[index].durationController.dispose();
-        bundleServiceWidgets[index].priceController.dispose();
-        bundleServiceWidgets[index].artistNameController.dispose();
-        bundleServiceWidgets[index].artistSpecializationController.dispose();
+        tempbundleServiceWidgets[index].titleController.dispose();
+        tempbundleServiceWidgets[index].descriptionController.dispose();
+        tempbundleServiceWidgets[index].durationController.dispose();
+        tempbundleServiceWidgets[index].priceController.dispose();
+        tempbundleServiceWidgets[index].artistNameController.dispose();
+        tempbundleServiceWidgets[index].artistSpecializationController.dispose();
 
         // Remove from list
         tempbundleServiceWidgets.removeAt(index);
       }
     } else {
-      final index = singleServiceWidget.indexWhere((item) => item.id == id);
+      final index = tempsingleServiceWidget.indexWhere((item) => item.id == id);
       if (index != -1) {
         // If service exists in Firestore, delete it
-        final serviceItem = singleServiceWidget[index];
-        if (serviceItem.documentId != null) {
-          try {
-            await _firestore
-                .collection('services')
-                .doc(serviceItem.documentId)
-                .delete();
-            Get.snackbar(
-              'Success',
-              'Service deleted from database',
-              snackPosition: SnackPosition.BOTTOM,
-              backgroundColor: Colors.green,
-              colorText: Colors.white,
-            );
-          } catch (e) {
-            Get.snackbar(
-              'Error',
-              'Failed to delete service: $e',
-              snackPosition: SnackPosition.BOTTOM,
-              backgroundColor: Colors.red,
-              colorText: Colors.white,
-            );
-            print('Error deleting service: $e');
-            return; // Don't remove from local list if deletion failed
-          }
-        }
 
         // Dispose of controllers
-        singleServiceWidget[index].titleController.dispose();
-        singleServiceWidget[index].descriptionController.dispose();
-        singleServiceWidget[index].durationController.dispose();
-        singleServiceWidget[index].priceController.dispose();
-        singleServiceWidget[index].artistNameController.dispose();
-        singleServiceWidget[index].artistSpecializationController.dispose();
+        tempsingleServiceWidget[index].titleController.dispose();
+        tempsingleServiceWidget[index].descriptionController.dispose();
+        tempsingleServiceWidget[index].durationController.dispose();
+        tempsingleServiceWidget[index].priceController.dispose();
+        tempsingleServiceWidget[index].artistNameController.dispose();
+        tempsingleServiceWidget[index].artistSpecializationController.dispose();
 
         // Remove from list
         tempsingleServiceWidget.removeAt(index);
