@@ -23,9 +23,9 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
 
-  int _totalBooking=0;
-  int _totalProposalSent=0;
-  int _totalInquiryRecieved=0;
+  int _totalBooking = 0;
+  int _totalProposalSent = 0;
+  int _totalInquiryRecieved = 0;
 
   @override
   void initState() {
@@ -37,17 +37,17 @@ class _HomePageState extends State<HomePage> {
     for (var lead in sampleLeads) {
       final status = lead.data.leadStatus;
 
-      if (status == 'Inquiry Received') {
+      if (status == 'Inbound' || status == 'Qualifying') {
         _totalInquiryRecieved++;
-      } else if (status == 'Consultation Scheduled' || status == 'Follow-up Required') {
+      } else if (status == 'Proposal Sent' || status == 'Proposal Accepted') {
         _totalProposalSent++;
-      } else if (status == 'Pending Payment' || status == 'Confirmed') {
+      } else if (status == 'Deposit Requested' ||
+          status == 'Deposit Received' ||
+          status == 'Confirmed') {
         _totalBooking++;
       }
     }
   }
-
-
 
   void _onItemTapped(int index) {
     if (index == _selectedIndex) return;
@@ -98,7 +98,6 @@ class _HomePageState extends State<HomePage> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -107,9 +106,10 @@ class _HomePageState extends State<HomePage> {
                         ),
                         const SizedBox(height: 2),
                         CustomSubTitle(
-                          subtitle: "Tuesday, 15 Feb 2025",
-                          color: Color.fromRGBO(107, 114, 128, 1) //** AppColors.subtitle,
-                        ),
+                            subtitle: "Tuesday, 15 Feb 2025",
+                            color: Color.fromRGBO(
+                                107, 114, 128, 1) //** AppColors.subtitle,
+                            ),
                       ],
                     ),
 
@@ -122,7 +122,7 @@ class _HomePageState extends State<HomePage> {
                 ),
 
                 const SizedBox(height: 24),
-        
+
                 // Section: Social Channels or Quick Actions
                 Text(
                   "Social Channels",
@@ -141,11 +141,14 @@ class _HomePageState extends State<HomePage> {
                       iconColor: Colors.white,
                       leadingIcon: FontAwesomeIcons.instagram,
                       //trailingImage: 'assets/images/c.svg',
-                      gradientColors: [Color.fromRGBO(236, 72, 153, 1), Color.fromRGBO(217, 70, 239, 1)],
+                      gradientColors: [
+                        Color.fromRGBO(236, 72, 153, 1),
+                        Color.fromRGBO(217, 70, 239, 1)
+                      ],
                       textColor: Colors.white,
                       textSize: 16,
                       isBold: true,
-                      onTap: () async{
+                      onTap: () async {
                         launchUrl(Uri.https("instagram.com"));
                       },
                     ),
@@ -155,7 +158,10 @@ class _HomePageState extends State<HomePage> {
                       borderColor: Colors.transparent,
                       iconColor: Colors.white,
                       leadingIcon: FontAwesomeIcons.whatsapp,
-                      gradientColors: [Color.fromRGBO(16, 185, 129, 1), Color.fromRGBO(16, 185, 129, 1)],
+                      gradientColors: [
+                        Color.fromRGBO(16, 185, 129, 1),
+                        Color.fromRGBO(16, 185, 129, 1)
+                      ],
                       //trailingImage: 'assets/images/c.svg',
                       textColor: Colors.white,
                       textSize: 16,
@@ -167,7 +173,10 @@ class _HomePageState extends State<HomePage> {
                       borderColor: Colors.transparent,
                       iconColor: Colors.white,
                       leadingIcon: FontAwesomeIcons.userPen,
-                      gradientColors: [Color.fromRGBO(139, 92, 246, 1), Color.fromRGBO(139, 92, 246, 1)],
+                      gradientColors: [
+                        Color.fromRGBO(139, 92, 246, 1),
+                        Color.fromRGBO(139, 92, 246, 1)
+                      ],
                       //trailingImage: 'assets/images/c.svg',
                       textColor: Colors.white,
                       textSize: 16,
@@ -176,10 +185,10 @@ class _HomePageState extends State<HomePage> {
                   ],
                 ),
                 const SizedBox(height: 24),
-        
+
                 // Section: Today's Schedule
                 Card(
-                  color: Colors.white,  
+                  color: Colors.white,
                   elevation: 0,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -240,7 +249,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
                 const SizedBox(height: 24),
-        
+
                 // Section: Add New Booking or other Home Services
                 Text(
                   "Services",
@@ -272,7 +281,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
                 const SizedBox(height: 32),
-        
+
                 // Section: Lead Stages
                 Text(
                   "Lead Stages",

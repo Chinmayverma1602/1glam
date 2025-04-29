@@ -23,50 +23,50 @@ class _ManageLeadNameButtonState extends State<ManageLeadNameButton> {
   // Function to determine status container color based on lead status
   Map<String, Color> getStatusColors(String status) {
     switch (status) {
-      case "New":
+      case "Inbound":
         return {
           'bg': Color(0xFFE0F2FE), // Light blue bg
           'text': Color(0xFF0284C7), // Blue text
         };
-      case "In Progress":
-        return {
-          'bg': Color(0xFFDCFCE7), // Light green bg
-          'text': Color(0xFF15803D), // Green text
-        };
-      case "Confirmed":
-        return {
-          'bg': AppColors.proposalButtonColor, // Green bg
-          'text': AppColors.proposalAcceptedTextColor, // Green text
-        };
-      case "Inquiry Received":
-        return {
-          'bg': AppColors.inquiryButtonColor, // Yellow bg
-          'text': AppColors.inquiryTextColor, // Yellow text
-        };
-      case "Qualified Lead":
-        return {
-          'bg': AppColors.qualifiedButtonColor, // Blue bg
-          'text': AppColors.qualifiedLeadTextColor, // Blue text
-        };
-      case "Accepted Leads":
-        return {
-          'bg': Color(0xFFD8B4FE), // Purple bg
-          'text': Color(0xFF7E22CE), // Purple text
-        };
-      case "Consultation Scheduled":
+      case "Qualifying":
         return {
           'bg': Color(0xFFFDE68A), // Amber bg
           'text': Color(0xFFB45309), // Amber text
         };
-      case "Follow-up Required":
+      case "Proposal Sent":
+        return {
+          'bg': Color(0xFFDCFCE7), // Light green bg
+          'text': Color(0xFF15803D), // Green text
+        };
+      case "Proposal Accepted":
+        return {
+          'bg': AppColors.proposalButtonColor, // Green bg
+          'text': AppColors.proposalAcceptedTextColor, // Green text
+        };
+      case "Deposit Requested":
+        return {
+          'bg': Color(0xFFFBEDD8), // Orange bg
+          'text': Color(0xFFEA580C), // Orange text
+        };
+      case "Deposit Received":
+        return {
+          'bg': Color(0xFFD8B4FE), // Purple bg
+          'text': Color(0xFF7E22CE), // Purple text
+        };
+      case "Confirmed":
+        return {
+          'bg': AppColors.inquiryButtonColor, // Yellow bg
+          'text': AppColors.inquiryTextColor, // Yellow text
+        };
+      case "Closed / Lost":
         return {
           'bg': Color(0xFFFECACA), // Red bg
           'text': Color(0xFFDC2626), // Red text
         };
-      case "Pending Payment":
+      case "Waitlisted":
         return {
-          'bg': Color(0xFFFBEDD8), // Orange bg
-          'text': Color(0xFFEA580C), // Orange text
+          'bg': Color(0xFFE5E7EB), // Gray bg
+          'text': Color(0xFF4B5563), // Gray text
         };
       default:
         return {

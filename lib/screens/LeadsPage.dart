@@ -26,12 +26,15 @@ class _LeadsPageState extends State<LeadsPage> {
   final ScrollController _scrollController = ScrollController();
   final List<String> leadsPageFilters = [
     "All Leads",
-    "New",
-    "In Progress",
+    "Inbound",
+    "Qualifying",
+    "Proposal Sent",
+    "Proposal Accepted",
+    "Deposit Requested",
+    "Deposit Received",
     "Confirmed",
-    "Inquiry Recieved",
-    "Qualified Lead",
-    "Accepted Leads"
+    "Closed / Lost",
+    "Waitlisted"
   ];
 
   @override

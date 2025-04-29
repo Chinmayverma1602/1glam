@@ -3,8 +3,6 @@ import 'package:http/http.dart' as http;
 import '../model/leadsReq_model.dart';
 import '../model/leadsRes_model.dart';
 
-
-
 //SAMPLE response for get all leads request to be shown on the main leads page
 List<LeadsResponse> sampleLeads = [
   LeadsResponse(
@@ -18,7 +16,7 @@ List<LeadsResponse> sampleLeads = [
       idx: 0,
       clientName: "John Doe",
       phoneNumber: "9876543210",
-      leadStatus: "Inquiry Received",
+      leadStatus: "Inbound",
       bookingDate: "2025-04-01",
       fromTime: "10:50:10.763896",
       toTime: "10:50:10.763944",
@@ -75,7 +73,7 @@ List<LeadsResponse> sampleLeads = [
       idx: 1,
       clientName: "Jane Smith",
       phoneNumber: "9876512345",
-      leadStatus: "Consultation Scheduled",
+      leadStatus: "Qualifying",
       bookingDate: "2025-04-02",
       fromTime: "11:00:00",
       toTime: "13:00:00",
@@ -114,7 +112,7 @@ List<LeadsResponse> sampleLeads = [
       idx: 2,
       clientName: "Alice Brown",
       phoneNumber: "9876598765",
-      leadStatus: "Follow-up Required",
+      leadStatus: "Proposal Sent",
       bookingDate: "2025-04-03",
       fromTime: "14:00:00",
       toTime: "15:30:00",
@@ -192,7 +190,7 @@ List<LeadsResponse> sampleLeads = [
       idx: 4,
       clientName: "Sophia Green",
       phoneNumber: "9876576543",
-      leadStatus: "Pending Payment",
+      leadStatus: "Deposit Requested",
       bookingDate: "2025-04-05",
       fromTime: "10:30:00",
       toTime: "12:00:00",
@@ -221,10 +219,6 @@ List<LeadsResponse> sampleLeads = [
     ),
   ),
 ];
-
-
-
-
 
 class LeadsApiService {
   final String baseUrl = "http://1glam.local:8000/api/resource/Leads";

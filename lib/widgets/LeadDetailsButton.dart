@@ -39,50 +39,50 @@ class _LeadDetailsButtonState extends State<LeadDetailsButton> {
   // Function to determine status container color based on lead status
   Map<String, Color> getStatusColors(String status) {
     switch (status) {
-      case "New":
+      case "Inbound":
         return {
           'bg': Color(0xFFE0F2FE), // Light blue bg
           'text': Color(0xFF0284C7), // Blue text
         };
-      case "In Progress":
-        return {
-          'bg': Color(0xFFDCFCE7), // Light green bg
-          'text': Color(0xFF15803D), // Green text
-        };
-      case "Confirmed":
-        return {
-          'bg': AppColors.proposalButtonColor, // Green bg
-          'text': AppColors.proposalAcceptedTextColor, // Green text
-        };
-      case "Inquiry Received":
-        return {
-          'bg': AppColors.inquiryButtonColor, // Yellow bg
-          'text': AppColors.inquiryTextColor, // Yellow text
-        };
-      case "Qualified Lead":
-        return {
-          'bg': AppColors.qualifiedButtonColor, // Blue bg
-          'text': AppColors.qualifiedLeadTextColor, // Blue text
-        };
-      case "Accepted Leads":
-        return {
-          'bg': Color(0xFFD8B4FE), // Purple bg
-          'text': Color(0xFF7E22CE), // Purple text
-        };
-      case "Consultation Scheduled":
+      case "Qualifying":
         return {
           'bg': Color(0xFFFDE68A), // Amber bg
           'text': Color(0xFFB45309), // Amber text
         };
-      case "Follow-up Required":
+      case "Proposal Sent":
+        return {
+          'bg': Color(0xFFDCFCE7), // Light green bg
+          'text': Color(0xFF15803D), // Green text
+        };
+      case "Proposal Accepted":
+        return {
+          'bg': AppColors.proposalButtonColor, // Green bg
+          'text': AppColors.proposalAcceptedTextColor, // Green text
+        };
+      case "Deposit Requested":
+        return {
+          'bg': Color(0xFFFBEDD8), // Orange bg
+          'text': Color(0xFFEA580C), // Orange text
+        };
+      case "Deposit Received":
+        return {
+          'bg': Color(0xFFD8B4FE), // Purple bg
+          'text': Color(0xFF7E22CE), // Purple text
+        };
+      case "Confirmed":
+        return {
+          'bg': AppColors.inquiryButtonColor, // Yellow bg
+          'text': AppColors.inquiryTextColor, // Yellow text
+        };
+      case "Closed / Lost":
         return {
           'bg': Color(0xFFFECACA), // Red bg
           'text': Color(0xFFDC2626), // Red text
         };
-      case "Pending Payment":
+      case "Waitlisted":
         return {
-          'bg': Color(0xFFFBEDD8), // Orange bg
-          'text': Color(0xFFEA580C), // Orange text
+          'bg': Color(0xFFE5E7EB), // Gray bg
+          'text': Color(0xFF4B5563), // Gray text
         };
       default:
         return {
@@ -96,6 +96,47 @@ class _LeadDetailsButtonState extends State<LeadDetailsButton> {
   Widget build(BuildContext context) {
     // Get status colors based on lead status
     final statusColors = getStatusColors(widget.lead.data.leadStatus);
+
+    // Determine the second action button text based on lead status
+    String actionButtonText;
+    IconData actionButtonIcon = FontAwesomeIcons.telegram;
+
+    switch (widget.lead.data.leadStatus) {
+      case "Inbound":
+        actionButtonText = "Call";
+        actionButtonIcon = FontAwesomeIcons.phone;
+        break;
+      case "Qualifying":
+        actionButtonText = "Send Estimate";
+        break;
+      case "Proposal Sent":
+        actionButtonText = "Reminder";
+        break;
+      case "Proposal Accepted":
+        actionButtonText = "Invoice";
+        actionButtonIcon = FontAwesomeIcons.fileInvoice;
+        break;
+      case "Deposit Requested":
+        actionButtonText = "Reminder";
+        break;
+      case "Deposit Received":
+        actionButtonText = "Confirm";
+        break;
+      case "Confirmed":
+        actionButtonText = "Complete";
+        actionButtonIcon = FontAwesomeIcons.check;
+        break;
+      case "Closed / Lost":
+        actionButtonText = "NA";
+        actionButtonIcon = FontAwesomeIcons.ban;
+        break;
+      case "Waitlisted":
+        actionButtonText = "Proposal";
+        break;
+      default:
+        actionButtonText = "Send Form";
+        break;
+    }
 
     return InkWell(
       onTap: () {
@@ -200,8 +241,8 @@ class _LeadDetailsButtonState extends State<LeadDetailsButton> {
                   textColor: Colors.white,
                 ),
                 _actionButton(
-                  icon: FontAwesomeIcons.telegram,
-                  text: "Send Form",
+                  icon: actionButtonIcon,
+                  text: actionButtonText,
                   bgColor: AppColors.primary.withOpacity(0.1),
                   iconColor: AppColors.primary,
                   textColor: AppColors.primary,
@@ -274,14 +315,18 @@ class _LeadDetailsButtonState extends State<LeadDetailsButton> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          FaIcon(icon, size: 16, color: iconColor),
-          SizedBox(width: 6),
-          Text(
-            text,
-            style: GoogleFonts.poppins(
-              fontSize: 13,
-              fontWeight: FontWeight.w500,
-              color: textColor,
+          FaIcon(icon, size: 14, color: iconColor),
+          SizedBox(width: 4),
+          Flexible(
+            child: Text(
+              text,
+              style: GoogleFonts.poppins(
+                fontSize: 11,
+                fontWeight: FontWeight.w500,
+                color: textColor,
+              ),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
             ),
           ),
         ],
