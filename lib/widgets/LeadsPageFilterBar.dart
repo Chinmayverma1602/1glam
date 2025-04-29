@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:glam1/constants/AppColors.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class LeadsPageFilterBar extends StatefulWidget {
   final void Function(String) onFilterSelected;
@@ -29,7 +30,7 @@ class _LeadsPageFilterBarState extends State<LeadsPageFilterBar> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 35,
+      height: 40,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: widget.filters.length,
@@ -46,20 +47,32 @@ class _LeadsPageFilterBarState extends State<LeadsPageFilterBar> {
                 });
                 widget.onFilterSelected(filter); // Pass the selected filter
               },
-              child: Container(
+              child: AnimatedContainer(
+                duration: Duration(milliseconds: 300),
+                curve: Curves.easeInOut,
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 decoration: BoxDecoration(
                   color: isSelected ? AppColors.primary : AppColors.light,
-                  borderRadius: BorderRadius.circular(17),
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: isSelected
+                      ? [
+                          BoxShadow(
+                            color: AppColors.primary.withOpacity(0.3),
+                            blurRadius: 4,
+                            spreadRadius: 1,
+                            offset: Offset(0, 2),
+                          ),
+                        ]
+                      : null,
                 ),
                 child: Text(
                   filter,
-                  style: TextStyle(
-                    fontSize: 16,
+                  style: GoogleFonts.poppins(
+                    fontSize: 14,
                     color:
                         isSelected ? AppColors.light : AppColors.secondaryText,
-                    fontWeight: FontWeight.w500,
+                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
                   ),
                 ),
               ),

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:glam1/constants/AppColors.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class ManageLeadsNotes extends StatelessWidget {
   const ManageLeadsNotes({super.key});
@@ -11,11 +13,11 @@ class ManageLeadsNotes extends StatelessWidget {
       padding: EdgeInsets.all(16.0),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.07),
-            blurRadius: 6,
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 8,
             spreadRadius: 1,
             offset: Offset(0, 3),
           ),
@@ -30,47 +32,52 @@ class ManageLeadsNotes extends StatelessWidget {
             children: [
               Text(
                 "Notes",
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                    fontSize: 18),
-              ),
-              GestureDetector(
-                onTap: () {},
-                child: Row(
-                  children: [
-                    Icon(Icons.edit, color: AppColors.primary, size: 20),
-                    SizedBox(width: 4),
-                    Text(
-                      'Edit Booking',
-                      style: TextStyle(color: AppColors.primary, fontSize: 16),
-                    ),
-                  ],
+                style: GoogleFonts.poppins(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black87,
                 ),
+              ),
+              _actionButton(
+                icon: FontAwesomeIcons.penToSquare,
+                text: 'Edit Notes',
+                bgColor: AppColors.primary.withOpacity(0.1),
+                iconColor: AppColors.primary,
+                textColor: AppColors.primary,
+                onTap: () {},
               ),
             ],
           ),
 
-          SizedBox(height: MediaQuery.of(context).size.height * 0.015),
+          SizedBox(height: 16),
 
-          // Notes Text
-          Text(
-            "Client prefers natural looking makeup. Allergic to latex products.",
-            style: TextStyle(
-              fontSize: 14,
-              color: AppColors.secondaryText,
+          // Notes Text or Empty State
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: AppColors.light.withOpacity(0.5),
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: Colors.grey.shade200),
+            ),
+            child: Text(
+              "Client prefers natural looking makeup. Allergic to latex products.",
+              style: GoogleFonts.poppins(
+                fontSize: 14,
+                color: AppColors.secondaryText,
+                fontWeight: FontWeight.w400,
+              ),
             ),
           ),
 
-          SizedBox(height: MediaQuery.of(context).size.height * 0.018),
+          SizedBox(height: 16),
 
           // Image placeholders
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              _buildImagePlaceholder(context),
-              SizedBox(width: MediaQuery.of(context).size.width*0.01),
-              _buildImagePlaceholder(context),
+              Expanded(child: _buildImagePlaceholder(context)),
+              SizedBox(width: 10),
+              Expanded(child: _buildImagePlaceholder(context)),
             ],
           ),
         ],
@@ -81,13 +88,69 @@ class ManageLeadsNotes extends StatelessWidget {
   // Placeholder Widget for images
   Widget _buildImagePlaceholder(BuildContext context) {
     return Container(
-        width: MediaQuery.of(context).size.width * 0.39,
-        height: MediaQuery.of(context).size.height * 0.16,
+      height: 120,
+      decoration: BoxDecoration(
+        color: Colors.grey.shade200,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      alignment: Alignment.center,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          FaIcon(
+            FontAwesomeIcons.image,
+            color: Colors.grey.shade400,
+            size: 24,
+          ),
+          SizedBox(height: 8),
+          Text(
+            'Image placeholder',
+            style: GoogleFonts.poppins(
+              fontSize: 12,
+              color: Colors.grey.shade500,
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _actionButton({
+    required IconData icon,
+    required String text,
+    required Color bgColor,
+    required Color iconColor,
+    required Color textColor,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
-          color: Colors.grey.shade300,
-          borderRadius: BorderRadius.circular(8),
+          color: bgColor,
+          borderRadius: BorderRadius.circular(10),
         ),
-        alignment: Alignment.center,
-        child: Text('any images goes here'));
+        child: Row(
+          children: [
+            FaIcon(
+              icon,
+              size: 12,
+              color: iconColor,
+            ),
+            SizedBox(width: 6),
+            Text(
+              text,
+              style: GoogleFonts.poppins(
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+                color: textColor,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

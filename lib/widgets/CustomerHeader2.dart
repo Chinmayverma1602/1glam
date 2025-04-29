@@ -4,7 +4,6 @@ import 'package:glam1/screens/HomePage.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:get/get.dart';
 
-
 class CustomHeader2 extends StatelessWidget {
   final String textValue;
   const CustomHeader2({super.key, required this.textValue});
@@ -12,7 +11,7 @@ class CustomHeader2 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(top: 20, left: 6, right: 16),
+      padding: EdgeInsets.only(top: 20, left: 0, right: 16),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
@@ -29,7 +28,7 @@ class CustomHeader2 extends StatelessWidget {
             textValue,
             textAlign: TextAlign.start,
             style: GoogleFonts.inter(
-                fontSize: 25, fontWeight: FontWeight.w600, color: Colors.black),
+                fontSize: 24, fontWeight: FontWeight.w600, color: Colors.black),
           ),
         ],
       ),

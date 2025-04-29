@@ -37,12 +37,11 @@ void main() async {
   Get.put(BookingController());
   String initialRoute = await getInitialRoute();
   runApp(MyApp(initialRoute: initialRoute));
-
 }
 
 Future<String> getInitialRoute() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  return prefs.getString('user_email') != null ? '/home' : '/services';
+  return prefs.getString('user_email') != null ? '/home' : '/leads';
 }
 
 class MyApp extends StatelessWidget {
@@ -58,7 +57,11 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       initialRoute: initialRoute,
       getPages: [
-        GetPage(name: '/home', page: () => HomePage(lead: sampleLeads,)),
+        GetPage(
+            name: '/home',
+            page: () => HomePage(
+                  lead: sampleLeads,
+                )),
         GetPage(name: '/leads', page: () => const LeadsPage()),
         // GetPage(name: '/settings', page: () => const HomePage()),
         GetPage(name: '/about', page: () => const AboutMePage()),
@@ -69,7 +72,11 @@ class MyApp extends StatelessWidget {
         GetPage(name: '/loginScreen', page: () => const LoginScreen()),
         GetPage(name: '/services', page: () => const ServicesInfoPage()),
         GetPage(name: '/verify', page: () => const VerifyEmailPage()),
-        GetPage(name: '/travelInfo', page: () => const TravellingInfoPage(fullAddress: "",)),
+        GetPage(
+            name: '/travelInfo',
+            page: () => const TravellingInfoPage(
+                  fullAddress: "",
+                )),
         GetPage(name: '/calender', page: () => const CalenderPage()),
         GetPage(
             name: '/PreviewPage', page: () => const EstimatePreviewScreen()),

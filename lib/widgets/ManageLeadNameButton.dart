@@ -1,25 +1,95 @@
 import 'package:flutter/material.dart';
 import 'package:glam1/constants/AppColors.dart';
 import 'package:glam1/widgets/CustomSubtitle.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-class ManageLeadNameButton extends StatelessWidget {
-
+class ManageLeadNameButton extends StatefulWidget {
   final String clientName;
   final String clientMobileNo;
   final String currentStatus;
-  const ManageLeadNameButton({super.key, required this.clientName,required this.currentStatus,required this.clientMobileNo });
+
+  const ManageLeadNameButton(
+      {super.key,
+      required this.clientName,
+      required this.currentStatus,
+      required this.clientMobileNo});
+
+  @override
+  State<ManageLeadNameButton> createState() => _ManageLeadNameButtonState();
+}
+
+class _ManageLeadNameButtonState extends State<ManageLeadNameButton> {
+  // Function to determine status container color based on lead status
+  Map<String, Color> getStatusColors(String status) {
+    switch (status) {
+      case "New":
+        return {
+          'bg': Color(0xFFE0F2FE), // Light blue bg
+          'text': Color(0xFF0284C7), // Blue text
+        };
+      case "In Progress":
+        return {
+          'bg': Color(0xFFDCFCE7), // Light green bg
+          'text': Color(0xFF15803D), // Green text
+        };
+      case "Confirmed":
+        return {
+          'bg': AppColors.proposalButtonColor, // Green bg
+          'text': AppColors.proposalAcceptedTextColor, // Green text
+        };
+      case "Inquiry Received":
+        return {
+          'bg': AppColors.inquiryButtonColor, // Yellow bg
+          'text': AppColors.inquiryTextColor, // Yellow text
+        };
+      case "Qualified Lead":
+        return {
+          'bg': AppColors.qualifiedButtonColor, // Blue bg
+          'text': AppColors.qualifiedLeadTextColor, // Blue text
+        };
+      case "Accepted Leads":
+        return {
+          'bg': Color(0xFFD8B4FE), // Purple bg
+          'text': Color(0xFF7E22CE), // Purple text
+        };
+      case "Consultation Scheduled":
+        return {
+          'bg': Color(0xFFFDE68A), // Amber bg
+          'text': Color(0xFFB45309), // Amber text
+        };
+      case "Follow-up Required":
+        return {
+          'bg': Color(0xFFFECACA), // Red bg
+          'text': Color(0xFFDC2626), // Red text
+        };
+      case "Pending Payment":
+        return {
+          'bg': Color(0xFFFBEDD8), // Orange bg
+          'text': Color(0xFFEA580C), // Orange text
+        };
+      default:
+        return {
+          'bg': AppColors.hintText.withOpacity(0.2), // Gray bg
+          'text': AppColors.hintText, // Gray text
+        };
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    // Get status colors based on lead status
+    final statusColors = getStatusColors(widget.currentStatus);
+
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      height: MediaQuery.of(context).size.height * 0.16,
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.07),
-            blurRadius: 6,
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 8,
             spreadRadius: 1,
             offset: Offset(0, 3),
           ),
@@ -29,94 +99,149 @@ class ManageLeadNameButton extends StatelessWidget {
         padding: EdgeInsets.all(16.0),
         child: Column(
           children: [
-
-            // Name, Phone Number
+            // Name, Phone Number and Status
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      clientName,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black87,
-                            fontSize: 18
+                Expanded(
+                  flex: 3,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        widget.clientName,
+                        style: GoogleFonts.poppins(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black87,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      SizedBox(height: 6),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          FaIcon(
+                            FontAwesomeIcons.phone,
+                            size: 12,
+                            color: AppColors.hintText,
                           ),
-                    ),
-                    SizedBox(height: MediaQuery.of(context).size.height*0.004),
-                    CustomSubTitle(
-                      subtitle: clientMobileNo,
-                      color: AppColors.hintText,
-                    ),
-                  ],
+                          SizedBox(width: 6),
+                          Flexible(
+                            child: Text(
+                              widget.clientMobileNo,
+                              style: GoogleFonts.poppins(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w400,
+                                color: AppColors.hintText,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-
-                // pending
+                SizedBox(width: 8),
+                // Status indicator
                 Container(
-                  margin: EdgeInsets.only(right: 4),
                   padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
-                    color: AppColors.inquiryButtonColor,
+                    color: statusColors['bg'],
                     borderRadius: BorderRadius.circular(13),
                   ),
                   child: Text(
-                    currentStatus,
-                    style: TextStyle(
-                      color: AppColors.inquiryTextColor,
+                    widget.currentStatus,
+                    style: GoogleFonts.poppins(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                      color: statusColors['text'],
                     ),
                   ),
                 ),
               ],
             ),
 
-            SizedBox(height: MediaQuery.of(context).size.height*0.02),
-            
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
+            SizedBox(height: 16),
 
-                // edit details
-                GestureDetector(
-                  onTap: () {},
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.edit,
-                        color: AppColors.primary,
-                        size: 20,
-                      ),
-                      Text(
-                        'Edit Details',
-                        style:
-                            TextStyle(color: AppColors.primary, fontSize: 16),
-                      )
-                    ],
+            // Action buttons in a Row
+            Container(
+              width: double.infinity,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // Edit Details button
+                  Expanded(
+                    child: _actionButton(
+                      icon: FontAwesomeIcons.penToSquare,
+                      text: 'Edit Details',
+                      bgColor: AppColors.primary.withOpacity(0.1),
+                      iconColor: AppColors.primary,
+                      textColor: AppColors.primary,
+                      onTap: () {},
+                    ),
                   ),
-                ),
-                SizedBox(width: MediaQuery.of(context).size.width*0.03),
 
-                // change status
-                GestureDetector(
-                  onTap: () {},
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.flag,
-                        color: const Color.fromARGB(255, 101, 101, 101),
-                        size: 20,
-                      ),
-                      Text(
-                        'Change Status',
-                        style:
-                            TextStyle(color: const Color.fromARGB(255, 101, 101, 101), fontSize: 16),
-                      )
-                    ],
+                  SizedBox(width: 12),
+
+                  // Change Status button
+                  Expanded(
+                    child: _actionButton(
+                      icon: FontAwesomeIcons.flag,
+                      text: 'Change Status',
+                      bgColor: Colors.grey.withOpacity(0.1),
+                      iconColor: Color(0xFF6B7280),
+                      textColor: Color(0xFF6B7280),
+                      onTap: () {},
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             )
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _actionButton({
+    required IconData icon,
+    required String text,
+    required Color bgColor,
+    required Color iconColor,
+    required Color textColor,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+        decoration: BoxDecoration(
+          color: bgColor,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            FaIcon(
+              icon,
+              size: 12,
+              color: iconColor,
+            ),
+            SizedBox(width: 5),
+            Flexible(
+              child: Text(
+                text,
+                style: GoogleFonts.poppins(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                  color: textColor,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
           ],
         ),
       ),

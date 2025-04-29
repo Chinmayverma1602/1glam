@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import 'package:glam1/widgets/CustomLoadingAnimation.dart';
 
 class ImageSelectionRow extends StatefulWidget {
   @override
@@ -89,8 +90,9 @@ class _ImageSelectionRowState extends State<ImageSelectionRow> {
               ? SizedBox(
                   width: 30, // Set desired width
                   height: 30, // Set desired height
-                  child: CircularProgressIndicator(
-                      strokeWidth: 3), // Adjust thickness
+                  child: CustomLoadingAnimations.waveDots(
+                    size: 20,
+                  ),
                 )
               : image != null
                   ? ClipRRect(

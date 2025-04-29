@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:glam1/constants/AppColors.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class ManageLeadsPaymentButton extends StatelessWidget {
   const ManageLeadsPaymentButton({super.key});
@@ -11,11 +13,11 @@ class ManageLeadsPaymentButton extends StatelessWidget {
       padding: EdgeInsets.all(16.0),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.07),
-            blurRadius: 6,
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 8,
             spreadRadius: 1,
             offset: Offset(0, 3),
           ),
@@ -30,43 +32,34 @@ class ManageLeadsPaymentButton extends StatelessWidget {
             children: [
               Text(
                 "Payments",
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                    fontSize: 18),
+                style: GoogleFonts.poppins(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black87,
+                ),
               ),
-              Row(
-                children: [
-                  GestureDetector(
-                    onTap: () {},
-                    child: Row(
-                      children: [
-                        Icon(Icons.add, color: AppColors.primary, size: 16),
-                        SizedBox(width: 4),
-                        Text(
-                          'New Estimate',
-                          style:
-                              TextStyle(color: AppColors.primary, fontSize: 12),
-                        ),
-                      ],
+              Flexible(
+                child: Wrap(
+                  spacing: 8,
+                  children: [
+                    _actionButton(
+                      icon: FontAwesomeIcons.fileInvoice,
+                      text: 'New Estimate',
+                      bgColor: AppColors.primary.withOpacity(0.1),
+                      iconColor: AppColors.primary,
+                      textColor: AppColors.primary,
+                      onTap: () {},
                     ),
-                  ),
-                  SizedBox(width: MediaQuery.of(context).size.width * 0.015),
-                  GestureDetector(
-                    onTap: () {},
-                    child: Row(
-                      children: [
-                        Icon(Icons.add, color: AppColors.primary, size: 16),
-                        SizedBox(width: 2),
-                        Text(
-                          'New Invoice',
-                          style:
-                              TextStyle(color: AppColors.primary, fontSize: 12),
-                        ),
-                      ],
+                    _actionButton(
+                      icon: FontAwesomeIcons.fileInvoiceDollar,
+                      text: 'New Invoice',
+                      bgColor: AppColors.primary.withOpacity(0.1),
+                      iconColor: AppColors.primary,
+                      textColor: AppColors.primary,
+                      onTap: () {},
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ],
           ),
@@ -76,38 +69,81 @@ class ManageLeadsPaymentButton extends StatelessWidget {
           // Estimates Section
           Text(
             "Estimates",
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w500,
-                color: Colors.black87,
-                fontSize: 16),
+            style: GoogleFonts.poppins(
+              fontSize: 15,
+              fontWeight: FontWeight.w500,
+              color: Colors.black87,
+            ),
           ),
+          SizedBox(height: 8),
           EstimateCard(
-              estimateNumber: 'Estimate #1',
-              sentDate: 'Feb 15, 2025',
-              dueDate: 'Feb 25, 2025',
-              amount: 'Total: ₹20,000',
-              status: 'status',
-              statusColor: Colors.black),
+            estimateNumber: 'Estimate #1',
+            sentDate: 'Feb 15, 2025',
+            dueDate: 'Feb 25, 2025',
+            amount: 'Total: ₹20,000',
+            status: 'Pending',
+            statusColor: Colors.orange,
+          ),
 
-          SizedBox(height: MediaQuery.of(context).size.height * 0.04),
+          SizedBox(height: 24),
 
           Text(
             "Invoices",
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w500,
-                color: Colors.black87,
-                fontSize: 16),
+            style: GoogleFonts.poppins(
+              fontSize: 15,
+              fontWeight: FontWeight.w500,
+              color: Colors.black87,
+            ),
           ),
+          SizedBox(height: 8),
           InvoiceCard(
-              invoiceNumber: 'Invoice #1',
-              issuedDate: 'Jan 15, 2025',
-              paidDate: 'Jan 18, 2025',
-              amount: 'Total: ₹20,000',
-              status: 'status',
-              statusColor: Colors.black),
-
-          // Invoices Section
+            invoiceNumber: 'Invoice #1',
+            issuedDate: 'Jan 15, 2025',
+            paidDate: 'Jan 18, 2025',
+            amount: 'Total: ₹20,000',
+            status: 'Paid',
+            statusColor: Colors.green,
+          ),
         ],
+      ),
+    );
+  }
+
+  Widget _actionButton({
+    required IconData icon,
+    required String text,
+    required Color bgColor,
+    required Color iconColor,
+    required Color textColor,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+        decoration: BoxDecoration(
+          color: bgColor,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            FaIcon(
+              icon,
+              size: 10,
+              color: iconColor,
+            ),
+            SizedBox(width: 4),
+            Text(
+              text,
+              style: GoogleFonts.poppins(
+                fontSize: 11,
+                fontWeight: FontWeight.w500,
+                color: textColor,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -134,21 +170,39 @@ class EstimateCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return _buildCard([
-      _buildTitleWithBadge(estimateNumber, status, statusColor),
-      _buildInfoRow(Icons.calendar_today, "Sent: $sentDate"),
-      _buildInfoRow(Icons.access_time, "Due: $dueDate"),
+      _buildTitleWithBadge(context, estimateNumber, status, statusColor),
+      _buildInfoRow(FontAwesomeIcons.calendar, "Sent: $sentDate"),
+      _buildInfoRow(FontAwesomeIcons.clock, "Due: $dueDate"),
       _buildAmount(amount),
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      Wrap(
+        spacing: 8,
+        runSpacing: 8,
+        alignment: WrapAlignment.spaceEvenly,
         children: [
-          _buildButton("Accept", AppColors.primary),
-          SizedBox(width: MediaQuery.of(context).size.width * 0.02),
-          _buildButton("Decline", Colors.red),
-          SizedBox(width: MediaQuery.of(context).size.width * 0.02),
-          _buildButton("Send", AppColors.hintText),
+          _buildActionButton("Accept", AppColors.primary),
+          _buildActionButton("Decline", Colors.red),
+          _buildActionButton("Send", AppColors.hintText),
         ],
       )
     ]);
+  }
+
+  Widget _buildActionButton(String text, Color color) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Text(
+        text,
+        style: GoogleFonts.poppins(
+          fontSize: 12,
+          fontWeight: FontWeight.w500,
+          color: color,
+        ),
+      ),
+    );
   }
 }
 
@@ -173,19 +227,38 @@ class InvoiceCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return _buildCard([
-      _buildTitleWithBadge(invoiceNumber, status, statusColor),
-      _buildInfoRow(Icons.calendar_today, "Issued: $issuedDate"),
-      _buildInfoRow(Icons.access_time, "Paid: $paidDate"),
+      _buildTitleWithBadge(context, invoiceNumber, status, statusColor),
+      _buildInfoRow(FontAwesomeIcons.calendar, "Issued: $issuedDate"),
+      _buildInfoRow(FontAwesomeIcons.clock, "Paid: $paidDate"),
       _buildAmount(amount),
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      Wrap(
+        spacing: 8,
+        runSpacing: 8,
+        alignment: WrapAlignment.spaceEvenly,
         children: [
-          _buildButton("Send Invoice", AppColors.hintText),
-          SizedBox(width: MediaQuery.of(context).size.width * 0.02),
-          _buildButton("Download", AppColors.primary),
+          _buildActionButton("Send Invoice", AppColors.hintText),
+          _buildActionButton("Download", AppColors.primary),
         ],
       )
     ]);
+  }
+
+  Widget _buildActionButton(String text, Color color) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Text(
+        text,
+        style: GoogleFonts.poppins(
+          fontSize: 12,
+          fontWeight: FontWeight.w500,
+          color: color,
+        ),
+      ),
+    );
   }
 }
 
@@ -195,35 +268,55 @@ Widget _buildCard(List<Widget> children) {
     decoration: BoxDecoration(
       color: Colors.white,
       borderRadius: BorderRadius.circular(12),
-      border: Border.all(color: Colors.grey[300]!),
+      border: Border.all(color: Colors.grey[200]!),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withOpacity(0.03),
+          blurRadius: 6,
+          spreadRadius: 1,
+          offset: Offset(0, 2),
+        ),
+      ],
     ),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        ...children.expand((widget) => [widget, SizedBox(height: 8)]).toList()
+        ...children.expand((widget) => [widget, SizedBox(height: 10)]).toList()
           ..removeLast(),
       ],
     ),
   );
 }
 
-Widget _buildTitleWithBadge(String title, String status, Color badgeColor) {
+Widget _buildTitleWithBadge(
+    BuildContext context, String title, String status, Color badgeColor) {
   return Row(
     mainAxisAlignment: MainAxisAlignment.spaceBetween,
     children: [
-      Text(title, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+      Flexible(
+        child: Text(
+          title,
+          style: GoogleFonts.poppins(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: Colors.black87,
+          ),
+          overflow: TextOverflow.ellipsis,
+        ),
+      ),
       Container(
         padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         decoration: BoxDecoration(
-            color: badgeColor.withOpacity(0.2),
-            borderRadius: BorderRadius.circular(20)),
-        child: Row(
-          children: [
-            Text(status,
-                style:
-                    TextStyle(color: badgeColor, fontWeight: FontWeight.w600)),
-            Icon(Icons.arrow_drop_down, color: badgeColor, size: 18),
-          ],
+          color: badgeColor.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Text(
+          status,
+          style: GoogleFonts.poppins(
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+            color: badgeColor,
+          ),
         ),
       ),
     ],
@@ -235,9 +328,18 @@ Widget _buildInfoRow(IconData icon, String text) {
     padding: EdgeInsets.only(top: 4),
     child: Row(
       children: [
-        Icon(icon, size: 16, color: AppColors.primary),
-        SizedBox(width: 6),
-        Text(text, style: TextStyle(fontSize: 14)),
+        FaIcon(icon, size: 12, color: AppColors.primary),
+        SizedBox(width: 8),
+        Expanded(
+          child: Text(
+            text,
+            style: GoogleFonts.poppins(
+              fontSize: 13,
+              color: AppColors.secondaryText,
+            ),
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
       ],
     ),
   );
@@ -246,19 +348,14 @@ Widget _buildInfoRow(IconData icon, String text) {
 Widget _buildAmount(String text) {
   return Padding(
     padding: EdgeInsets.only(top: 8),
-    child:
-        Text(text, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-  );
-}
-
-Widget _buildButton(String text, Color color) {
-  return OutlinedButton(
-    onPressed: () {},
-    style: OutlinedButton.styleFrom(
-      side: BorderSide(color: color),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
-      padding: EdgeInsets.symmetric(vertical: 5, horizontal: 18),
+    child: Text(
+      text,
+      style: GoogleFonts.poppins(
+        fontSize: 14,
+        fontWeight: FontWeight.w600,
+        color: Colors.black87,
+      ),
+      overflow: TextOverflow.ellipsis,
     ),
-    child: Text(text, style: TextStyle(color: color)),
   );
 }

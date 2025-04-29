@@ -4,7 +4,8 @@ import 'package:glam1/constants/AppColors.dart';
 import 'package:glam1/screens/ManageLeadPage.dart';
 import 'package:glam1/widgets/CustomSubtitle.dart';
 import 'package:glam1/model/leadsRes_model.dart';
-import 'package:intl/intl.dart'; // Import the model
+import 'package:intl/intl.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class LeadDetailsButton extends StatefulWidget {
   final LeadsResponse lead; // Accepts a lead object
@@ -17,7 +18,8 @@ class LeadDetailsButton extends StatefulWidget {
 
 String formatTime(String timeString) {
   try {
-    DateTime dateTime = DateTime.parse("1970-01-01 $timeString"); // Add a dummy date
+    DateTime dateTime =
+        DateTime.parse("1970-01-01 $timeString"); // Add a dummy date
     return DateFormat.jm().format(dateTime); // Converts to 12-hour AM/PM format
   } catch (e) {
     return timeString; // Fallback in case of error
@@ -34,25 +36,85 @@ String formatDate(String dateString) {
 }
 
 class _LeadDetailsButtonState extends State<LeadDetailsButton> {
+  // Function to determine status container color based on lead status
+  Map<String, Color> getStatusColors(String status) {
+    switch (status) {
+      case "New":
+        return {
+          'bg': Color(0xFFE0F2FE), // Light blue bg
+          'text': Color(0xFF0284C7), // Blue text
+        };
+      case "In Progress":
+        return {
+          'bg': Color(0xFFDCFCE7), // Light green bg
+          'text': Color(0xFF15803D), // Green text
+        };
+      case "Confirmed":
+        return {
+          'bg': AppColors.proposalButtonColor, // Green bg
+          'text': AppColors.proposalAcceptedTextColor, // Green text
+        };
+      case "Inquiry Received":
+        return {
+          'bg': AppColors.inquiryButtonColor, // Yellow bg
+          'text': AppColors.inquiryTextColor, // Yellow text
+        };
+      case "Qualified Lead":
+        return {
+          'bg': AppColors.qualifiedButtonColor, // Blue bg
+          'text': AppColors.qualifiedLeadTextColor, // Blue text
+        };
+      case "Accepted Leads":
+        return {
+          'bg': Color(0xFFD8B4FE), // Purple bg
+          'text': Color(0xFF7E22CE), // Purple text
+        };
+      case "Consultation Scheduled":
+        return {
+          'bg': Color(0xFFFDE68A), // Amber bg
+          'text': Color(0xFFB45309), // Amber text
+        };
+      case "Follow-up Required":
+        return {
+          'bg': Color(0xFFFECACA), // Red bg
+          'text': Color(0xFFDC2626), // Red text
+        };
+      case "Pending Payment":
+        return {
+          'bg': Color(0xFFFBEDD8), // Orange bg
+          'text': Color(0xFFEA580C), // Orange text
+        };
+      default:
+        return {
+          'bg': AppColors.hintText.withOpacity(0.2), // Gray bg
+          'text': AppColors.hintText, // Gray text
+        };
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    // Get status colors based on lead status
+    final statusColors = getStatusColors(widget.lead.data.leadStatus);
+
     return InkWell(
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => ManageLeadPage(lead:widget.lead.data  ,)),
+          MaterialPageRoute(
+              builder: (context) => ManageLeadPage(lead: widget.lead.data)),
         );
       },
       child: Container(
         margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        height: MediaQuery.of(context).size.height * 0.25,
+        height: MediaQuery.of(context).size.height * 0.22,
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(14),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 6,
+              color: Colors.black.withOpacity(0.06),
+              blurRadius: 8,
               spreadRadius: 1,
               offset: Offset(0, 3),
             ),
@@ -68,14 +130,14 @@ class _LeadDetailsButtonState extends State<LeadDetailsButton> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Padding(
-                      padding: EdgeInsets.only(left: 15, top: 15),
+                      padding: EdgeInsets.only(left: 15, top: 12),
                       child: Text(
-                        widget.lead.data.clientName, // Using dynamic data
-                        style:
-                            Theme.of(context).textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black87,
-                                ),
+                        widget.lead.data.clientName,
+                        style: GoogleFonts.poppins(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black87,
+                        ),
                       ),
                     ),
                     Padding(
@@ -86,43 +148,47 @@ class _LeadDetailsButtonState extends State<LeadDetailsButton> {
                                 ? widget
                                     .lead.data.servicesOpted.first.serviceName
                                 : "${widget.lead.data.servicesOpted.first.serviceName} + ${widget.lead.data.servicesOpted.length - 1}"
-                            : "No Service Selected", // Using dynamic data
+                            : "No Service Selected",
                         color: AppColors.hintText,
                       ),
                     ),
                   ],
                 ),
                 Container(
-                  margin: EdgeInsets.only(right: 10),
+                  margin: EdgeInsets.only(right: 12),
                   padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
-                    color: AppColors.inquiryButtonColor,
+                    color: statusColors['bg'],
                     borderRadius: BorderRadius.circular(13),
                   ),
                   child: Text(
-                    widget.lead.data.leadStatus, // Using dynamic data
-                    style: TextStyle(color: AppColors.inquiryTextColor),
+                    widget.lead.data.leadStatus,
+                    style: GoogleFonts.poppins(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                      color: statusColors['text'],
+                    ),
                   ),
                 ),
               ],
             ),
-            SizedBox(height: 16),
+            SizedBox(height: 12),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 _infoContainer(
                   icon: FontAwesomeIcons.calendar,
-                  text: formatDate(widget.lead.data.bookingDate), // Using dynamic data
+                  text: formatDate(widget.lead.data.bookingDate),
                   iconColor: AppColors.primary,
                 ),
                 _infoContainer(
                   icon: FontAwesomeIcons.clock,
-                  text: formatTime(widget.lead.data.fromTime), // Using dynamic data
+                  text: formatTime(widget.lead.data.fromTime),
                   iconColor: AppColors.primary,
                 ),
               ],
             ),
-            SizedBox(height: 16),
+            SizedBox(height: 12),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -154,18 +220,25 @@ class _LeadDetailsButtonState extends State<LeadDetailsButton> {
     required Color iconColor,
   }) {
     return Container(
-      height: 50,
+      height: 40,
       width: MediaQuery.of(context).size.width * 0.4,
-      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
+      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: AppColors.light.withOpacity(0.5),
+        borderRadius: BorderRadius.circular(10),
+      ),
       child: Row(
         children: [
-          FaIcon(icon, size: 20, color: iconColor),
+          FaIcon(icon, size: 16, color: iconColor),
           SizedBox(width: 8),
           Flexible(
             child: Text(
               text,
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+              style: GoogleFonts.poppins(
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+                color: Colors.black87,
+              ),
               overflow: TextOverflow.ellipsis,
             ),
           ),
@@ -182,22 +255,34 @@ class _LeadDetailsButtonState extends State<LeadDetailsButton> {
     required Color textColor,
   }) {
     return Container(
-      height: 50,
+      height: 40,
       width: MediaQuery.of(context).size.width * 0.4,
-      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
         color: bgColor,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(10),
+        boxShadow: [
+          if (bgColor == AppColors.primary)
+            BoxShadow(
+              color: AppColors.primary.withOpacity(0.2),
+              blurRadius: 5,
+              spreadRadius: 0,
+              offset: Offset(0, 2),
+            ),
+        ],
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          FaIcon(icon, size: 20, color: iconColor),
-          SizedBox(width: 8),
+          FaIcon(icon, size: 16, color: iconColor),
+          SizedBox(width: 6),
           Text(
             text,
-            style: TextStyle(
-                fontSize: 14, fontWeight: FontWeight.bold, color: textColor),
+            style: GoogleFonts.poppins(
+              fontSize: 13,
+              fontWeight: FontWeight.w500,
+              color: textColor,
+            ),
           ),
         ],
       ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:glam1/constants/AppColors.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class ManageLeadsBottomNavBar extends StatelessWidget {
   final VoidCallback onBack;
@@ -14,15 +15,15 @@ class ManageLeadsBottomNavBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(2)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.07),
-            blurRadius: 3,
-            spreadRadius: 0.3,
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 8,
+            spreadRadius: 1,
             offset: Offset(0, -3),
           ),
         ],
@@ -34,22 +35,31 @@ class ManageLeadsBottomNavBar extends StatelessWidget {
           Expanded(
             child: ElevatedButton.icon(
               onPressed: onBack,
-              icon: Icon(Icons.arrow_back, color: Colors.black),
+              icon: Icon(
+                Icons.arrow_back,
+                color: Colors.black87,
+                size: 18,
+              ),
               label: Text(
                 "Go Back",
-                style: TextStyle(color: Colors.black, fontSize: 16),
+                style: GoogleFonts.poppins(
+                  color: Colors.black87,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color.fromARGB(255, 225, 224, 224),
+                backgroundColor: Colors.grey.shade100,
+                elevation: 0,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(12),
                 ),
-                padding: EdgeInsets.symmetric(vertical: 14),
+                padding: EdgeInsets.symmetric(vertical: 12),
               ),
             ),
           ),
 
-          SizedBox(width: MediaQuery.of(context).size.width*0.03),
+          SizedBox(width: 12),
 
           // Right Button - "Send Estimate"
           Expanded(
@@ -57,14 +67,19 @@ class ManageLeadsBottomNavBar extends StatelessWidget {
               onPressed: onSendEstimate,
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,
+                elevation: 0,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(12),
                 ),
-                padding: EdgeInsets.symmetric(vertical: 14),
+                padding: EdgeInsets.symmetric(vertical: 12),
               ),
               child: Text(
                 "Send Estimate",
-                style: TextStyle(color: Colors.white, fontSize: 16),
+                style: GoogleFonts.poppins(
+                  color: Colors.white,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ),
           ),

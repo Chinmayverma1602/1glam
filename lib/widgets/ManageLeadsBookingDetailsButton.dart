@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:glam1/constants/AppColors.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class ManageLeadsBookingDetailsButton extends StatelessWidget {
   final String bookingDate;
   final String startTime;
   final String endTime;
-  const ManageLeadsBookingDetailsButton({super.key , required this.bookingDate, required this.startTime , required this.endTime});
+
+  const ManageLeadsBookingDetailsButton(
+      {super.key,
+      required this.bookingDate,
+      required this.startTime,
+      required this.endTime});
 
   @override
   Widget build(BuildContext context) {
@@ -14,11 +21,11 @@ class ManageLeadsBookingDetailsButton extends StatelessWidget {
       padding: EdgeInsets.all(16.0),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.07),
-            blurRadius: 6,
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 8,
             spreadRadius: 1,
             offset: Offset(0, 3),
           ),
@@ -27,86 +34,154 @@ class ManageLeadsBookingDetailsButton extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-
           Text(
-                      "Booking Details",
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black87,
-                            fontSize: 18
-                          ),
-                    ),
-                    SizedBox(height: MediaQuery.of(context).size.height*0.02),
-
+            "Booking Details",
+            style: GoogleFonts.poppins(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: Colors.black87,
+            ),
+          ),
+          SizedBox(height: 16),
 
           // Calendar Icon + Date
-          Row(
-            children: [
-              Icon(Icons.calendar_today, color: AppColors.primary, size: 20),
-              SizedBox(width: 8),
-              Text(
-                bookingDate,
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w300,
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              color: AppColors.light.withOpacity(0.5),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Row(
+              children: [
+                FaIcon(
+                  FontAwesomeIcons.calendar,
+                  color: AppColors.primary,
+                  size: 14,
+                ),
+                SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    bookingDate,
+                    style: GoogleFonts.poppins(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
                       color: Colors.black87,
                     ),
-              ),
-            ],
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
           ),
 
-          SizedBox(height: MediaQuery.of(context).size.height * 0.015),
+          SizedBox(height: 12),
 
           // Clock Icon + Time
-          Row(
-            children: [
-              Icon(Icons.access_time, color: AppColors.primary, size: 20),
-              SizedBox(width: 8),
-              Text(
-                "${startTime} - ${endTime}",
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w300,
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              color: AppColors.light.withOpacity(0.5),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Row(
+              children: [
+                FaIcon(
+                  FontAwesomeIcons.clock,
+                  color: AppColors.primary,
+                  size: 14,
+                ),
+                SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    "${startTime} - ${endTime}",
+                    style: GoogleFonts.poppins(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
                       color: Colors.black87,
                     ),
-              ),
-            ],
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
           ),
 
-          SizedBox(height: MediaQuery.of(context).size.height * 0.02),
+          SizedBox(height: 16),
 
-          // Edit Booking & View Conversation Buttons
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              GestureDetector(
-                onTap: () {},
-                child: Row(
-                  children: [
-                    Icon(Icons.edit, color: AppColors.primary, size: 20),
-                    SizedBox(width: 4),
-                    Text(
-                      'Edit Booking',
-                      style: TextStyle(color: AppColors.primary, fontSize: 16),
-                    ),
-                  ],
+          // Edit Booking & View Conversation Buttons in a Row
+          Container(
+            width: double.infinity,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: _actionButton(
+                    icon: FontAwesomeIcons.penToSquare,
+                    text: 'Edit Booking',
+                    bgColor: AppColors.primary.withOpacity(0.1),
+                    iconColor: AppColors.primary,
+                    textColor: AppColors.primary,
+                    onTap: () {},
+                  ),
                 ),
-              ),
-              SizedBox(width: MediaQuery.of(context).size.width * 0.04),
-              GestureDetector(
-                onTap: () {},
-                child: Row(
-                  children: [
-                    Icon(Icons.chat, color: Color(0xFF656565), size: 20),
-                    SizedBox(width: 4),
-                    Text(
-                      'View Conversation',
-                      style: TextStyle(color: Color(0xFF656565), fontSize: 16),
-                    ),
-                  ],
+                SizedBox(width: 12),
+                Expanded(
+                  child: _actionButton(
+                    icon: FontAwesomeIcons.comments,
+                    text: 'View Conversation',
+                    bgColor: Colors.grey.withOpacity(0.1),
+                    iconColor: Color(0xFF6B7280),
+                    textColor: Color(0xFF6B7280),
+                    onTap: () {},
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _actionButton({
+    required IconData icon,
+    required String text,
+    required Color bgColor,
+    required Color iconColor,
+    required Color textColor,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+        decoration: BoxDecoration(
+          color: bgColor,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            FaIcon(
+              icon,
+              size: 12,
+              color: iconColor,
+            ),
+            SizedBox(width: 5),
+            Flexible(
+              child: Text(
+                text,
+                style: GoogleFonts.poppins(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                  color: textColor,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -1,24 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:glam1/constants/AppColors.dart';
 import 'package:glam1/model/leadsRes_model.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class ManageLeadsServicesButton extends StatelessWidget {
   final List<ServiceOptedres> services;
-  const ManageLeadsServicesButton({super.key , required this.services});
+
+  const ManageLeadsServicesButton({super.key, required this.services});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-
       padding: EdgeInsets.all(16.0),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.07),
-            blurRadius: 6,
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 8,
             spreadRadius: 1,
             offset: Offset(0, 3),
           ),
@@ -27,45 +29,62 @@ class ManageLeadsServicesButton extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-
           // Services Header with "Add Service" Button
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
                 "Services",
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
-                      fontSize: 18
-                    ),
-              ),
-              GestureDetector(
-                onTap: () {},
-                child: Row(
-                  children: [
-                    Icon(Icons.add, color: AppColors.primary, size: 20),
-                    SizedBox(width: 4),
-                    Text(
-                      'Add Service',
-                      style: TextStyle(color: AppColors.primary, fontSize: 16),
-                    ),
-                  ],
+                style: GoogleFonts.poppins(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black87,
                 ),
+              ),
+              _actionButton(
+                icon: FontAwesomeIcons.plus,
+                text: 'Add Service',
+                bgColor: AppColors.primary.withOpacity(0.1),
+                iconColor: AppColors.primary,
+                textColor: AppColors.primary,
+                onTap: () {},
               ),
             ],
           ),
 
-          SizedBox(height: MediaQuery.of(context).size.height * 0.015),
+          SizedBox(height: 16),
 
           // Services List
           Column(
-            children: services
-                .map((service) =>
-                    _buildServiceItem(service.serviceName, "₹${service.price}"))
-                .toList(),
+            children: services.isEmpty
+                ? [_emptyServiceItem()]
+                : services
+                    .map((service) => _buildServiceItem(
+                        service.serviceName, "₹${service.price}"))
+                    .toList(),
           ),
         ],
+      ),
+    );
+  }
+
+  // Widget for empty state
+  Widget _emptyServiceItem() {
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 16),
+      decoration: BoxDecoration(
+        color: AppColors.light.withOpacity(0.5),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Center(
+        child: Text(
+          "No services added yet",
+          style: GoogleFonts.poppins(
+            fontSize: 14,
+            fontWeight: FontWeight.w400,
+            color: AppColors.hintText,
+          ),
+        ),
       ),
     );
   }
@@ -78,7 +97,7 @@ class ManageLeadsServicesButton extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: Colors.grey.shade300),
+        border: Border.all(color: Colors.grey.shade200),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -88,18 +107,19 @@ class ManageLeadsServicesButton extends StatelessWidget {
             children: [
               Text(
                 serviceName,
-                style: TextStyle(
+                style: GoogleFonts.poppins(
+                  fontSize: 14,
                   fontWeight: FontWeight.w500,
                   color: Colors.black87,
-                  fontSize: 16,
                 ),
               ),
               SizedBox(height: 4),
               Text(
                 price,
-                style: TextStyle(
+                style: GoogleFonts.poppins(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w400,
                   color: Colors.grey.shade700,
-                  fontSize: 14,
                 ),
               ),
             ],
@@ -108,16 +128,70 @@ class ManageLeadsServicesButton extends StatelessWidget {
             children: [
               GestureDetector(
                 onTap: () {},
-                child: Icon(Icons.edit, color: AppColors.primary, size: 20),
+                child: Container(
+                  padding: EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: FaIcon(FontAwesomeIcons.penToSquare,
+                      color: AppColors.primary, size: 14),
+                ),
               ),
-              SizedBox(width: 8),
+              SizedBox(width: 10),
               GestureDetector(
                 onTap: () {},
-                child: Icon(Icons.delete, color: Colors.red, size: 20),
+                child: Container(
+                  padding: EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: Colors.red.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: FaIcon(FontAwesomeIcons.trash,
+                      color: Colors.red, size: 14),
+                ),
               ),
             ],
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _actionButton({
+    required IconData icon,
+    required String text,
+    required Color bgColor,
+    required Color iconColor,
+    required Color textColor,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+          color: bgColor,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Row(
+          children: [
+            FaIcon(
+              icon,
+              size: 12,
+              color: iconColor,
+            ),
+            SizedBox(width: 6),
+            Text(
+              text,
+              style: GoogleFonts.poppins(
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+                color: textColor,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
