@@ -280,7 +280,7 @@ class _TravellingInfoPageState extends State<TravellingInfoPage> {
     print("Using user ID for travel fee: $userId");
 
     TravelFee travelFee = TravelFee(
-      user: userId!,
+      user: userId,
       feeType: _travelFeeController.dropDownValue?.value ?? "",
       fee: _paymentController.dropDownValue?.value ?? "",
       maxDistance: sliderController.sliderValue.value.toInt(),

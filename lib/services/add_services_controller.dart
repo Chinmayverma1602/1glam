@@ -337,7 +337,9 @@ class AddServicesController extends GetxController {
         tempbundleServiceWidgets[index].durationController.dispose();
         tempbundleServiceWidgets[index].priceController.dispose();
         tempbundleServiceWidgets[index].artistNameController.dispose();
-        tempbundleServiceWidgets[index].artistSpecializationController.dispose();
+        tempbundleServiceWidgets[index]
+            .artistSpecializationController
+            .dispose();
 
         // Remove from list
         tempbundleServiceWidgets.removeAt(index);
@@ -371,71 +373,88 @@ class AddServicesController extends GetxController {
   }
 
   // Calculate total price based on the current mode
-  int calculateTotalPrice() {
-    int totalPrice = 0;
+  String calculateTotalPrice() {
+    double totalPrice = 0;
     for (var service in serviceWidgets) {
-      // Remove non-numeric characters
-      String numericPrice =
-          service.priceController.text.replaceAll(RegExp(r'[^0-9]'), '');
-      totalPrice += int.tryParse(numericPrice) ?? 0;
+      String priceText = service.priceController.text.replaceAll(',', '');
+      totalPrice += double.tryParse(priceText) ?? 0;
     }
-    return totalPrice > 0 ? totalPrice : serviceWidgets.length * 40000;
+    return totalPrice.toStringAsFixed(2);
   }
 
-  // Save services to Firebase
-  Future<bool> saveServices() async {
-    _isLoading.value = true;
+  // Edit existing service
+  Future<bool> editService(String docId) async {
     try {
-      final batch = _firestore.batch();
+      _isLoading.value = true;
 
-      bundleServiceWidgets = tempbundleServiceWidgets;
-      singleServiceWidget = tempsingleServiceWidget;
+      // Fetch the service document
+      DocumentSnapshot doc =
+          await _firestore.collection('services').doc(docId).get();
 
-      final currentServices =
-          isBundle.value ? bundleServiceWidgets : singleServiceWidget;
+      if (!doc.exists) {
+        _isLoading.value = false;
+        return false;
+      }
 
-      for (var service in currentServices) {
-        // Convert service to JSON format
-        final serviceData = service.toJson();
+      // Clear existing services
+      tempbundleServiceWidgets.clear();
+      tempsingleServiceWidget.clear();
 
+      // Create a service item from the document
+      Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+
+      // Determine if it's a bundle or single service
+      bool isServiceBundle = data['isBundle'] ?? false;
+      isBundle.value = isServiceBundle;
+
+      // Create the service item
+      ServiceItem serviceItem = ServiceItem.fromFirestore(doc, 0);
+      serviceItem.documentId = docId;
+
+      // Add to the appropriate list
+      if (isServiceBundle) {
+        tempbundleServiceWidgets.add(serviceItem);
+      } else {
+        tempsingleServiceWidget.add(serviceItem);
+      }
+
+      _isLoading.value = false;
+      return true;
+    } catch (e) {
+      print("Error loading service for editing: $e");
+      _isLoading.value = false;
+      return false;
+    }
+  }
+
+  // Update existing service or create new one
+  Future<bool> saveServices() async {
+    try {
+      _isLoading.value = true;
+
+      for (var service in serviceWidgets) {
+        Map<String, dynamic> serviceData = service.toJson();
+
+        // If documentId exists, update existing document
         if (service.documentId != null) {
-          // Update existing document
-          batch.update(
-              _firestore.collection('services').doc(service.documentId),
-              serviceData);
+          await _firestore
+              .collection('services')
+              .doc(service.documentId)
+              .update(serviceData);
         } else {
-          // Create new document
-          DocumentReference docRef = _firestore.collection('services').doc();
-          batch.set(docRef, serviceData);
-          service.documentId =
-              docRef.id; // Store document ID for future reference
+          // Otherwise create a new document
+          DocumentReference docRef =
+              await _firestore.collection('services').add(serviceData);
+          service.documentId = docRef.id;
         }
       }
 
-      // Commit batch
-      await batch.commit();
-
-      Get.snackbar(
-        'Success',
-        'Services saved successfully',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.green,
-        colorText: Colors.white,
-      );
-
+      _isLoading.value = false;
       return true;
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Failed to save services: $e',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
-      print('Error saving services: $e');
-      return false;
-    } finally {
+      print("Error saving services: $e");
       _isLoading.value = false;
+      return false;
     }
   }
 

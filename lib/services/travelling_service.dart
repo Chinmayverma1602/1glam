@@ -5,6 +5,7 @@ import 'package:glam1/constants/api_constants.dart';
 import 'package:glam1/services/api_service.dart';
 
 class TravelFeeService {
+  // Using the exact URL provided in the user's instructions
   static final String _baseUrl =
       "https://1glambackend-production.up.railway.app/api/resource/TravelFees";
 

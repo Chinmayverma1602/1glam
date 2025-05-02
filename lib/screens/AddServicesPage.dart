@@ -1,239 +1,3 @@
-// import 'package:flutter/material.dart';
-// import 'package:get/get.dart';
-// import 'package:glam1/constants/AppColors.dart';
-// import 'package:glam1/screens/ServicesInfoPage.dart';
-// import 'package:glam1/services/add_services_controller.dart';
-// import 'package:glam1/widgets/CustomButton.dart';
-// import 'package:glam1/widgets/CustomButton2.dart';
-// import 'package:glam1/widgets/CustomServiceSelectionContainer.dart';
-// import 'package:google_fonts/google_fonts.dart';
-
-// class AddServicesPage extends StatelessWidget {
-//   const AddServicesPage({Key? key}) : super(key: key);
-
-//   @override
-//   Widget build(BuildContext context) {
-//     // Get the controller
-
-//     final controller = Get.find<AddServicesController>();
-
-//     print("controller..isBundle.value in Obx: ${controller.isBundle.value}");
-//       void _saveServices() {
-//   List<Map<String, dynamic>> servicesToSave = [];
-
-//   if (controller.isBundle.value) {
-//     for (final item in controller.bundleServiceWidgets) { // Use controller.bundleServices
-//       servicesToSave.add({
-//         'title': item.titleController.text,
-//         'description': item.descriptionController.text,
-//         'price': item.priceController.text,
-//         'duration': item.durationController.text,
-//         // ... other data from the ServiceItem ...
-//       });
-//     }
-//   } else if (controller.singleServiceWidget.isNotEmpty) { // Use controller.singleService
-//     final item = controller.singleServiceWidget.first;
-//     servicesToSave.add({
-//       'title': item.titleController.text,
-//       'description': item.descriptionController.text,
-//       'price': item.priceController.text,
-//       'duration': item.durationController.text,
-//       // ... other data from the ServiceItem ...
-//     });
-//   }
-
-//   // Implement your save logic
-//   print('Saving services: $servicesToSave');
-//   // ...
-
-//   // Dispose controllers after saving
-//   controller.disposeControllers();
-// }
-
-//     return Scaffold(
-//       backgroundColor: Colors.white,
-//       appBar: AppBar(
-//         shadowColor: Colors.white,
-//         title: Text(
-//           "Add Service",
-//           textAlign: TextAlign.start,
-//           style: GoogleFonts.inter(
-//               fontSize: 23, fontWeight: FontWeight.w600, color: Colors.black),
-//         ),
-//       ),
-//       body: SingleChildScrollView(
-//         child: Padding(
-//           padding: const EdgeInsets.symmetric(horizontal: 16),
-//           child: Column(
-//             crossAxisAlignment: CrossAxisAlignment.start,
-//             children: [
-//               // Mode toggle buttons
-//               Row(
-//                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-//                 children: [
-//                   GestureDetector(
-//                     onTap: () {
-//                       if (!controller.isBundle.value) {
-//                         controller.toggleMode();
-//                       }
-//                       print(
-//                           "controller.isBundle.value in Obx: ${controller.isBundle.value}");
-//                     },
-//                     child: Obx(
-//                       () => CustomButton2(
-//                           isBold: true,
-//                           fillColor: controller.isBundle.value
-//                               ? AppColors.primary
-//                               : Colors.white,
-//                           text: "Bundle",
-//                           textColor: controller.isBundle.value
-//                               ? AppColors.light
-//                               : AppColors.dark,
-//                           borderColor: controller.isBundle.value
-//                               ? AppColors.primary
-//                               : Colors.black),
-//                     ),
-//                   ),
-//                   GestureDetector(
-//                     onTap: () {
-//                       if (controller.isBundle.value) {
-//                         controller.toggleMode();
-//                       }
-//                       print(
-//                           "controller.isBundle.value in Obx: ${controller.isBundle.value}");
-//                     },
-//                     child: Obx(
-//                       () => CustomButton2(
-//                         isBold: true,
-//                         fillColor: !controller.isBundle.value
-//                             ? AppColors.primary
-//                             : Colors.white,
-//                         text: "Single",
-//                         textColor: !controller.isBundle.value
-//                             ? AppColors.light
-//                             : AppColors.dark,
-//                         borderColor: !controller.isBundle.value
-//                             ? AppColors.primary
-//                             : Colors.black,
-//                       ),
-//                     ),
-//                   ),
-//                 ],
-//               ),
-//               const SizedBox(height: 16.0),
-//               Obx(
-//                 () => Row(
-//                   children: [
-//                     const Text("Total time:",
-//                         style: TextStyle(color: AppColors.hintText)),
-//                     const SizedBox(width: 15),
-//                     Text("${controller.calculateTotalTime()} hours"),
-//                     const Spacer(),
-//                     const Text("Total price:",
-//                         style: TextStyle(color: AppColors.hintText)),
-//                     const SizedBox(width: 15),
-//                     Text("${controller.calculateTotalPrice()}"),
-//                   ],
-//                 ),
-//               ),
-//               const SizedBox(height: 16.0),
-//               // Services list - shows either bundle or single services
-//               Obx(
-//                 () => Column(
-//                   children:
-//                       List.generate(controller.serviceWidgets.length, (index) {
-//                     final serviceItem =
-//                         controller.serviceWidgets[index]; // Get the ServiceItem
-//                     return Container(
-//                       key:
-//                           ValueKey(serviceItem.id), // 🔥 THIS LINE IS IMPORTANT
-//                       margin: const EdgeInsets.only(bottom: 8),
-//                       decoration: BoxDecoration(
-//                         border: Border.all(
-//                           color: Colors.transparent,
-//                           width: 2,
-//                         ),
-//                         borderRadius: BorderRadius.circular(18),
-//                       ),
-//                       child: CustomServiceSelectionContainer(
-//                         // Now pass the data and controllers from the ServiceItem
-//                         title: serviceItem.titleController.text,
-//                         serviceCategory: serviceItem.serviceCategory.value,
-//                         buttonBorderColor: serviceItem.buttonBorderColor.value,
-//                         borderColor: serviceItem.borderColor.value,
-//                         hintText: serviceItem.hintText.value,
-//                         borderRadius: serviceItem.borderRadius.value,
-//                         durationLabel: serviceItem.durationController.text,
-//                         priceLabel: serviceItem.priceController.text,
-//                         artistName: serviceItem.artistNameController.text,
-//                         artistSpecialization:
-//                             serviceItem.artistSpecializationController.text,
-//                         serviceType: serviceItem.serviceType.value,
-//                         serviceIcon: serviceItem.serviceIcon.value,
-//                         leadingIconColor: serviceItem.leadingIconColor.value,
-//                         trailingIconColor: serviceItem.trailingIconColor.value,
-//                         artistImage: serviceItem.artistImage.value,
-//                         id: serviceItem.id,
-//                         onDelete: () =>
-//                             controller.removeService(serviceItem.id),
-//                       ),
-//                     );
-//                   }),
-//                 ),
-//               ),
-//               const SizedBox(height: 16),
-//               Obx(() {
-//                 final isSingle = !controller.isBundle.value;
-//                 final servicesCount = controller.serviceWidgets.length;
-
-//                 // If single mode and already one service added — don't show button
-//                 if (isSingle && servicesCount >= 1)
-//                   return const SizedBox.shrink();
-
-//                 return CustomButton(
-//                   icon: Icons.add,
-//                   text: "Add Another Service",
-//                   color: Colors.transparent,
-//                   onPressed: controller.addService,
-//                   textColor: AppColors.primary,
-//                   borderColor: AppColors.primary,
-//                   border: true,
-//                   borderThickness: 0.4,
-//                 );
-//               }),
-//               const SizedBox(height: 16),
-//               CustomButton(
-//                 text: "Save Service",
-//                 color: AppColors.primary,
-//                 onPressed: () {
-//                   // Check if there are services to save
-//                   if (controller.serviceWidgets.isEmpty) {
-//                     Get.snackbar(
-//                       'Error',
-//                       'Please add at least one service before saving',
-//                       snackPosition: SnackPosition.BOTTOM,
-//                       backgroundColor: const Color.fromARGB(126, 236, 140, 247),
-//                       colorText: Colors.white,
-//                     );
-//                     return;
-//                   }
-//                   else {
-//                     _saveServices();
-//                   }
-
-//                   // Navigate to the services info page
-//                   Get.to(() => ServicesInfoPage());
-//                 },
-//               ),
-//               const SizedBox(height: 20),
-//             ],
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:glam1/constants/AppColors.dart';
@@ -241,6 +5,7 @@ import 'package:glam1/screens/ServicesInfoPage.dart';
 import 'package:glam1/services/add_services_controller.dart';
 import 'package:glam1/widgets/CustomButton.dart';
 import 'package:glam1/widgets/CustomButton2.dart';
+import 'package:glam1/widgets/CustomHeader.dart';
 import 'package:glam1/widgets/CustomServiceSelectionContainer.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -256,7 +21,9 @@ class AddServicesPage extends StatelessWidget {
       // Show loading indicator
       Get.dialog(
         const Center(
-          // child: CircularProgressIndicator(),
+          child: CircularProgressIndicator(
+            color: AppColors.primary,
+          ),
         ),
         barrierDismissible: false,
       );
@@ -268,92 +35,226 @@ class AddServicesPage extends StatelessWidget {
       Get.back();
 
       if (success) {
+        // Show success message
+        Get.snackbar(
+          'Success',
+          'Your service has been saved',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.green.withOpacity(0.7),
+          colorText: Colors.white,
+          margin: const EdgeInsets.all(10),
+          borderRadius: 10,
+          duration: const Duration(seconds: 2),
+        );
+
         // Navigate to the services info page
-        Get.to(ServicesInfoPage());
+        Get.to(() => ServicesInfoPage());
+      } else {
+        // Show error message
+        Get.snackbar(
+          'Error',
+          'Failed to save service',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red.withOpacity(0.7),
+          colorText: Colors.white,
+          margin: const EdgeInsets.all(10),
+          borderRadius: 10,
+        );
       }
     }
 
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        shadowColor: Colors.white,
-        title: Text(
-          "Add Service",
-          textAlign: TextAlign.start,
-          style: GoogleFonts.inter(
-              fontSize: 23, fontWeight: FontWeight.w600, color: Colors.black),
-        ),
-      ),
-      body: Obx(() =>  SingleChildScrollView(
+      body: Obx(() => SafeArea(
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                padding: const EdgeInsets.all(20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // Custom Header
+                    CustomHeader(),
+
+                    const SizedBox(height: 24),
+
                     // Mode toggle buttons
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            if (!controller.isBundle.value) {
-                              controller.toggleMode();
-                            }
-                          },
-                          child: Obx(
-                            () => CustomButton2(
-                                isBold: true,
-                                fillColor: controller.isBundle.value
-                                    ? AppColors.primary
-                                    : Colors.white,
-                                text: "Bundle",
-                                textColor: controller.isBundle.value
-                                    ? AppColors.light
-                                    : AppColors.dark,
-                                borderColor: controller.isBundle.value
-                                    ? AppColors.primary
-                                    : Colors.black),
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            if (controller.isBundle.value) {
-                              controller.toggleMode();
-                            }
-                          },
-                          child: Obx(
-                            () => CustomButton2(
-                              isBold: true,
-                              fillColor: !controller.isBundle.value
-                                  ? AppColors.primary
-                                  : Colors.white,
-                              text: "Single",
-                              textColor: !controller.isBundle.value
-                                  ? AppColors.light
-                                  : AppColors.dark,
-                              borderColor: !controller.isBundle.value
-                                  ? AppColors.primary
-                                  : Colors.black,
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.grey[100],
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      padding: const EdgeInsets.all(8),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: GestureDetector(
+                              onTap: () {
+                                if (!controller.isBundle.value) {
+                                  controller.toggleMode();
+                                }
+                              },
+                              child: Obx(
+                                () => AnimatedContainer(
+                                  duration: const Duration(milliseconds: 200),
+                                  decoration: BoxDecoration(
+                                    color: controller.isBundle.value
+                                        ? AppColors.primary
+                                        : Colors.transparent,
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 12),
+                                  child: Center(
+                                    child: Text(
+                                      "Bundle",
+                                      style: GoogleFonts.poppins(
+                                        fontWeight: FontWeight.w500,
+                                        color: controller.isBundle.value
+                                            ? Colors.white
+                                            : Colors.black54,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
                             ),
                           ),
+                          Expanded(
+                            child: GestureDetector(
+                              onTap: () {
+                                if (controller.isBundle.value) {
+                                  controller.toggleMode();
+                                }
+                              },
+                              child: Obx(
+                                () => AnimatedContainer(
+                                  duration: const Duration(milliseconds: 200),
+                                  decoration: BoxDecoration(
+                                    color: !controller.isBundle.value
+                                        ? AppColors.primary
+                                        : Colors.transparent,
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 12),
+                                  child: Center(
+                                    child: Text(
+                                      "Single",
+                                      style: GoogleFonts.poppins(
+                                        fontWeight: FontWeight.w500,
+                                        color: !controller.isBundle.value
+                                            ? Colors.white
+                                            : Colors.black54,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(height: 24),
+
+                    // Summary card
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade50,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: Colors.grey.shade200),
+                      ),
+                      padding: const EdgeInsets.all(16),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "Total time",
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 14,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  "${controller.calculateTotalTime()} hours",
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                    color: AppColors.primary,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Container(
+                            height: 40,
+                            width: 1,
+                            color: Colors.grey.shade300,
+                          ),
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.only(left: 16),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Total price",
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 14,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    "₹ ${controller.calculateTotalPrice()}",
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                      color: AppColors.primary,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(height: 24),
+
+                    // Section title
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          controller.isBundle.value
+                              ? "Bundle Services"
+                              : "Service Information",
+                          style: GoogleFonts.poppins(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.black87,
+                          ),
+                        ),
+                        Text(
+                          "${controller.serviceWidgets.length} ${controller.isBundle.value ? 'services' : 'service'}",
+                          style: GoogleFonts.poppins(
+                            fontSize: 14,
+                            color: Colors.grey,
+                          ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 16.0),
-                    Row(
-                      children: [
-                        const Text("Total time:",
-                            style: TextStyle(color: AppColors.hintText)),
-                        const SizedBox(width: 15),
-                        Text("${controller.calculateTotalTime()} hours"),
-                        const Spacer(),
-                        const Text("Total price:",
-                            style: TextStyle(color: AppColors.hintText)),
-                        const SizedBox(width: 15),
-                        Text("₹ ${controller.calculateTotalPrice()}"),
-                      ],
-                    ),
-                    const SizedBox(height: 16.0),
+
+                    const SizedBox(height: 16),
+
                     // Services list - shows either bundle or single services
                     Column(
                       children: List.generate(controller.serviceWidgets.length,
@@ -363,14 +264,7 @@ class AddServicesPage extends StatelessWidget {
                         return Container(
                           key: ValueKey(
                               serviceItem.id), // 🔥 THIS LINE IS IMPORTANT
-                          margin: const EdgeInsets.only(bottom: 8),
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              color: Colors.transparent,
-                              width: 2,
-                            ),
-                            borderRadius: BorderRadius.circular(18),
-                          ),
+                          margin: const EdgeInsets.only(bottom: 16),
                           child: CustomServiceSelectionContainer(
                             id: serviceItem.id,
                             titleController: serviceItem.titleController,
@@ -403,7 +297,10 @@ class AddServicesPage extends StatelessWidget {
                         );
                       }),
                     ),
+
                     const SizedBox(height: 16),
+
+                    // Add Another Service button (only for bundles or empty single)
                     Obx(() {
                       final isSingle = !controller.isBundle.value;
                       final servicesCount = controller.serviceWidgets.length;
@@ -412,42 +309,80 @@ class AddServicesPage extends StatelessWidget {
                       if (isSingle && servicesCount >= 1)
                         return const SizedBox.shrink();
 
-                      return CustomButton(
-                        icon: Icons.add,
-                        text: "Add Another Service",
-                        color: Colors.transparent,
-                        onPressed: controller.addService,
-                        textColor: AppColors.primary,
-                        borderColor: AppColors.primary,
-                        border: true,
-                        borderThickness: 0.4,
+                      return Container(
+                        width: double.infinity,
+                        margin: const EdgeInsets.only(bottom: 16),
+                        child: ElevatedButton.icon(
+                          onPressed: controller.addService,
+                          icon: const Icon(Icons.add, color: AppColors.primary),
+                          label: Text(
+                            "Add Another Service",
+                            style: GoogleFonts.poppins(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                              color: AppColors.primary,
+                            ),
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            elevation: 0,
+                            side: const BorderSide(
+                              color: AppColors.primary,
+                              width: 1,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                        ),
                       );
                     }),
-                    const SizedBox(height: 16),
-                    CustomButton(
-                      text: "Save Service",
-                      color: AppColors.primary,
-                      onPressed: () {
-                        // Check if there are services to save
-                        if (controller.serviceWidgets.isEmpty) {
-                          Get.snackbar(
-                            'Error',
-                            'Please add at least one service before saving',
-                            snackPosition: SnackPosition.BOTTOM,
-                            backgroundColor:
-                                const Color.fromARGB(126, 236, 140, 247),
-                            colorText: Colors.white,
-                          );
-                          return;
-                        }
-                        _saveServices();
-                      },
+
+                    // Save button
+                    Container(
+                      width: double.infinity,
+                      margin: const EdgeInsets.only(bottom: 30),
+                      child: ElevatedButton(
+                        onPressed: () {
+                          // Check if there are services to save
+                          if (controller.serviceWidgets.isEmpty) {
+                            Get.snackbar(
+                              'Error',
+                              'Please add at least one service before saving',
+                              snackPosition: SnackPosition.BOTTOM,
+                              backgroundColor: Colors.red.withOpacity(0.7),
+                              colorText: Colors.white,
+                              margin: const EdgeInsets.all(10),
+                              borderRadius: 10,
+                            );
+                            return;
+                          }
+                          _saveServices();
+                        },
+                        child: Text(
+                          "Save Service",
+                          style: GoogleFonts.poppins(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.white,
+                          ),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primary,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                      ),
                     ),
-                    const SizedBox(height: 20),
                   ],
                 ),
               ),
-            )),
+            ),
+          )),
     );
   }
 }

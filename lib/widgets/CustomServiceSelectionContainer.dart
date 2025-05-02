@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:glam1/constants/AppColors.dart';
 import 'package:switcher_button/switcher_button.dart';
 import 'package:dropdown_textfield/dropdown_textfield.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class CustomServiceSelectionContainer extends StatefulWidget {
   final int id;
@@ -69,50 +70,53 @@ class _CustomServiceSelectionContainerState
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        print("Tapped card with ID: ${widget.id}");
-      },
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.shade200,
+            blurRadius: 8,
+            spreadRadius: 1,
+            offset: const Offset(0, 2),
+          ),
+        ],
+        border: Border.all(color: Colors.grey.shade100),
+      ),
       child: Padding(
-        padding: const EdgeInsets.only(bottom: 16.0),
-        child: Material(
-          elevation: 1,
-          borderRadius: BorderRadius.circular(widget.borderRadius),
-          child: Container(
-            width: double.infinity,
-            decoration: BoxDecoration(
-              color: widget.backgroundColor,
-              borderRadius: BorderRadius.circular(widget.borderRadius),
-            ),
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Title and actions
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: widget.titleController,
-                        focusNode: _titleFocusNode,
-                        readOnly: !isEditing,
-                        decoration: const InputDecoration(
-                          border: InputBorder.none,
-                          contentPadding: EdgeInsets.zero,
-                        ),
-                        style: TextStyle(
-                          color: widget.textColor,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+                Expanded(
+                  child: TextField(
+                    controller: widget.titleController,
+                    focusNode: _titleFocusNode,
+                    readOnly: !isEditing,
+                    decoration: const InputDecoration(
+                      border: InputBorder.none,
+                      contentPadding: EdgeInsets.zero,
                     ),
+                    style: GoogleFonts.poppins(
+                      color: Colors.black87,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+                Row(
+                  children: [
                     IconButton(
-                      icon: Icon(isEditing ? Icons.check : Icons.edit,
-                          size: 18,
-                          color: isEditing
-                              ? AppColors.primary
-                              : const Color.fromARGB(255, 204, 103, 218)),
+                      icon: Icon(
+                        isEditing ? Icons.check : Icons.edit,
+                        size: 20,
+                        color: AppColors.primary,
+                      ),
                       onPressed: () {
                         setState(() {
                           isEditing = !isEditing;
@@ -120,7 +124,8 @@ class _CustomServiceSelectionContainerState
                             _titleFocusNode.requestFocus();
                             widget.titleController.selection =
                                 TextSelection.fromPosition(TextPosition(
-                                    offset: widget.titleController.text.length));
+                                    offset:
+                                        widget.titleController.text.length));
                           } else {
                             _titleFocusNode.unfocus();
                           }
@@ -128,170 +133,286 @@ class _CustomServiceSelectionContainerState
                       },
                     ),
                     IconButton(
-                      icon: const Icon(Icons.delete, color: Colors.red),
+                      icon: const Icon(
+                        Icons.delete_outline,
+                        color: Colors.red,
+                        size: 20,
+                      ),
                       onPressed: widget.onDelete,
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8.0),
-
-                DropDownTextField(
-                  controller: widget.serviceCategoryController,
-                  clearOption: false,
-                  textFieldDecoration: InputDecoration(
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(widget.borderRadius),
-                    ),
-                    hintText: "Select Service",
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return "Please select a service";
-                    }
-                    return null;
-                  },
-                  dropDownList: [
-                    DropDownValueModel(name: "Hairstyling", value: "Hairstyling"),
-                    DropDownValueModel(name: "Makeup", value: "Makeup"),
-                    DropDownValueModel(name: "Facial", value: "Facial"),
-                    DropDownValueModel(name: "Massage", value: "Massage"),
-                    DropDownValueModel(name: "Hair Coloring", value: "Hair Coloring"),
-                    DropDownValueModel(name: "Nail Art", value: "Nail Art"),
-                  ],
-                  onChanged: (val) {
-                    // Handle on change
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                const Divider(),
-
-                Row(
-                  children: [
-                    Text("  Duration",
-                        style: TextStyle(color: AppColors.secondaryText)),
-                    const SizedBox(width: 85),
-                    Text("Price",
-                        style: TextStyle(color: AppColors.secondaryText)),
-                  ],
-                ),
-                const SizedBox(height: 2.0),
-                Row(
-                  children: [
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.2,
-                      child: TextField(
-                        controller: widget.durationController,
-                        decoration: InputDecoration(
-                          hintText: "Duration",
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius:
-                                BorderRadius.circular(widget.borderRadius),
-                            borderSide:
-                                BorderSide(color: Colors.grey.withOpacity(0.4)),
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 8.0),
-                    Text("hours", style: TextStyle(color: widget.textColor)),
-                    const SizedBox(width: 8.0),
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.4,
-                      child: TextField(
-                        controller: widget.priceController,
-                        decoration: InputDecoration(
-                          hintText: "Price",
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius:
-                                BorderRadius.circular(widget.borderRadius),
-                            borderSide:
-                                BorderSide(color: Colors.grey.withOpacity(0.4)),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const Divider(),
-
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text("Select Artist (Optional)",
-                        style: TextStyle(color: widget.textColor)),
-                    Text(
-                      "Change",
-                      style: TextStyle(
-                        color: AppColors.primary,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8.0),
-                Row(
-                  children: [
-                    SvgPicture.asset(widget.artistImage, width: 50, height: 50),
-                    const SizedBox(width: 8.0),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          widget.artistNameController.text,
-                          style: TextStyle(
-                            color: widget.textColor,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text(
-                          widget.artistSpecializationController.text,
-                          style:
-                              TextStyle(color: widget.textColor.withOpacity(0.7)),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                const Divider(),
-                const SizedBox(height: 10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        SvgPicture.asset(
-                            widget.serviceIcon,
-                          width: 24,
-                          height: 24,
-                          color: widget.leadingIconColor,
-                        ),
-                        const SizedBox(width: 8.0),
-                        Text(widget.serviceType,
-                            style: TextStyle(color: widget.textColor)),
-                      ],
-                    ),
-                    SwitcherButton(
-                      value: true,
-                      onChange: (value) {
-                        // Add your switch toggle functionality here.
-                      },
-                      onColor: AppColors.primary,
-                      offColor: AppColors.hintText,
                     ),
                   ],
                 ),
               ],
             ),
-          ),
+
+            const SizedBox(height: 16),
+
+            // Service category dropdown
+            Theme(
+              data: Theme.of(context).copyWith(
+                inputDecorationTheme: InputDecorationTheme(
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: Colors.grey.shade300),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: Colors.grey.shade300),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(color: AppColors.primary),
+                  ),
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                ),
+              ),
+              child: DropDownTextField(
+                controller: widget.serviceCategoryController,
+                clearOption: false,
+                textFieldDecoration: InputDecoration(
+                  hintText: "Select Service Category",
+                  hintStyle: GoogleFonts.poppins(
+                    color: Colors.grey,
+                    fontSize: 14,
+                  ),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return "Please select a service";
+                  }
+                  return null;
+                },
+                dropDownList: const [
+                  DropDownValueModel(name: "Hairstyling", value: "Hairstyling"),
+                  DropDownValueModel(name: "Makeup", value: "Makeup"),
+                  DropDownValueModel(name: "Facial", value: "Facial"),
+                  DropDownValueModel(name: "Massage", value: "Massage"),
+                  DropDownValueModel(
+                      name: "Hair Coloring", value: "Hair Coloring"),
+                  DropDownValueModel(name: "Nail Art", value: "Nail Art"),
+                ],
+                onChanged: (val) {
+                  // Handle on change
+                },
+              ),
+            ),
+
+            const SizedBox(height: 24),
+
+            // Duration and price row
+            Row(
+              children: [
+                Text(
+                  "Duration",
+                  style: GoogleFonts.poppins(
+                    fontSize: 14,
+                    color: Colors.grey,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(width: 85),
+                Text(
+                  "Price",
+                  style: GoogleFonts.poppins(
+                    fontSize: 14,
+                    color: Colors.grey,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+
+            Row(
+              children: [
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.2,
+                  child: TextField(
+                    controller: widget.durationController,
+                    decoration: InputDecoration(
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 12),
+                      hintText: "Duration",
+                      hintStyle: GoogleFonts.poppins(
+                        color: Colors.grey,
+                        fontSize: 14,
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: Colors.grey.shade300),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(color: AppColors.primary),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8.0),
+                Text(
+                  "hours",
+                  style: GoogleFonts.poppins(
+                    color: Colors.grey.shade700,
+                    fontSize: 14,
+                  ),
+                ),
+                const SizedBox(width: 16.0),
+                Expanded(
+                  child: TextField(
+                    controller: widget.priceController,
+                    decoration: InputDecoration(
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 12),
+                      prefixText: "₹ ",
+                      prefixStyle: GoogleFonts.poppins(
+                        color: Colors.grey.shade700,
+                        fontSize: 14,
+                      ),
+                      hintText: "Price",
+                      hintStyle: GoogleFonts.poppins(
+                        color: Colors.grey,
+                        fontSize: 14,
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: Colors.grey.shade300),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(color: AppColors.primary),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 24),
+            const Divider(height: 1),
+            const SizedBox(height: 16),
+
+            // Artist section
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "Select Artist (Optional)",
+                  style: GoogleFonts.poppins(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.grey.shade700,
+                  ),
+                ),
+                Text(
+                  "Change",
+                  style: GoogleFonts.poppins(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.primary,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+
+            Row(
+              children: [
+                Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade100,
+                    borderRadius: BorderRadius.circular(24),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(24),
+                    child: SvgPicture.asset(
+                      widget.artistImage,
+                      width: 48,
+                      height: 48,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      widget.artistNameController.text,
+                      style: GoogleFonts.poppins(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    Text(
+                      widget.artistSpecializationController.text,
+                      style: GoogleFonts.poppins(
+                        fontSize: 12,
+                        color: Colors.grey,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 16),
+            const Divider(height: 1),
+            const SizedBox(height: 16),
+
+            // Service type toggle
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      width: 32,
+                      height: 32,
+                      decoration: BoxDecoration(
+                        color: AppColors.primary.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Center(
+                        child: SvgPicture.asset(
+                          widget.serviceIcon,
+                          width: 20,
+                          height: 20,
+                          color: AppColors.primary,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Text(
+                      widget.serviceType,
+                      style: GoogleFonts.poppins(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.black87,
+                      ),
+                    ),
+                  ],
+                ),
+                SwitcherButton(
+                  value: true,
+                  size: 30,
+                  onChange: (value) {
+                    // Add your switch toggle functionality here.
+                  },
+                  onColor: AppColors.primary,
+                  offColor: Colors.grey.shade400,
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );
   }
 }
-
-
-
-
 
 // import 'package:flutter/material.dart';
 // import 'package:get/get.dart';
