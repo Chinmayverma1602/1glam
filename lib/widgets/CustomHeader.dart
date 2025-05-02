@@ -9,8 +9,18 @@ class CustomHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 20,left: 16,right: 16),
+    // Get the status bar height to ensure proper spacing
+    final statusBarHeight = MediaQuery.of(context).padding.top;
+
+    return Container(
+      padding: EdgeInsets.only(
+        top: statusBarHeight +
+            12, // Dynamic top padding based on status bar + extra space
+        left: 16,
+        right: 16,
+        bottom: 10,
+      ),
+      width: double.infinity,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -23,8 +33,12 @@ class CustomHeader extends StatelessWidget {
           ),
           GestureDetector(
               onTap: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => HomePage(lead: sampleLeads,)));
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => HomePage(
+                              lead: sampleLeads,
+                            )));
               },
               child: Text(
                 "Skip",

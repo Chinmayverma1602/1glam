@@ -20,6 +20,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -53,6 +54,7 @@ class _LoginPageState extends State<LoginPage> {
                 .collection('users')
                 .doc(user.uid)
                 .set({
+              'name': _nameController.text,
               'email': user.email,
               'displayName': user.displayName,
               'photoURL': user.photoURL,
@@ -135,6 +137,7 @@ class _LoginPageState extends State<LoginPage> {
               .collection('users')
               .doc(user.uid)
               .set({
+            'name': _nameController.text,
             'email': user.email,
             'displayName': user.displayName,
             'photoURL': user.photoURL,
@@ -158,8 +161,6 @@ class _LoginPageState extends State<LoginPage> {
         );
 
         // Navigate to the appropriate screen
-        // For new users, you might want to redirect to a profile completion page
-        // For existing users, redirect to home or dashboard
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => VerifyEmailPage()),
@@ -175,6 +176,13 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> _handleLogin() async {
+    if (_nameController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Please enter your name")),
+      );
+      return;
+    }
+
     if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Please enter email and password")),
@@ -184,26 +192,35 @@ class _LoginPageState extends State<LoginPage> {
 
     setState(() => _isLoading = true);
 
-    final response = await LoginServiceApi.createUser(
-      _emailController.text,
-      _passwordController.text,
-    );
-
-    setState(() => _isLoading = false);
-
-    if (response != null && response.containsKey("data")) {
-      print("Success Response: $response");
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content: Text("Account created for ${response['data']['email']}")),
+    try {
+      final response = await LoginServiceApi.createUser(
+        _emailController.text,
+        _passwordController.text,
+        name: _nameController.text,
       );
-      Navigator.push(
-          context, MaterialPageRoute(builder: (context) => VerifyEmailPage()));
-    } else {
-      print("Failed Response: $response");
+
+      setState(() => _isLoading = false);
+
+      if (response != null && response.containsKey("token")) {
+        print("Success Response: $response");
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content:
+                  Text("Account created for ${response['user']['email']}")),
+        );
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => VerifyEmailPage()));
+      } else {
+        print("Failed Response: $response");
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content: Text(response?["error"] ?? "Failed to create account")),
+        );
+      }
+    } catch (e) {
+      setState(() => _isLoading = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content: Text(response?["error"] ?? "Failed to create account")),
+        SnackBar(content: Text("Error: ${e.toString()}")),
       );
     }
   }
@@ -212,144 +229,155 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
+      appBar: null,
       body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const CustomHeader(),
-              const SizedBox(height: 16),
-              Container(
-                height: MediaQuery.of(context).size.height * 0.25,
-                width: MediaQuery.of(context).size.width * 0.99,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child:
-                    SvgPicture.asset('assets/images/div.svg', fit: BoxFit.fill),
-              ),
-              const Center(
-                child: Text(
-                  "AI-Powered Bookings for \nMakeup Artists",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.title,
-                  ),
-                ),
-              ),
-              const Center(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(vertical: 5),
-                  child: Text(
-                    "Streamline your bookings with WhatsApp & Instagram \nintegration",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 15, color: AppColors.primary),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 5),
-                child: CustomTextInputField(
-                  hintText: "Enter your email",
-                  controller: _emailController,
-                  icon: Icons.email_outlined,
-                  keyboardType: TextInputType.emailAddress,
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 5),
-                child: CustomTextInputField(
-                  hintText: "Enter your password",
-                  controller: _passwordController,
-                  icon: Icons.lock_outline,
-                  keyboardType: TextInputType.visiblePassword,
-                ),
-              ),
-              const SizedBox(height: 12),
-              CustomButton(
-                text: _isLoading ? "Creating Account..." : "Continue",
-                color: AppColors.subtitle,
-                onPressed: _isLoading ? null : _handleLogin,
-              ),
-              const SizedBox(height: 10),
-              Row(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const CustomHeader(),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const Expanded(
-                      child: Divider(color: AppColors.primary, thickness: 1)),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    child: Text(
-                      "or continue with",
-                      style: TextStyle(fontSize: 14, color: AppColors.primary),
+                  Container(
+                    height: 160,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: Color(0xFFFAE8FF),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Center(
+                      child: Icon(
+                        Icons.brush, // This is a makeup brush icon
+                        size: 50,
+                        color: AppColors.primary,
+                      ),
                     ),
                   ),
-                  const Expanded(
-                      child: Divider(color: AppColors.primary, thickness: 1)),
+                  const SizedBox(height: 20),
+                  const Text(
+                    "AI-Powered Booking for \nMakeup Artists",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.title,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  const Text(
+                    "Streamline your bookings with WhatsApp & Instagram \nintegration",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 14, color: AppColors.primary),
+                  ),
+                  const SizedBox(height: 20),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 5),
+                    child: CustomTextInputField(
+                      hintText: "Enter your name",
+                      controller: _nameController,
+                      icon: Icons.person_outline,
+                      keyboardType: TextInputType.text,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 5),
+                    child: CustomTextInputField(
+                      hintText: "Enter your email",
+                      controller: _emailController,
+                      icon: Icons.email_outlined,
+                      keyboardType: TextInputType.emailAddress,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 5),
+                    child: CustomTextInputField(
+                      hintText: "Enter your password",
+                      controller: _passwordController,
+                      icon: Icons.lock_outline,
+                      keyboardType: TextInputType.visiblePassword,
+                      isPassword: true,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  CustomButton(
+                    text: _isLoading ? "Creating Account..." : "Continue",
+                    color: AppColors.subtitle,
+                    onPressed: _isLoading ? null : _handleLogin,
+                  ),
+                  const SizedBox(height: 16),
+                  const Text(
+                    "or continue with",
+                    style: TextStyle(fontSize: 14, color: AppColors.primary),
+                  ),
+                  const SizedBox(height: 16),
+                  CustomButton(
+                    text: _isGoogleLoading
+                        ? "Signing in..."
+                        : "Continue with Google",
+                    borderThickness: 0.4,
+                    svgIcon: 'assets/images/google.svg',
+                    textColor: Colors.black,
+                    border: true,
+                    borderColor: Colors.grey.withOpacity(0.4),
+                    color: Colors.transparent,
+                    icon: Icons.abc,
+                    onPressed: _isGoogleLoading ? null : _handleGoogleSignIn,
+                  ),
+                  const SizedBox(height: 12),
+                  CustomButton(
+                    text: "Continue with Apple",
+                    icon: Icons.apple,
+                    iconColor: Colors.white,
+                    color: Colors.black,
+                    onPressed: () {},
+                  ),
+                  const SizedBox(height: 12),
+                  CustomButton(
+                    text:
+                        _isLoading ? "Signing in..." : "Continue with Facebook",
+                    icon: Icons.facebook,
+                    color: AppColors.facebookBlue,
+                    iconColor: Colors.white,
+                    onPressed: _isLoading ? null : _handleFacebookSignIn,
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: CustomButton2(
+                          text: "Language",
+                          borderColor: AppColors.primary.withOpacity(0.5),
+                          leadingImage: 'assets/images/Frame-1.svg',
+                          trailingImage: 'assets/images/i.svg',
+                          fillColor: Colors.transparent,
+                        ),
+                      ),
+                      SizedBox(width: 12),
+                      Expanded(
+                        child: CustomButton2(
+                          text: "Country",
+                          borderColor: AppColors.primary.withOpacity(0.5),
+                          leadingImage: 'assets/images/Frame.svg',
+                          trailingImage: 'assets/images/i.svg',
+                          fillColor: Colors.transparent,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  const Text(
+                    "By continuing, you agree to our Terms of Service and Privacy Policy",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 12, color: AppColors.primary),
+                  ),
+                  const SizedBox(height: 24),
                 ],
               ),
-              const SizedBox(height: 12),
-              CustomButton(
-                text:
-                    _isGoogleLoading ? "Signing in..." : "Continue with Google",
-                borderThickness: 0.4,
-                svgIcon: 'assets/images/google.svg',
-                textColor: Colors.black,
-                border: true,
-                borderColor: Colors.grey.withOpacity(0.4),
-                color: Colors.transparent,
-                icon: Icons.abc,
-                onPressed: _isGoogleLoading ? null : _handleGoogleSignIn,
-              ),
-              const SizedBox(height: 12),
-              CustomButton(
-                text: "Continue with Apple",
-                icon: Icons.apple,
-                iconColor: Colors.white,
-                color: Colors.black,
-                onPressed: () {},
-              ),
-              const SizedBox(height: 12),
-              CustomButton(
-                text: _isLoading ? "Signing in..." : "Continue with Facebook",
-                icon: Icons.facebook,
-                color: AppColors.facebookBlue,
-                iconColor: Colors.white,
-                onPressed: _isLoading ? null : _handleFacebookSignIn,
-              ),
-              const SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  CustomButton2(
-                    text: "Country",
-                    borderColor: AppColors.primary,
-                    leadingImage: 'assets/images/Frame.svg',
-                    trailingImage: 'assets/images/i.svg',
-                    fillColor: Colors.transparent,
-                  ),
-                  CustomButton2(
-                    text: "Language",
-                    borderColor: AppColors.primary,
-                    fillColor: Colors.transparent,
-                    leadingImage: 'assets/images/Frame-1.svg',
-                    trailingImage: 'assets/images/i.svg',
-                  ),
-                ],
-              ),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
-                child: Text(
-                  "By continuing, you agree to our Terms of Service and Privacy Policy",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 15, color: AppColors.primary),
-                ),
-              ),
-              const SizedBox(height: 24),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

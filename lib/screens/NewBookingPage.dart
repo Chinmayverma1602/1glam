@@ -18,7 +18,6 @@ import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
-
 class NewBookingScreen extends StatefulWidget {
   const NewBookingScreen({super.key});
 
@@ -91,15 +90,14 @@ class _NewBookingScreenState extends State<NewBookingScreen> {
   Future<void> _getCurrentLocation() async {
     setState(() {
       isLoadingLocation = true;
-    String addressLine1 = addressLine1Controller.text.trim();
-    String addressLine2 = addressLine2Controller.text.trim();
-    String city = cityController.text.trim();
-    String zip = zipController.text.trim();
+      String addressLine1 = addressLine1Controller.text.trim();
+      String addressLine2 = addressLine2Controller.text.trim();
+      String city = cityController.text.trim();
+      String zip = zipController.text.trim();
 
-    addressController.text = [addressLine1, addressLine2, city, zip]
-        .where((element) => element.isNotEmpty)
-        .join(', ');
-
+      addressController.text = [addressLine1, addressLine2, city, zip]
+          .where((element) => element.isNotEmpty)
+          .join(', ');
     });
 
     try {
@@ -120,54 +118,44 @@ class _NewBookingScreenState extends State<NewBookingScreen> {
   }
 
   Future<void> _getAddressFromNominatim(Position position) async {
-    final String url =
-        'https://nominatim.openstreetmap.org/reverse?format=json&lat=${position.latitude}&lon=${position.longitude}&zoom=18&addressdetails=1';
-
+    // Placeholder mock implementation instead of API call
     try {
-      final http.Response response = await http.get(
-        Uri.parse(url),
-        headers: {'User-Agent': 'Glam1App'},
-      );
+      // Mock data
+      final Map<String, dynamic> address = {
+        'road': 'Example Street',
+        'house_number': '123',
+        'city': 'Sample City',
+        'state': 'Delhi',
+        'postcode': '110001'
+      };
 
-      if (response.statusCode == 200) {
-        final Map<String, dynamic> data = json.decode(response.body);
-        print("API Response: ${response.body}");
-        final Map<String, dynamic> address = data['address'];
-
-        String street = address['road'] ?? '';
-        if (address['house_number'] != null) {
-          street = "${address['house_number']} $street";
-        }
-
-        String city =
-            address['city'] ?? address['town'] ?? address['village'] ?? '';
-        String state = address['state'] ?? '';
-        String postcode = address['postcode'] ?? '';
-        print("Street: $street");
-        print("City: $city");
-        print("State: $state");
-        print("Postcode: $postcode");
-
-        setState(() {
-          addressLine1Controller.text = street;
-          cityController.text = city;
-          zipController.text = postcode;
-
-          // if (state.isNotEmpty) {
-          //   for (String indianState in indianStates) {
-          //     if (indianState.toLowerCase().contains(state.toLowerCase()) ||
-          //         state.toLowerCase().contains(indianState.toLowerCase())) {
-          //       selectedState = indianState;
-          //       break;
-          //     }
-          //   }
-          // }
-        });
-      } else {
-        await _getAddressFromGeocoding(position);
+      String street = address['road'] ?? '';
+      if (address['house_number'] != null) {
+        street = "${address['house_number']} $street";
       }
+
+      String city =
+          address['city'] ?? address['town'] ?? address['village'] ?? '';
+      String state = address['state'] ?? '';
+      String postcode = address['postcode'] ?? '';
+
+      setState(() {
+        addressLine1Controller.text = street;
+        cityController.text = city;
+        zipController.text = postcode;
+
+        // if (state.isNotEmpty) {
+        //   for (String indianState in indianStates) {
+        //     if (indianState.toLowerCase().contains(state.toLowerCase()) ||
+        //         state.toLowerCase().contains(indianState.toLowerCase())) {
+        //       selectedState = indianState;
+        //       break;
+        //     }
+        //   }
+        // }
+      });
     } catch (e) {
-      print('Error fetching address from Nominatim: $e');
+      print('Error in mock address: $e');
       await _getAddressFromGeocoding(position);
     }
   }
@@ -259,7 +247,6 @@ class _NewBookingScreenState extends State<NewBookingScreen> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -280,8 +267,8 @@ class _NewBookingScreenState extends State<NewBookingScreen> {
             child: ElevatedButton(
               onPressed: () async {
                 // final bookingController = Get.find<BookingController>();
-                final BookingController bookingController = Get.put(BookingController());
-
+                final BookingController bookingController =
+                    Get.put(BookingController());
 
                 // Build new booking map using controller values
                 final dynamic newBooking = {
@@ -293,7 +280,7 @@ class _NewBookingScreenState extends State<NewBookingScreen> {
                       _dropdownController.dropDownValue?.name ?? "Unknown",
                   "price": 1000,
                   "duration": 60,
-                  "start_time":startTime,
+                  "start_time": startTime,
                 };
 
                 // Append newBooking to the jsonData list in BookingController
@@ -304,7 +291,7 @@ class _NewBookingScreenState extends State<NewBookingScreen> {
                 await bookingController.addBookingToFirestore(newBooking);
 
                 // Optionally, navigate to the next screen which builds using jsonData:
-                Get.to(() => CalenderPage()); 
+                Get.to(() => CalenderPage());
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,
@@ -579,13 +566,15 @@ class _NewBookingScreenState extends State<NewBookingScreen> {
         if (selectedLocation == "Client Location")
           Row(
             children: [
-              Expanded(child: _textInputField("Address", "Enter address", addressController)),
+              Expanded(
+                  child: _textInputField(
+                      "Address", "Enter address", addressController)),
               SizedBox(width: 15), // spacing between field and icon
-                  IconButton(
-                    onPressed: isLoadingLocation ? null : _getCurrentLocation,
-                    icon: Icon(isLoadingLocation ? Icons.sync : Icons.pin_drop,
-                          color: AppColors.subtitle, size: 30),
-                  ),
+              IconButton(
+                onPressed: isLoadingLocation ? null : _getCurrentLocation,
+                icon: Icon(isLoadingLocation ? Icons.sync : Icons.pin_drop,
+                    color: AppColors.subtitle, size: 30),
+              ),
             ],
           ),
       ],

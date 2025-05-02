@@ -6,7 +6,7 @@ import 'package:glam1/model/booking_model.dart';
 class BookingController extends GetxController {
   var isLoading = false.obs;
   RxList<Booking> bookings = <Booking>[].obs;
-  
+
   @override
   void onInit() {
     listenToFirestoreBookings();
@@ -14,21 +14,24 @@ class BookingController extends GetxController {
   }
 
   void listenToFirestoreBookings() {
-    FirebaseFirestore.instance.collection('bookings').snapshots().listen((snapshot) {
-      bookings.assignAll(
-        snapshot.docs.map((doc) => Booking.fromJson(doc.data(), doc.id)).toList()
-      );
+    FirebaseFirestore.instance
+        .collection('bookings')
+        .snapshots()
+        .listen((snapshot) {
+      bookings.assignAll(snapshot.docs
+          .map((doc) => Booking.fromJson(doc.data(), doc.id))
+          .toList());
     });
   }
 
   Future<void> addBookingToFirestore(dynamic bookingData) async {
     try {
       isLoading.value = true;
-      
+
       // Convert TimeOfDay to DateTime for Firebase storage
       final date = bookingData["date"] as DateTime;
       final startTime = bookingData["start_time"] as TimeOfDay;
-      
+
       // Create a DateTime that combines the date with the time
       final startDateTime = DateTime(
         date.year,
@@ -37,7 +40,7 @@ class BookingController extends GetxController {
         startTime.hour,
         startTime.minute,
       );
-      
+
       // Create booking data for Firestore
       final firestoreData = {
         'customer_name': bookingData["customer_name"],
@@ -48,9 +51,12 @@ class BookingController extends GetxController {
         'duration': 60, // Default duration in minutes
         'start_time': Timestamp.fromDate(startDateTime),
       };
-      
+
       // Add to Firestore
-      await FirebaseFirestore.instance.collection('bookings').doc(bookingData["id"]).set(firestoreData);
+      await FirebaseFirestore.instance
+          .collection('bookings')
+          .doc(bookingData["id"])
+          .set(firestoreData);
     } catch (e) {
       print('Error adding booking to Firestore: $e');
     } finally {

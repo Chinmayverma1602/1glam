@@ -41,7 +41,7 @@ void main() async {
 
 Future<String> getInitialRoute() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  return prefs.getString('user_email') != null ? '/home' : '/leads';
+  return prefs.getString('user_email') != null ? '/login' : '/login';
 }
 
 class MyApp extends StatelessWidget {
@@ -69,7 +69,7 @@ class MyApp extends StatelessWidget {
         // GetPage(name: '/bundle', page: () => const BundleServicePage()),
         GetPage(name: '/details', page: () => const EnterDetailsPage()),
         GetPage(name: '/login', page: () => const LoginPage()),
-        GetPage(name: '/loginScreen', page: () => const LoginScreen()),
+        //  GetPage(name: '/loginScreen', page: () => const LoginScreen()),
         GetPage(name: '/services', page: () => const ServicesInfoPage()),
         GetPage(name: '/verify', page: () => const VerifyEmailPage()),
         GetPage(

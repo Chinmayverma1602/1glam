@@ -18,68 +18,76 @@ class CustomButton2 extends StatelessWidget {
   final double iconSize;
   final VoidCallback? onTap;
 
-  CustomButton2({
-    Key? key,
-    required this.text,
-    required this.borderColor,
-    this.fillColor = Colors.transparent,
-    this.leadingIcon ,
-    this.leadingImage,
-    this.trailingIcon,
-    this.trailingImage,
-    this.textColor = AppColors.text,
-    this.textSize = 14.0,
-    this.isBold = false,
-    this.iconColor = Colors.black,
-    this.iconSize = 24.0,
-    this.onTap
-  }) : super(key: key);
+  CustomButton2(
+      {Key? key,
+      required this.text,
+      required this.borderColor,
+      this.fillColor = Colors.transparent,
+      this.leadingIcon,
+      this.leadingImage,
+      this.trailingIcon,
+      this.trailingImage,
+      this.textColor = AppColors.text,
+      this.textSize = 14.0,
+      this.isBold = false,
+      this.iconColor = Colors.black,
+      this.iconSize = 24.0,
+      this.onTap})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    print("borderColor in build: $borderColor");
     return OutlinedButton(
       style: OutlinedButton.styleFrom(
-        minimumSize: const Size(175, 60),
-        elevation: 10,
+        minimumSize: Size(0, 48),
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        elevation: 0,
         backgroundColor: fillColor,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
-          side: BorderSide(color: borderColor, width: 2),
         ),
-        padding: const EdgeInsets.all(8.0),
+        side: BorderSide(color: borderColor, width: 1),
+        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
       ),
-      onPressed:onTap,
+      onPressed: onTap,
       child: Row(
+        mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           if (leadingIcon != null || leadingImage != null)
             Row(
+              mainAxisSize: MainAxisSize.min,
               children: [
                 if (leadingIcon != null)
                   FaIcon(leadingIcon, color: iconColor, size: iconSize)
                 else if (leadingImage != null)
-                  SvgPicture.asset(leadingImage!, height: iconSize, width: iconSize),
-                const SizedBox(width: 8),
+                  SvgPicture.asset(leadingImage!,
+                      height: iconSize, width: iconSize),
+                const SizedBox(width: 4),
               ],
             ),
-          Text(
-            text,
-            style: TextStyle(
-              color: textColor,
-              fontSize: textSize,
-              fontWeight: isBold ? FontWeight.bold : FontWeight.w400,
+          Flexible(
+            child: Text(
+              text,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                color: textColor,
+                fontSize: textSize,
+                fontWeight: isBold ? FontWeight.bold : FontWeight.w400,
+              ),
             ),
           ),
           if (trailingIcon != null || trailingImage != null)
             Row(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                const SizedBox(width: 8),
+                const SizedBox(width: 4),
                 if (trailingIcon != null)
                   Icon(trailingIcon, color: iconColor, size: iconSize)
                 else if (trailingImage != null)
-                  SvgPicture.asset(trailingImage!, height: iconSize, width: iconSize),
+                  SvgPicture.asset(trailingImage!,
+                      height: iconSize, width: iconSize),
               ],
             ),
         ],

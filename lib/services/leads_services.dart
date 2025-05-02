@@ -1,5 +1,3 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
 import '../model/leadsReq_model.dart';
 import '../model/leadsRes_model.dart';
 
@@ -221,87 +219,42 @@ List<LeadsResponse> sampleLeads = [
 ];
 
 class LeadsApiService {
-  final String baseUrl = "http://1glam.local:8000/api/resource/Leads";
-  final Map<String, String> headers = {
-    "Content-Type": "application/json",
-    "Authorization": "token 4a7f1b702703792:87ee3c3ae508175"
-  };
+  // Placeholder for future API implementation
 
-  //Create a new lead (POST)
+  // Create a new lead (POST)
   Future<LeadsResponse?> createLead(LeadsRequest request) async {
-    final url = Uri.parse(baseUrl);
-
-    try {
-      final response = await http.post(
-        url,
-        headers: headers,
-        body: jsonEncode(request.toJson()),
-      );
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        return LeadsResponse.fromJson(jsonDecode(response.body)['data']);
-      } else {
-        print("Error: ${response.statusCode} - ${response.body}");
-        return null;
-      }
-    } catch (e) {
-      print("Exception: $e");
-      return null;
-    }
+    // Placeholder - API implementation to be added
+    // Return sample response for now
+    return sampleLeads.first;
   }
 
-  // Fetch all lead IDs (GET)
-  Future<List<String>?> fetchLeadIds() async {
-    final url = Uri.parse(baseUrl);
-
-    try {
-      final response = await http.get(url, headers: headers);
-
-      if (response.statusCode == 200) {
-        final List<dynamic> body = jsonDecode(response.body)['data'];
-        return body.map((data) => data['name'].toString()).toList();
-      } else {
-        print("Error: ${response.statusCode} - ${response.body}");
-        return null;
-      }
-    } catch (e) {
-      print("Exception: $e");
-      return null;
-    }
+  // Get all leads (GET)
+  Future<List<LeadsResponse>> getLeads() async {
+    // Placeholder - API implementation to be added
+    // Return sample leads for now
+    return sampleLeads;
   }
 
-  //fetch details of a single lead by nameID (GET)
-  Future<LeadsResponse?> fetchLeadDetails(String nameID) async {
-    final url = Uri.parse("$baseUrl/$nameID");
-
-    try {
-      final response = await http.get(url, headers: headers);
-
-      if (response.statusCode == 200) {
-        final Map<String, dynamic> body = jsonDecode(response.body)['data'];
-        return LeadsResponse.fromJson(body);
-      } else {
-        print("Error: ${response.statusCode} - ${response.body}");
-        return null;
-      }
-    } catch (e) {
-      print("Exception: $e");
-      return null;
-    }
+  // Get a specific lead by ID (GET)
+  Future<LeadsResponse?> getLeadById(String leadId) async {
+    // Placeholder - API implementation to be added
+    // Return a sample lead for now
+    return sampleLeads.firstWhere(
+      (lead) => lead.data.name == leadId,
+      orElse: () => sampleLeads.first,
+    );
   }
 
-  // 🟢 Fetch all lead details dynamically
-  Future<List<LeadsResponse>> fetchAllLeads() async {
-    List<String>? leadIds = await fetchLeadIds();
-    if (leadIds == null) return [];
+  // Update a lead (PUT)
+  Future<LeadsResponse?> updateLead(String leadId, LeadsRequest request) async {
+    // Placeholder - API implementation to be added
+    // Return a sample lead for now
+    return sampleLeads.first;
+  }
 
-    List<LeadsResponse> leads = [];
-    for (String id in leadIds) {
-      LeadsResponse? lead = await fetchLeadDetails(id);
-      if (lead != null) {
-        leads.add(lead);
-      }
-    }
-    return leads;
+  // Delete a lead (DELETE)
+  Future<bool> deleteLead(String leadId) async {
+    // Placeholder - API implementation to be added
+    return true;
   }
 }
