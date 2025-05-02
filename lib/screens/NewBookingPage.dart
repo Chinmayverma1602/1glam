@@ -244,16 +244,37 @@ class _NewBookingScreenState extends State<NewBookingScreen> {
     try {
       final BookingController bookingController = Get.put(BookingController());
 
+      // Calculate price based on service (in a real app, this would come from a service price list)
+      int price = 0;
+      switch (_dropdownController.dropDownValue?.name) {
+        case "Bridal Makeup":
+          price = 5000;
+          break;
+        case "Party Makeup":
+          price = 2500;
+          break;
+        case "Hair Styling":
+          price = 1500;
+          break;
+        case "Facial":
+          price = 1000;
+          break;
+        case "Manicure & Pedicure":
+          price = 800;
+          break;
+        default:
+          price = 1000;
+      }
+
       // Build new booking object
       final dynamic newBooking = {
-        "id": "booking_${(DateTime.now().millisecondsSinceEpoch)}",
         "customer_name": clientNameController.text,
         "phone_no": clientPhoneNumberController.text,
         "date": selectedDate,
         "service_name": _dropdownController.dropDownValue?.name ?? "Unknown",
-        "price": 1000,
-        "duration": 60,
+        "price": price,
         "start_time": startTime,
+        "end_time": endTime,
         "notes": notesController.text,
         "location": selectedLocation,
         "address": selectedLocation == "Client Location"
@@ -261,11 +282,38 @@ class _NewBookingScreenState extends State<NewBookingScreen> {
             : "Studio",
       };
 
-      // Save to Firestore
-      await bookingController.addBookingToFirestore(newBooking);
+      // Print booking details for debugging
+      print('Creating new booking:');
+      print('Customer: ${newBooking["customer_name"]}');
+      print('Date: ${DateFormat('yyyy-MM-dd').format(newBooking["date"])}');
+      print('Service: ${newBooking["service_name"]}');
+      print(
+          'Time: ${_formatTimeOfDay(newBooking["start_time"])} - ${_formatTimeOfDay(newBooking["end_time"])}');
 
-      // Navigate to calendar
-      Get.to(() => CalenderPage());
+      // Save to API
+      bool success = await bookingController.addBookingToApi(newBooking);
+
+      if (success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Booking created successfully')),
+        );
+
+        // Explicitly refresh bookings before navigating to ensure data is up to date
+        await bookingController.fetchBookingsFromApi();
+
+        // Print total bookings after refresh for debugging
+        print(
+            'Total bookings after creation: ${bookingController.bookings.length}');
+
+        // Navigate to calendar with a slight delay to ensure data is loaded
+        await Future.delayed(Duration(milliseconds: 500));
+        Get.to(() => CalenderPage());
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content: Text('Failed to create booking. Please try again.')),
+        );
+      }
     } catch (e) {
       print('Error saving booking: $e');
       ScaffoldMessenger.of(context).showSnackBar(
@@ -273,6 +321,13 @@ class _NewBookingScreenState extends State<NewBookingScreen> {
     } finally {
       setState(() => isLoading = false);
     }
+  }
+
+  // Helper function to format TimeOfDay to string
+  String _formatTimeOfDay(TimeOfDay time) {
+    final hour = time.hour.toString().padLeft(2, '0');
+    final minute = time.minute.toString().padLeft(2, '0');
+    return '$hour:$minute';
   }
 
   @override

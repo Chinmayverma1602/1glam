@@ -12,6 +12,12 @@ import 'package:glam1/widgets/CustomeNewBooking.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
 
+// Simple Event class for the calendar
+class CalendarEvent {
+  final String title;
+  const CalendarEvent(this.title);
+}
+
 class CalenderPage extends StatefulWidget {
   const CalenderPage({super.key});
 
@@ -24,25 +30,99 @@ class _CalendarPageState extends State<CalenderPage> {
       CalendarFormat.week; //to select the format of the calender from the enum
   DateTime _focusedDay = DateTime.now();
   DateTime _selectedDay = DateTime.now();
+  bool isLoading = false;
+  bool _initialDaySelected = false;
 
   // Initialize BookingController
   final BookingController bookingController = Get.put(BookingController());
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   bookingController.fetchBookings(); // Fetch bookings when the page loads
-  // }
+  @override
+  void initState() {
+    super.initState();
+    // Immediately refresh the bookings data
+    _refreshData();
+  }
 
-  // Get bookings for a selected day
+  // Centralized refresh method
+  Future<void> _refreshData() async {
+    if (!mounted) return;
+
+    setState(() {
+      isLoading = true;
+    });
+
+    try {
+      print('Fetching bookings directly from API...');
+
+      // Ensure the controller is initialized
+      if (!Get.isRegistered<BookingController>()) {
+        Get.put(BookingController());
+      }
+
+      // Force a fresh fetch from API
+      await bookingController.fetchBookingsFromApi();
+
+      // Manually trigger a rebuild
+      if (mounted) {
+        setState(() {
+          _selectedDay = DateTime.now();
+          _focusedDay = DateTime.now();
+        });
+      }
+    } catch (e) {
+      print('Error refreshing data: $e');
+    } finally {
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
+    }
+  }
+
+  // Simple utility to check if two dates are the same day
+  bool _isSameDay(DateTime a, DateTime b) {
+    return a.year == b.year && a.month == b.month && a.day == b.day;
+  }
+
+  // Get bookings for a specific day - simplified
   List<Booking> _getBookingsForDay(DateTime day) {
-    print(bookingController.bookings
-        .where((booking) => isSameDay(booking.date, day))
-        .toList()
-        .length);
-    return bookingController.bookings
-        .where((booking) => isSameDay(booking.date, day))
-        .toList();
+    List<Booking> result = [];
+
+    // Print available bookings for debugging
+    print('Looking for bookings on ${DateFormat('yyyy-MM-dd').format(day)}');
+    print('Available bookings: ${bookingController.bookings.length}');
+
+    // Check each booking with a simple date comparison
+    for (var booking in bookingController.bookings) {
+      if (_isSameDay(booking.date, day)) {
+        print('Found matching booking: ${booking.customerName}');
+        result.add(booking);
+      }
+    }
+
+    print('Total matching bookings: ${result.length}');
+    return result;
+  }
+
+  // Get today's bookings
+  List<Booking> _getTodaysBookings() {
+    DateTime today = DateTime.now();
+
+    // Print debug info
+    print(
+        'Getting bookings for today: ${DateFormat('yyyy-MM-dd').format(today)}');
+
+    // Compare only year, month, day for accurate matching
+    return bookingController.bookings.where((booking) {
+      // For debugging
+      print(
+          'Comparing today with booking: ${DateFormat('yyyy-MM-dd').format(booking.date)}');
+
+      return booking.date.year == today.year &&
+          booking.date.month == today.month &&
+          booking.date.day == today.day;
+    }).toList();
   }
 
   // Get title for the bookings section based on selected date
@@ -63,6 +143,30 @@ class _CalendarPageState extends State<CalenderPage> {
   @override
   Widget build(BuildContext context) {
     int _selectedIndex = 2;
+
+    // Debug print all bookings in build method to ensure they're loaded
+    print(
+        '** DEBUG BUILD: Total bookings: ${bookingController.bookings.length}');
+    bookingController.bookings.forEach((booking) {
+      print(
+          '** DEBUG BUILD: Booking ${booking.id} - ${booking.customerName} on ${DateFormat('yyyy-MM-dd').format(booking.date)}');
+    });
+
+    // Try to map bookings to a simpler format for debugging
+    Map<String, List<String>> dateToBookingsMap = {};
+    bookingController.bookings.forEach((booking) {
+      String dateKey = DateFormat('yyyy-MM-dd').format(booking.date);
+      if (!dateToBookingsMap.containsKey(dateKey)) {
+        dateToBookingsMap[dateKey] = [];
+      }
+      dateToBookingsMap[dateKey]!.add(booking.customerName);
+    });
+
+    print('** DEBUG BUILD: Dates with bookings:');
+    dateToBookingsMap.forEach((date, bookings) {
+      print(
+          '** DEBUG BUILD: Date $date has ${bookings.length} bookings: ${bookings.join(', ')}');
+    });
 
     void _onItemTapped(int index) {
       if (index == _selectedIndex) return;
@@ -100,9 +204,20 @@ class _CalendarPageState extends State<CalenderPage> {
           _buildCalendarHeader(),
           //_buildCalendarViewOptions(),
           _buildCalendar(),
-          Obx(() => _buildSelectedDayBookings()),
+          isLoading
+              ? Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: CircularProgressIndicator(
+                      valueColor:
+                          AlwaysStoppedAnimation<Color>(AppColors.primary),
+                    ),
+                  ),
+                )
+              : Obx(() => _buildSelectedDayBookings()),
         ],
       ),
+      floatingActionButton: NewBookingButton(),
     );
   }
 
@@ -168,24 +283,49 @@ class _CalendarPageState extends State<CalenderPage> {
   }
 
   Widget _buildCalendar() {
+    // Create a map of dates to booking counts for all dates
+    Map<DateTime, int> bookingCountMap = {};
+
+    // Process all bookings to prepare the event map
+    for (var booking in bookingController.bookings) {
+      // Normalize the date to avoid time comparison issues
+      DateTime normalizedDate =
+          DateTime(booking.date.year, booking.date.month, booking.date.day);
+
+      // Count bookings per date
+      bookingCountMap[normalizedDate] =
+          (bookingCountMap[normalizedDate] ?? 0) + 1;
+    }
+
+    // For debugging, print all dates with bookings
+    print('Dates with bookings:');
+    bookingCountMap.forEach((date, count) {
+      print('${DateFormat('yyyy-MM-dd').format(date)}: $count bookings');
+    });
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8),
-      // decoration: BoxDecoration(
-      //   border: Border.all(color: Colors.pink)
-      // ),
       child: TableCalendar(
-        firstDay: DateTime.utc(2025, 1, 1),
-        lastDay: DateTime.utc(2025, 12, 31),
+        firstDay: DateTime(DateTime.now().year - 1),
+        lastDay: DateTime(DateTime.now().year + 1, 12, 31),
         focusedDay: _focusedDay,
         calendarFormat: _calendarFormat,
         selectedDayPredicate: (day) {
-          return isSameDay(_selectedDay, day);
+          return _isSameDay(_selectedDay, day);
         },
         onDaySelected: (selectedDay, focusedDay) {
           setState(() {
             _selectedDay = selectedDay;
             _focusedDay = focusedDay;
           });
+
+          // Debug selected day's bookings
+          List<Booking> selectedDayBookings = _getBookingsForDay(selectedDay);
+          print(
+              'Selected ${DateFormat('yyyy-MM-dd').format(selectedDay)}: ${selectedDayBookings.length} bookings');
+          for (var booking in selectedDayBookings) {
+            print('- ${booking.customerName}: ${booking.serviceName}');
+          }
         },
         onFormatChanged: (format) {
           setState(() {
@@ -197,196 +337,108 @@ class _CalendarPageState extends State<CalenderPage> {
             _focusedDay = focusedDay;
           });
         },
-        calendarStyle: CalendarStyle(
-          markersMaxCount: 0, // Hide default markers, using custom ones
-        ),
-        calendarBuilders: CalendarBuilders(
-          prioritizedBuilder: (context, day, focusedDay) {
-            final bookingsForDay = _getBookingsForDay(day);
-            bool isSelected = isSameDay(_selectedDay, day);
-            bool isToday = isSameDay(day, DateTime.now());
-
-            return Container(
-              margin: const EdgeInsets.all(4),
-              padding: const EdgeInsets.only(left: 10),
-              alignment: Alignment.center,
-              child: Stack(
-                children: [
-                  // Background Box for Event Days, Selected Day, and Today
-                  if (bookingsForDay.isNotEmpty || isSelected || isToday)
-                    Container(
-                      width: 50,
-                      height: 75,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: isToday
-                            ? const Color(
-                                0xFFE8CFFF) // Slightly darker for today
-                            : const Color(
-                                0xFFF9EBFF), // Light purple for selected & events
-                      ),
-                    ),
-
-                  // Date Text
-                  Align(
-                    alignment: Alignment.topLeft,
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 8, left: 6),
-                      child: Text(
-                        '${day.day}',
-                        style: const TextStyle(
-                          fontSize: 16,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  // Event Indicator (Only if there are events)
-                  if (bookingsForDay.isNotEmpty)
-                    Align(
-                      alignment: Alignment.bottomCenter,
-                      child: Padding(
-                        padding: const EdgeInsets.only(bottom: 2.0),
-                        child: Container(
-                          width: 40,
-                          height: 35,
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.8),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Padding(
-                                padding:
-                                    const EdgeInsets.only(left: 4.0, top: 4.0),
-                                child: Text(
-                                  '${bookingsForDay.length}\nevents',
-                                  style: const TextStyle(
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.bold,
-                                    color: AppColors.primary,
-                                  ),
-                                ),
-                              ),
-                              // const Text(
-                              //   'events',
-                              //   style: TextStyle(
-                              //     fontSize: 10,
-                              //     color: AppColors.primary,
-                              //   ),
-                              // ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-
-                  // "No Events" Label for Selected Day without Events
-                  if (isSelected && bookingsForDay.isEmpty)
-                    Align(
-                      alignment: Alignment.bottomCenter,
-                      child: Padding(
-                        padding: const EdgeInsets.only(bottom: 2.0),
-                        child: Container(
-                          width: 40,
-                          height: 35,
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.8),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: const Center(
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.only(left: 4.0, top: 4.0),
-                              child: Text(
-                                'No events',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 10,
-                                  color: AppColors.primary,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-            );
-          },
-        ),
+        // Use eventLoader to signal which days have bookings
         eventLoader: (day) {
-          return _getBookingsForDay(day);
+          // Normalize day to midnight
+          DateTime normalizedDay = DateTime(day.year, day.month, day.day);
+
+          // Check if this day has any bookings
+          int count = bookingCountMap[normalizedDay] ?? 0;
+          return count > 0
+              ? List.generate(count, (_) => CalendarEvent('Booking'))
+              : [];
         },
-        rowHeight: 50,
+        // Style settings
+        calendarStyle: CalendarStyle(
+          markersMaxCount: 4,
+          markerDecoration: const BoxDecoration(
+            color: AppColors.primary,
+            shape: BoxShape.circle,
+          ),
+          todayDecoration: BoxDecoration(
+            color: AppColors.primary.withOpacity(0.3),
+            shape: BoxShape.circle,
+          ),
+          selectedDecoration: const BoxDecoration(
+            color: AppColors.primary,
+            shape: BoxShape.circle,
+          ),
+        ),
+        rowHeight: 60,
       ),
     );
   }
 
   Widget _buildSelectedDayBookings() {
+    // Get bookings for the selected day using our helper method
     final bookingsForSelectedDay = _getBookingsForDay(_selectedDay);
 
     return Expanded(
       child: Container(
         padding: EdgeInsets.all(16),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(
-            _getBookingsSectionTitle(),
-            // "HEY HARSH",
-            style: TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          // SizedBox(
-          //   height: 25,
-          //   child: Container(
-          //     decoration: BoxDecoration(color: Colors.blue),
-          //   ),
-          // ),
-          bookingsForSelectedDay.isEmpty
-              ? Flexible(
-                  child: Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SizedBox(height: 16),
-                        Text(
-                          "No bookings for this date",
-                          style: TextStyle(
-                            color: Colors.grey[600],
-                            fontSize: 16,
-                          ),
-                        ),
-                      ],
-                    ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header row with title and refresh button
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  _getBookingsSectionTitle(),
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
                   ),
-                )
-              :
-              Flexible(
-                  child: Obx(() {
-                    print('I ran again lets go');
-                    var bookingsForSelectedDay = bookingController.bookings
-                        .where(
-                            (booking) => isSameDay(booking.date, _selectedDay))
-                        .toList();
-                    return ListView.builder(
-                      shrinkWrap:
-                          true, // ✅ Ensures it only takes necessary space
+                ),
+                // Refresh button
+                IconButton(
+                  icon: Icon(Icons.refresh, color: AppColors.primary),
+                  onPressed: () {
+                    print('Manual refresh triggered');
+                    _refreshData();
+                  },
+                ),
+              ],
+            ),
+
+            SizedBox(height: 8),
+
+            // Debug info
+            Text(
+              'Found ${bookingsForSelectedDay.length} bookings',
+              style: TextStyle(color: Colors.grey[600], fontSize: 12),
+            ),
+
+            SizedBox(height: 8),
+
+            // Display bookings or no bookings message
+            Expanded(
+              child: bookingsForSelectedDay.isEmpty
+                  ? Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            "No bookings for this date",
+                            style: TextStyle(
+                              color: Colors.grey[600],
+                              fontSize: 16,
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  : ListView.builder(
+                      shrinkWrap: true,
                       itemCount: bookingsForSelectedDay.length,
                       itemBuilder: (context, index) {
                         final booking = bookingsForSelectedDay[index];
-                        // return Text("Hello");
-                        return _buildBookingItem(context,
-                            booking); // Pass context as the first parameter
+                        return _buildBookingItem(context, booking);
                       },
-                    );
-                  }),
-                ),
-        ]),
+                    ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -394,12 +446,14 @@ class _CalendarPageState extends State<CalenderPage> {
   Widget _buildBookingItem(BuildContext context, Booking booking) {
     return GestureDetector(
       onTap: () {
-        print("TAPPED"); // for debugging purposes
         Navigator.push(
           context,
           MaterialPageRoute(
               builder: (context) => EditBookingScreen(booking: booking)),
-        );
+        ).then((_) {
+          // Refresh bookings when returning from edit screen
+          _refreshData();
+        });
       },
       child: Container(
         margin: EdgeInsets.only(bottom: 16),
@@ -422,15 +476,17 @@ class _CalendarPageState extends State<CalenderPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  booking.customerName,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
+                Expanded(
+                  child: Text(
+                    booking.customerName,
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                // If you want to add status chip later
-                // _buildStatusChip(booking.status),
+                _buildStatusChip(BookingStatus.confirmed),
               ],
             ),
             SizedBox(height: 4),
@@ -453,6 +509,25 @@ class _CalendarPageState extends State<CalenderPage> {
                   "${DateFormat('h:mm a').format(booking.startTime)} - ${DateFormat('h:mm a').format(booking.endTime)}",
                   style: TextStyle(
                     color: Colors.grey[700],
+                  ),
+                ),
+              ],
+            ),
+            // Date display
+            SizedBox(height: 4),
+            Row(
+              children: [
+                Icon(
+                  Icons.calendar_today,
+                  size: 16,
+                  color: AppColors.primary,
+                ),
+                SizedBox(width: 4),
+                Text(
+                  DateFormat('EEE, MMM d').format(booking.date),
+                  style: TextStyle(
+                    color: AppColors.primary,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ],
@@ -504,4 +579,3 @@ enum BookingStatus {
   pending,
   confirmed,
 }
-
