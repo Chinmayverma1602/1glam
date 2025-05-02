@@ -9,6 +9,7 @@ import 'package:glam1/model/travelling_model.dart';
 import 'package:glam1/screens/ServicesInfoPage.dart';
 import 'package:glam1/services/address_service.dart';
 import 'package:glam1/services/travelling_service.dart';
+import 'package:glam1/services/api_service.dart';
 import 'package:glam1/widgets/CustomButton.dart';
 import 'package:glam1/widgets/CustomDistanceSlider.dart';
 import 'package:glam1/widgets/CustomHeader.dart';
@@ -261,17 +262,32 @@ class _TravellingInfoPageState extends State<TravellingInfoPage> {
   }
 
   void _submitTravelFee() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String selectedEmail = prefs.getString('user_email') ?? "";
+    // Get the user ID from TokenManager instead of email from SharedPreferences
+    String? userId = await TokenManager.getUserId();
+
+    if (userId == null || userId.isEmpty) {
+      // Fallback to SharedPreferences if TokenManager doesn't have it
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      userId = prefs.getString('user_id');
+
+      if (userId == null || userId.isEmpty) {
+        // Fallback to email as last resort
+        String email = prefs.getString('user_email') ?? "";
+        userId = email;
+      }
+    }
+
+    print("Using user ID for travel fee: $userId");
+
     TravelFee travelFee = TravelFee(
-      user: selectedEmail,
+      user: userId!,
       feeType: _travelFeeController.dropDownValue?.value ?? "",
-      paymentMethod: _paymentController.dropDownValue?.value ?? "",
-      maxDistance: sliderController.sliderValue.value.toInt().toString(),
+      fee: _paymentController.dropDownValue?.value ?? "",
+      maxDistance: sliderController.sliderValue.value.toInt(),
     );
 
-    bool success = await _travelFeeService.submitTravelFee(travelFee);
-    if (success) {
+    final result = await _travelFeeService.submitTravelFee(travelFee);
+    if (result != null) {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => ServicesInfoPage()),
