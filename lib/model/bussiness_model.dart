@@ -21,7 +21,7 @@ class BusinessProfile {
 
   Map<String, dynamic> toJson() {
     return {
-      "user": user,
+      "userId": user,
       "business_name": businessName,
       "business_type": businessType,
       "owner_name": ownerName,
@@ -34,12 +34,12 @@ class BusinessProfile {
 
   factory BusinessProfile.fromJson(Map<String, dynamic> json) {
     return BusinessProfile(
-      user: json["user"],
-      businessName: json["business_name"],
-      businessType: json["business_type"],
-      ownerName: json["owner_name"],
-      phone: json["phone"],
-      address: json["address"],
+      user: json["userId"] ?? json["user_id"] ?? json["user"] ?? "",
+      businessName: json["business_name"] ?? "",
+      businessType: json["business_type"] ?? "",
+      ownerName: json["owner_name"] ?? "",
+      phone: json["phone"] ?? "",
+      address: json["address"] ?? "",
       atMyPlace: json["at_my_place"] == 1,
       atClientLocation: json["at_client_location"] == 1,
     );

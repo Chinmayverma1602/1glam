@@ -9,6 +9,8 @@ import 'package:glam1/widgets/CustomCheckBoxAboutMePage.dart';
 import 'package:glam1/widgets/CustomHeader.dart';
 import 'package:glam1/widgets/CustomTextInputField.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:glam1/services/api_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AboutMePage extends StatefulWidget {
   final bussinessType;
@@ -26,6 +28,10 @@ class _AboutMePageState extends State<AboutMePage> {
   bool _atMyPlace = false;
   bool _atClientLocation = false;
   String _selectedCode = '+91';
+  bool _isLoading = false;
+  String? _userId;
+
+  // List of country codes with flags
   final List<Map<String, String>> countryList = [
     {'code': '+91', 'flag': '🇮🇳'},
     {'code': '+1', 'flag': '🇺🇸'},
@@ -45,27 +51,124 @@ class _AboutMePageState extends State<AboutMePage> {
     {'code': '+971', 'flag': '🇦🇪'},
   ];
 
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserId();
+    // Set default values for testing if needed
+    _businessNameController.text = "Test Business";
+    _ownerNameController.text = "Test Owner";
+    _phoneController.text = "1234567890";
+  }
+
+  Future<void> _fetchUserId() async {
+    // Try multiple sources for user ID
+
+    // 1. Check if we have a direct user ID from TokenManager
+    final userId = await TokenManager.getUserId();
+    if (userId != null && userId.isNotEmpty) {
+      setState(() {
+        _userId = userId;
+      });
+      print("Using TokenManager userId: $_userId");
+      return;
+    }
+
+    // 2. Check for selectedEmail from widget
+    if (widget.selectedEmail != null && widget.selectedEmail.isNotEmpty) {
+      setState(() {
+        _userId = widget.selectedEmail;
+      });
+      print("Using selectedEmail as userId: $_userId");
+      return;
+    }
+
+    // 3. Check SharedPreferences directly as a last resort
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? storedUserId = prefs.getString('user_id');
+    if (storedUserId != null && storedUserId.isNotEmpty) {
+      setState(() {
+        _userId = storedUserId;
+      });
+      print("Using SharedPreferences userId: $_userId");
+      return;
+    }
+
+    // If all fails, use a mock ID for testing (remove in production)
+    // setState(() {
+    //   _userId = "68147786cc7c79ccbf7e39f1"; // Sample ID for testing
+    // });
+    // print("Using mock userId for testing: $_userId");
+
+    print("USER ID NOT FOUND - please log in again");
+  }
+
   void _submitForm() async {
+    if (_businessNameController.text.isEmpty ||
+        _ownerNameController.text.isEmpty ||
+        _phoneController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Please fill all required fields")),
+      );
+      return;
+    }
+
+    // Fetch user ID again just to be sure
+    if (_userId == null || _userId!.isEmpty) {
+      await _fetchUserId();
+    }
+
+    // Final check for user ID
+    if (_userId == null || _userId!.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("User ID not found. Please log in again.")),
+      );
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    print("Creating business profile with user ID: $_userId");
+
     BusinessProfile profile = BusinessProfile(
-      user: widget.selectedEmail,
+      user: _userId!,
       businessName: _businessNameController.text,
-      businessType: widget.bussinessType,
+      businessType:
+          widget.bussinessType ?? "Other", // Default to "Other" if null
       ownerName: _ownerNameController.text,
-      phone: _phoneController.text,
-      address: "123 Main Street, NY",
+      phone: "$_selectedCode${_phoneController.text}",
+      address: "123 Main Street, NY", // Default address
       atMyPlace: _atMyPlace,
       atClientLocation: _atClientLocation,
     );
 
-    bool success = await BusinessProfileService.createBusinessProfile(profile);
-    if (success) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => AddressDetailsPage()),
-      );
-    } else {
+    try {
+      bool success =
+          await BusinessProfileService.createBusinessProfile(profile);
+      setState(() {
+        _isLoading = false;
+      });
+
+      if (success) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => AddressDetailsPage()),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content:
+                  Text("Failed to save business profile. Please try again.")),
+        );
+      }
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Failed to save business profile")),
+        SnackBar(content: Text("An error occurred: $e")),
       );
     }
   }
@@ -105,6 +208,14 @@ class _AboutMePageState extends State<AboutMePage> {
                       fontWeight: FontWeight.w400,
                       fontSize: 14,
                     ),
+                  ),
+                ),
+                // Debug text to show user ID (remove in production)
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Text(
+                    "User ID: ${_userId ?? 'Not found'}",
+                    style: TextStyle(fontSize: 10, color: Colors.grey),
                   ),
                 ),
                 SizedBox(height: 20),
@@ -200,15 +311,16 @@ class _AboutMePageState extends State<AboutMePage> {
                 ),
               ],
             ),
-            // Spacer(),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
               child: Center(
-                child: CustomButton(
-                  text: "Continue",
-                  color: AppColors.subtitle,
-                  onPressed: _submitForm,
-                ),
+                child: _isLoading
+                    ? CircularProgressIndicator(color: AppColors.subtitle)
+                    : CustomButton(
+                        text: "Continue",
+                        color: AppColors.subtitle,
+                        onPressed: _submitForm,
+                      ),
               ),
             ),
           ],
