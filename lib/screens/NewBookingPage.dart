@@ -15,6 +15,7 @@ import 'package:glam1/services/address_service.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'dart:async';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -34,6 +35,7 @@ class _NewBookingScreenState extends State<NewBookingScreen> {
   final addressController = TextEditingController();
   final clientNameController = TextEditingController();
   final clientPhoneNumberController = TextEditingController();
+  final notesController = TextEditingController();
   final _dropdownController = SingleValueDropDownController(
     data: DropDownValueModel(name: "Bridal Makeup", value: "Bridal Makeup"),
   );
@@ -143,16 +145,6 @@ class _NewBookingScreenState extends State<NewBookingScreen> {
         addressLine1Controller.text = street;
         cityController.text = city;
         zipController.text = postcode;
-
-        // if (state.isNotEmpty) {
-        //   for (String indianState in indianStates) {
-        //     if (indianState.toLowerCase().contains(state.toLowerCase()) ||
-        //         state.toLowerCase().contains(indianState.toLowerCase())) {
-        //       selectedState = indianState;
-        //       break;
-        //     }
-        //   }
-        // }
       });
     } catch (e) {
       print('Error in mock address: $e');
@@ -172,17 +164,6 @@ class _NewBookingScreenState extends State<NewBookingScreen> {
           addressLine1Controller.text = place.street ?? '';
           cityController.text = place.locality ?? '';
           zipController.text = place.postalCode ?? '';
-
-          String adminArea = place.administrativeArea ?? '';
-          if (adminArea.isNotEmpty) {
-            // for (String indianState in indianStates) {
-            //   if (indianState.toLowerCase().contains(adminArea.toLowerCase()) ||
-            //       adminArea.toLowerCase().contains(indianState.toLowerCase())) {
-            //     selectedState = indianState;
-            //     break;
-            //   }
-            // }
-          }
         });
       }
     } catch (e) {
@@ -247,71 +228,137 @@ class _NewBookingScreenState extends State<NewBookingScreen> {
     }
   }
 
+  void _saveBookingAndNavigate() async {
+    // Validate form
+    if (clientNameController.text.isEmpty ||
+        clientPhoneNumberController.text.isEmpty ||
+        _dropdownController.dropDownValue == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Please fill all required fields')));
+      return;
+    }
+
+    // Show loading indicator
+    setState(() => isLoading = true);
+
+    try {
+      final BookingController bookingController = Get.put(BookingController());
+
+      // Build new booking object
+      final dynamic newBooking = {
+        "id": "booking_${(DateTime.now().millisecondsSinceEpoch)}",
+        "customer_name": clientNameController.text,
+        "phone_no": clientPhoneNumberController.text,
+        "date": selectedDate,
+        "service_name": _dropdownController.dropDownValue?.name ?? "Unknown",
+        "price": 1000,
+        "duration": 60,
+        "start_time": startTime,
+        "notes": notesController.text,
+        "location": selectedLocation,
+        "address": selectedLocation == "Client Location"
+            ? addressController.text
+            : "Studio",
+      };
+
+      // Save to Firestore
+      await bookingController.addBookingToFirestore(newBooking);
+
+      // Navigate to calendar
+      Get.to(() => CalenderPage());
+    } catch (e) {
+      print('Error saving booking: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error saving booking. Please try again.')));
+    } finally {
+      setState(() => isLoading = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor:
-          Color.fromARGB(255, 236, 237, 238), // Updated background color
+      backgroundColor: Color(0xFFF8F9FA),
       appBar: AppBar(
-        backgroundColor: Color.fromARGB(255, 236, 237, 238),
+        backgroundColor: Colors.white,
         elevation: 0,
+        centerTitle: true,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
+          icon: Icon(Icons.arrow_back_ios, color: Colors.black, size: 20),
           onPressed: () => Navigator.pop(context),
         ),
-        title: Text("New Booking",
-            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
-        actions: [
-          Padding(
-            padding: EdgeInsets.only(right: 16),
-            child: ElevatedButton(
-              onPressed: () async {
-                // final bookingController = Get.find<BookingController>();
-                final BookingController bookingController =
-                    Get.put(BookingController());
-
-                // Build new booking map using controller values
-                final dynamic newBooking = {
-                  "id": "booking_${(DateTime.now().millisecondsSinceEpoch)}",
-                  "customer_name": clientNameController.text,
-                  "phone_no": clientPhoneNumberController.text,
-                  "date": selectedDate,
-                  "service_name":
-                      _dropdownController.dropDownValue?.name ?? "Unknown",
-                  "price": 1000,
-                  "duration": 60,
-                  "start_time": startTime,
-                };
-
-                // Append newBooking to the jsonData list in BookingController
-                // bookingController.jsonData.add(newBooking);
-                // // bookingController.bookings.add(Booking.fromJson(newBooking)); // ✅ RIGHT
-
-                // bookingController.fetchBookings();
-                await bookingController.addBookingToFirestore(newBooking);
-
-                // Optionally, navigate to the next screen which builds using jsonData:
-                Get.to(() => CalenderPage());
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              child: Text("Save", style: TextStyle(color: Colors.white)),
-            ),
+        title: Text(
+          "New Booking",
+          style: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.w600,
+            fontSize: 18,
           ),
+        ),
+        actions: [
+          isLoading
+              ? Padding(
+                  padding: EdgeInsets.only(right: 16),
+                  child: Center(
+                    child: SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        valueColor:
+                            AlwaysStoppedAnimation<Color>(AppColors.primary),
+                      ),
+                    ),
+                  ),
+                )
+              : Padding(
+                  padding: EdgeInsets.only(right: 16),
+                  child: ElevatedButton(
+                    onPressed: _saveBookingAndNavigate,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      elevation: 0,
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    ),
+                    child: Text(
+                      "Save",
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
         ],
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16),
         child: Column(
           children: [
-            _sectionContainer("Date & Time", _dateTimeSelection()),
-            _sectionContainer("Client Details", _clientDetails()),
-            _sectionContainer("Location", _locationSelection()),
-            _sectionContainer("Additional Notes", _notesField()),
+            _buildSection(
+              title: "Date & Time",
+              icon: Icons.calendar_today,
+              child: _dateTimeSelection(),
+            ),
+            _buildSection(
+              title: "Client Details",
+              icon: Icons.person_outline,
+              child: _clientDetails(),
+            ),
+            _buildSection(
+              title: "Location",
+              icon: Icons.location_on_outlined,
+              child: _locationSelection(),
+            ),
+            _buildSection(
+              title: "Additional Notes",
+              icon: Icons.note_outlined,
+              child: _notesField(),
+            ),
             SizedBox(height: 20),
           ],
         ),
@@ -319,41 +366,67 @@ class _NewBookingScreenState extends State<NewBookingScreen> {
     );
   }
 
-//   void saveAndGoToNextScreen() {
-//   final newBooking = {
-//     "id": "booking_${DateTime.now().millisecondsSinceEpoch}", // unique-ish
-//     "customer_name": clientNameController.text,
-//     "phone_no": clientPhoneNumberController.text,
-//     "date": DateTime.now().toIso8601String(),
-//     "service_name": _dropdownController.dropDownValue?.name ?? "Unknown",
-//     "price": 1000, // placeholder, replace if needed
-//     "duration": 60, // placeholder, replace if needed
-//     "start_time": DateTime.now().toIso8601String(),
-//   };
-
-//   jsonData.add(newBooking);
-
-//   Get.to(() => CalenderPage()); // replace with your screen widget
-// }
-
-  /// Section Container with rounded white background
-  Widget _sectionContainer(String title, Widget child) {
+  /// Section Container with icon header
+  Widget _buildSection({
+    required String title,
+    required IconData icon,
+    required Widget child,
+  }) {
     return Container(
-      padding: EdgeInsets.all(16),
       margin: EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            title,
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          // Header with icon
+          Container(
+            padding: EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(12),
+                topRight: Radius.circular(12),
+              ),
+              border: Border(
+                bottom: BorderSide(
+                  color: Colors.grey.shade200,
+                  width: 1,
+                ),
+              ),
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  icon,
+                  color: AppColors.primary,
+                  size: 20,
+                ),
+                SizedBox(width: 10),
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
           ),
-          SizedBox(height: 10),
-          child,
+          // Content
+          Padding(
+            padding: EdgeInsets.all(16),
+            child: child,
+          ),
         ],
       ),
     );
@@ -362,94 +435,188 @@ class _NewBookingScreenState extends State<NewBookingScreen> {
   /// Date and Time Selection UI
   Widget _dateTimeSelection() {
     return Column(
-      // crossAxisAlignment: CrossAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 15.0),
-          child: Row(
-            spacing: 10,
-            children: [
-              Text("Date: "),
-              _datePickerButton(),
-            ],
+        // Date selection
+        Text(
+          "Select Date",
+          style: TextStyle(
+            fontWeight: FontWeight.w500,
+            fontSize: 14,
+            color: Colors.grey[700],
           ),
         ),
-        SizedBox(height: 10),
+        SizedBox(height: 8),
+        InkWell(
+          onTap: () async {
+            DateTime? pickedDate = await showDatePicker(
+              context: context,
+              initialDate: selectedDate,
+              firstDate: DateTime.now(),
+              lastDate: DateTime(2100),
+              builder: (context, child) {
+                return Theme(
+                  data: Theme.of(context).copyWith(
+                    colorScheme: ColorScheme.light(
+                      primary: AppColors.primary,
+                    ),
+                  ),
+                  child: child!,
+                );
+              },
+            );
+            if (pickedDate != null) {
+              setState(() => selectedDate = pickedDate);
+            }
+          },
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+            decoration: BoxDecoration(
+              color: Colors.grey[50],
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: Colors.grey.shade300),
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.calendar_today,
+                  size: 18,
+                  color: AppColors.primary,
+                ),
+                SizedBox(width: 8),
+                Text(
+                  DateFormat('EEEE, MMMM d, yyyy').format(selectedDate),
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                Spacer(),
+                Icon(
+                  Icons.arrow_drop_down,
+                  color: Colors.grey[600],
+                ),
+              ],
+            ),
+          ),
+        ),
+        SizedBox(height: 16),
+
+        // Time selection
+        Text(
+          "Select Time",
+          style: TextStyle(
+            fontWeight: FontWeight.w500,
+            fontSize: 14,
+            color: Colors.grey[700],
+          ),
+        ),
+        SizedBox(height: 8),
         Row(
           children: [
             Expanded(
-                child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                _timePickerButton("Start Time", startTime,
-                    (newTime) => setState(() => startTime = newTime)),
-                Text("Start Time"),
-              ],
-            )),
-            SizedBox(width: 10),
+              child: _buildTimeSelector(
+                label: "Start",
+                time: startTime,
+                onTap: () async {
+                  TimeOfDay? pickedTime = await showTimePicker(
+                    context: context,
+                    initialTime: startTime,
+                    builder: (context, child) {
+                      return Theme(
+                        data: Theme.of(context).copyWith(
+                          colorScheme: ColorScheme.light(
+                            primary: AppColors.primary,
+                          ),
+                        ),
+                        child: child!,
+                      );
+                    },
+                  );
+                  if (pickedTime != null) {
+                    setState(() => startTime = pickedTime);
+                  }
+                },
+              ),
+            ),
+            SizedBox(width: 12),
             Expanded(
-                child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                _timePickerButton("End Time", endTime,
-                    (newTime) => setState(() => endTime = newTime)),
-                Text("End Time"),
-              ],
-            )),
+              child: _buildTimeSelector(
+                label: "End",
+                time: endTime,
+                onTap: () async {
+                  TimeOfDay? pickedTime = await showTimePicker(
+                    context: context,
+                    initialTime: endTime,
+                    builder: (context, child) {
+                      return Theme(
+                        data: Theme.of(context).copyWith(
+                          colorScheme: ColorScheme.light(
+                            primary: AppColors.primary,
+                          ),
+                        ),
+                        child: child!,
+                      );
+                    },
+                  );
+                  if (pickedTime != null) {
+                    setState(() => endTime = pickedTime);
+                  }
+                },
+              ),
+            ),
           ],
         ),
       ],
     );
   }
 
-  /// Date Picker Button
-  Widget _datePickerButton() {
-    return ElevatedButton.icon(
-      onPressed: () async {
-        DateTime? pickedDate = await showDatePicker(
-          context: context,
-          initialDate: selectedDate,
-          firstDate: DateTime(2000),
-          lastDate: DateTime(2100),
-        );
-        if (pickedDate != null) {
-          setState(() => selectedDate = pickedDate);
-        }
-      },
-      icon: Icon(Icons.calendar_today, size: 16, color: Colors.black),
-      label: Text(DateFormat('dd/MM/yyyy').format(selectedDate),
-          style: TextStyle(color: Colors.black)),
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.white,
-        shape: RoundedRectangleBorder(
+  // Time selector widget
+  Widget _buildTimeSelector({
+    required String label,
+    required TimeOfDay time,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+        decoration: BoxDecoration(
+          color: Colors.grey[50],
           borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: Colors.grey.shade300),
         ),
-        elevation: 1,
-      ),
-    );
-  }
-
-  /// Time Picker Button
-  Widget _timePickerButton(
-      String label, TimeOfDay time, Function(TimeOfDay) onTimeSelected) {
-    return ElevatedButton.icon(
-      onPressed: () async {
-        TimeOfDay? pickedTime = await showTimePicker(
-          context: context,
-          initialTime: time,
-        );
-        if (pickedTime != null) {
-          onTimeSelected(pickedTime);
-        }
-      },
-      icon: Icon(Icons.access_time, size: 16, color: Colors.black),
-      label: Text(time.format(context), style: TextStyle(color: Colors.black)),
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.white,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 12,
+                color: Colors.grey[600],
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            SizedBox(height: 4),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  time.format(context),
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                Icon(
+                  Icons.access_time,
+                  size: 16,
+                  color: AppColors.primary,
+                ),
+              ],
+            ),
+          ],
         ),
-        elevation: 1,
       ),
     );
   }
@@ -459,92 +626,128 @@ class _NewBookingScreenState extends State<NewBookingScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _textInputField(
-            "Client Name", "Enter client name", clientNameController),
-        _textInputField(
-            "Phone Number", "Enter phone number", clientPhoneNumberController),
-        _dropdownField("Service Type", "Bridal Makeup"),
+        _buildTextField(
+          label: "Client Name",
+          hint: "Enter client's full name",
+          controller: clientNameController,
+          icon: Icons.person,
+        ),
+        SizedBox(height: 16),
+        _buildTextField(
+          label: "Phone Number",
+          hint: "Enter client's phone number",
+          controller: clientPhoneNumberController,
+          icon: Icons.phone,
+          keyboardType: TextInputType.phone,
+        ),
+        SizedBox(height: 16),
+        _buildDropdownField(
+          label: "Service Type",
+          icon: Icons.spa,
+        ),
       ],
     );
   }
 
-  /// Standard Input Field
-  Widget _textInputField(
-      String label, String hint, TextEditingController controller) {
+  // Improved text field widget
+  Widget _buildTextField({
+    required String label,
+    required String hint,
+    required TextEditingController controller,
+    required IconData icon,
+    TextInputType keyboardType = TextInputType.text,
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        /// **Label Text**
-        Padding(
-          padding: const EdgeInsets.only(top: 10, bottom: 5),
-          child: Text(
-            label,
-            style: TextStyle(
-                fontSize: 14, fontWeight: FontWeight.w600, color: Colors.black),
-          ),
-        ),
-
-        /// **Text Field**
-        TextField(
-          controller: controller,
-          decoration: InputDecoration(
-            hintText: hint,
-            hintStyle: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: Colors.grey[500]),
-            filled: true,
-            fillColor: Color(0xFFF7F7F8),
-            contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-            border: InputBorder.none,
-            enabledBorder: InputBorder.none,
-            focusedBorder: InputBorder.none,
-          ),
+        Text(
+          label,
           style: TextStyle(
-              fontSize: 14, fontWeight: FontWeight.w500, color: Colors.black),
+            fontWeight: FontWeight.w500,
+            fontSize: 14,
+            color: Colors.grey[700],
+          ),
+        ),
+        SizedBox(height: 8),
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.grey[50],
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: Colors.grey.shade300),
+          ),
+          child: TextField(
+            controller: controller,
+            keyboardType: keyboardType,
+            decoration: InputDecoration(
+              hintText: hint,
+              hintStyle: TextStyle(
+                fontSize: 14,
+                color: Colors.grey[400],
+              ),
+              prefixIcon: Icon(
+                icon,
+                color: AppColors.primary,
+                size: 20,
+              ),
+              border: InputBorder.none,
+              contentPadding: EdgeInsets.symmetric(vertical: 12),
+            ),
+          ),
         ),
       ],
     );
   }
 
-  Widget _dropdownField(String label, String defaultValue) {
+  // Improved dropdown field
+  Widget _buildDropdownField({
+    required String label,
+    required IconData icon,
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        /// **Label Text**
-        Padding(
-          padding: const EdgeInsets.only(top: 10, bottom: 5),
-          child: Text(
-            label,
-            style: TextStyle(
-                fontSize: 14, fontWeight: FontWeight.w600, color: Colors.black),
+        Text(
+          label,
+          style: TextStyle(
+            fontWeight: FontWeight.w500,
+            fontSize: 14,
+            color: Colors.grey[700],
           ),
         ),
-
-        /// **Dropdown Field**
-        DropDownTextField(
-          controller: _dropdownController,
-          textFieldDecoration: InputDecoration(
-            filled: true,
-            fillColor: Color(0xFFF7F7F8), // Matches the text field background
-            contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-            border: InputBorder.none, // No border
-            enabledBorder: InputBorder.none, // No border when enabled
-            focusedBorder: InputBorder.none, // No border when focused
-            hintStyle: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: Colors.grey[500]),
+        SizedBox(height: 8),
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.grey[50],
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: Colors.grey.shade300),
           ),
-          dropDownList: [
-            DropDownValueModel(name: "Bridal Makeup", value: "Bridal Makeup"),
-            DropDownValueModel(name: "Hair Styling", value: "Hair Styling"),
-            DropDownValueModel(name: "Facial", value: "Facial"),
-          ],
-          onChanged: (val) {
-            print(val);
-          },
-          dropdownRadius: 8,
+          child: DropDownTextField(
+            controller: _dropdownController,
+            textFieldDecoration: InputDecoration(
+              hintText: "Select service type",
+              hintStyle: TextStyle(
+                fontSize: 14,
+                color: Colors.grey[400],
+              ),
+              prefixIcon: Icon(
+                icon,
+                color: AppColors.primary,
+                size: 20,
+              ),
+              border: InputBorder.none,
+              contentPadding: EdgeInsets.symmetric(vertical: 12),
+            ),
+            dropDownList: [
+              DropDownValueModel(name: "Bridal Makeup", value: "Bridal Makeup"),
+              DropDownValueModel(name: "Party Makeup", value: "Party Makeup"),
+              DropDownValueModel(name: "Hair Styling", value: "Hair Styling"),
+              DropDownValueModel(name: "Facial", value: "Facial"),
+              DropDownValueModel(
+                  name: "Manicure & Pedicure", value: "Manicure & Pedicure"),
+            ],
+            dropdownRadius: 8,
+            dropDownItemCount: 5,
+          ),
         ),
       ],
     );
@@ -553,70 +756,142 @@ class _NewBookingScreenState extends State<NewBookingScreen> {
   /// Location Selection UI
   Widget _locationSelection() {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        Text(
+          "Where will the service be provided?",
+          style: TextStyle(
+            fontWeight: FontWeight.w500,
+            fontSize: 14,
+            color: Colors.grey[700],
+          ),
+        ),
+        SizedBox(height: 12),
         Row(
           children: [
-            _locationButton(
-                "Studio", Icons.location_on, selectedLocation == "Studio"),
-            SizedBox(width: MediaQuery.of(context).size.width * 0.022),
-            _locationButton("Client Location", Icons.home,
-                selectedLocation == "Client Location"),
+            _buildLocationOption(
+              title: "Studio",
+              icon: Icons.business,
+              isSelected: selectedLocation == "Studio",
+            ),
+            SizedBox(width: 12),
+            _buildLocationOption(
+              title: "Client Location",
+              icon: Icons.home,
+              isSelected: selectedLocation == "Client Location",
+            ),
           ],
         ),
-        if (selectedLocation == "Client Location")
-          Row(
-            children: [
-              Expanded(
-                  child: _textInputField(
-                      "Address", "Enter address", addressController)),
-              SizedBox(width: 15), // spacing between field and icon
-              IconButton(
-                onPressed: isLoadingLocation ? null : _getCurrentLocation,
-                icon: Icon(isLoadingLocation ? Icons.sync : Icons.pin_drop,
-                    color: AppColors.subtitle, size: 30),
-              ),
-            ],
+        if (selectedLocation == "Client Location") ...[
+          SizedBox(height: 20),
+          Text(
+            "Client Address",
+            style: TextStyle(
+              fontWeight: FontWeight.w500,
+              fontSize: 14,
+              color: Colors.grey[700],
+            ),
           ),
+          SizedBox(height: 8),
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.grey[50],
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: Colors.grey.shade300),
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: addressController,
+                    decoration: InputDecoration(
+                      hintText: "Enter client's address",
+                      hintStyle: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey[400],
+                      ),
+                      prefixIcon: Icon(
+                        Icons.location_on,
+                        color: AppColors.primary,
+                        size: 20,
+                      ),
+                      border: InputBorder.none,
+                      contentPadding: EdgeInsets.symmetric(vertical: 12),
+                    ),
+                  ),
+                ),
+                Container(
+                  height: 48,
+                  width: 48,
+                  child: IconButton(
+                    onPressed: isLoadingLocation ? null : _getCurrentLocation,
+                    icon: isLoadingLocation
+                        ? SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                  AppColors.primary),
+                            ),
+                          )
+                        : Icon(
+                            Icons.my_location,
+                            color: AppColors.primary,
+                          ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ],
     );
   }
 
-  /// Location Selection Button
-  Widget _locationButton(String title, IconData icon, bool isSelected) {
+  // Location option button
+  Widget _buildLocationOption({
+    required String title,
+    required IconData icon,
+    required bool isSelected,
+  }) {
     return Expanded(
-      child: ElevatedButton(
-        onPressed: () {
+      child: InkWell(
+        onTap: () {
           setState(() {
             selectedLocation = title;
           });
         },
-        style: ElevatedButton.styleFrom(
-          backgroundColor: isSelected ? Color(0xFFF8EAFB) : Colors.grey[100],
-          foregroundColor: isSelected ? AppColors.primary : Colors.black87,
-          side: BorderSide(color: AppColors.primary),
-          shape: RoundedRectangleBorder(
+        child: Container(
+          padding: EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+          decoration: BoxDecoration(
+            color:
+                isSelected ? AppColors.primary.withOpacity(0.1) : Colors.white,
             borderRadius: BorderRadius.circular(8),
-          ),
-          padding: EdgeInsets.symmetric(
-              vertical: 14), // Increased for better spacing
-          elevation: 0, // Removing shadow to match flat UI
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon,
-                color: isSelected ? AppColors.primary : Colors.black54,
-                size: 22),
-            SizedBox(height: 4), // Space between icon and text
-            Text(
-              title,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600, // Slightly bolder to match UI
-                color: isSelected ? AppColors.primary : Colors.black87,
-              ),
+            border: Border.all(
+              color: isSelected ? AppColors.primary : Colors.grey.shade300,
+              width: 1.5,
             ),
-          ],
+          ),
+          child: Column(
+            children: [
+              Icon(
+                icon,
+                color: isSelected ? AppColors.primary : Colors.grey[600],
+                size: 24,
+              ),
+              SizedBox(height: 8),
+              Text(
+                title,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: isSelected ? AppColors.primary : Colors.grey[800],
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -624,16 +899,53 @@ class _NewBookingScreenState extends State<NewBookingScreen> {
 
   /// Notes Input Field
   Widget _notesField() {
-    return TextField(
-      maxLines: 3,
-      decoration: InputDecoration(
-        hintText: "Add any additional notes or requirements",
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "Special Requirements or Notes",
+          style: TextStyle(
+            fontWeight: FontWeight.w500,
+            fontSize: 14,
+            color: Colors.grey[700],
+          ),
         ),
-        filled: true,
-        fillColor: Colors.grey[100],
-      ),
+        SizedBox(height: 8),
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.grey[50],
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: Colors.grey.shade300),
+          ),
+          child: TextField(
+            controller: notesController,
+            maxLines: 4,
+            decoration: InputDecoration(
+              hintText: "Any special requirements or notes for this booking",
+              hintStyle: TextStyle(
+                fontSize: 14,
+                color: Colors.grey[400],
+              ),
+              prefixIcon: Padding(
+                padding: EdgeInsets.only(left: 12, right: 8, top: 12),
+                child: Icon(
+                  Icons.note,
+                  color: AppColors.primary,
+                  size: 20,
+                ),
+              ),
+              prefixIconConstraints: BoxConstraints(
+                minWidth: 40,
+                minHeight: 40,
+              ),
+              alignLabelWithHint: true,
+              border: InputBorder.none,
+              contentPadding:
+                  EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
