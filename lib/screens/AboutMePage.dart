@@ -156,9 +156,9 @@ class _AboutMePageState extends State<AboutMePage> {
                           ),
                         ),
                       ),
-                    
+
                       SizedBox(width: 12),
-                    
+
                       // Phone Number Field (Half Width)
                       Expanded(
                         child: CustomTextInputField(

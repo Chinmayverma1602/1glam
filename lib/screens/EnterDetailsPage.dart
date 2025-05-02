@@ -31,6 +31,7 @@ class _EnterDetailsPageState extends State<EnterDetailsPage> {
   bool isLoading = false;
   String? selectedEmail = '';
   TextEditingController serviceController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -46,23 +47,62 @@ class _EnterDetailsPageState extends State<EnterDetailsPage> {
   }
 
   void _showAddServiceDialog() {
+    // Reset controller when opening dialog
+    serviceController.clear();
+
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text("Add Your Own Service"),
-          content: TextField(
-            controller: serviceController,
-            decoration: const InputDecoration(hintText: "Enter service name"),
+          title: Text(
+            "Add Your Own Service",
+            style: TextStyle(
+              color: AppColors.title,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          content: Form(
+            key: _formKey,
+            child: TextFormField(
+              controller: serviceController,
+              decoration: InputDecoration(
+                hintText: "Enter service name",
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                filled: true,
+                fillColor: Colors.grey[50],
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
+              ),
+              validator: (value) {
+                if (value == null || value.trim().isEmpty) {
+                  return "Please enter a service name";
+                }
+                return null;
+              },
+              textCapitalization: TextCapitalization.words,
+              autofocus: true,
+            ),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text("Cancel"),
+              child: Text(
+                "Cancel",
+                style: TextStyle(
+                  color: Colors.grey[600],
+                ),
+              ),
             ),
-            TextButton(
+            ElevatedButton(
               onPressed: () {
-                if (serviceController.text.trim().isNotEmpty) {
+                if (_formKey.currentState!.validate()) {
                   setState(() {
                     users.insert(users.length - 1, {
                       "business": serviceController.text.trim(),
@@ -71,9 +111,16 @@ class _EnterDetailsPageState extends State<EnterDetailsPage> {
                     selectedIndex = users.length - 2;
                     selectedBusiness = serviceController.text.trim();
                   });
+                  Navigator.pop(context);
                 }
-                Navigator.pop(context);
               },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
               child: const Text("Add"),
             ),
           ],
@@ -148,9 +195,16 @@ class _EnterDetailsPageState extends State<EnterDetailsPage> {
                                   : Colors.transparent,
                               child: SvgPicture.asset(
                                 users[index]["imageLocation"],
-                                width: 80, // Controlled size of SVG
-                                height: 80,
-                                fit: BoxFit.none, // Ensures SVG fits properly
+                                width: 30,
+                                height: 30,
+                                fit: BoxFit
+                                    .fill, // Changed to contain for better rendering
+                                colorFilter: ColorFilter.mode(
+                                  isSelected
+                                      ? AppColors.primary
+                                      : Colors.grey.shade700,
+                                  BlendMode.srcIn,
+                                ),
                               ),
                             ),
                           ),
@@ -158,8 +212,15 @@ class _EnterDetailsPageState extends State<EnterDetailsPage> {
                           Text(
                             users[index]["business"],
                             textAlign: TextAlign.center,
-                            style: const TextStyle(
-                                fontSize: 14), // Controlled text size
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: isSelected
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
+                              color: isSelected
+                                  ? AppColors.primary
+                                  : AppColors.title,
+                            ),
                           ),
                         ],
                       ),

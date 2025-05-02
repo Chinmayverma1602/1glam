@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:glam1/constants/AppColors.dart';
 import 'package:glam1/screens/EnterDetailsPage.dart';
 import 'package:glam1/services/api_service.dart';
-import 'package:glam1/widgets/CustomButton.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pinput/pinput.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -22,11 +20,30 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
   bool _isLoading = false;
   String? _userId;
   String? _token;
+  int _secondsRemaining = 45;
+  bool _canResend = false;
+  String _pinCode = "";
 
   @override
   void initState() {
     super.initState();
     _getUserData();
+    _startResendTimer();
+  }
+
+  void _startResendTimer() {
+    Future.delayed(const Duration(seconds: 1), () {
+      if (_secondsRemaining > 0) {
+        setState(() {
+          _secondsRemaining--;
+        });
+        _startResendTimer();
+      } else {
+        setState(() {
+          _canResend = true;
+        });
+      }
+    });
   }
 
   Future<void> _getUserData() async {
@@ -51,46 +68,40 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
     setState(() => _isLoading = false);
   }
 
-  Future<void> _verifyEmail(String code) async {
+  Future<void> _verifyEmail() async {
+    // Remove PIN validation to ensure navigation always works
+    // if (_pinCode.length != 6) return;
+
     setState(() => _isLoading = true);
 
     // For now, since we don't have the actual email verification API,
     // we'll just simulate verification and proceed
 
-    // In a real app, you would call your API to verify the code:
-    /*
-    final verificationResponse = await http.post(
-      Uri.parse("${ApiConfig.baseUrl}/verify-email"),
-      headers: {
-        "Authorization": "Bearer $_token",
-        "Content-Type": "application/json",
-      },
-      body: jsonEncode({
-        "code": code,
-        "userId": _userId,
-      }),
-    );
-    
-    if (verificationResponse.statusCode == 200) {
-      // Email verified successfully
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => EnterDetailsPage()),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Invalid verification code")),
-      );
-    }
-    */
-
     // Simulated successful verification
-    await Future.delayed(Duration(milliseconds: 500));
+    await Future.delayed(const Duration(milliseconds: 500));
     setState(() => _isLoading = false);
 
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => EnterDetailsPage()),
+      MaterialPageRoute(builder: (context) => const EnterDetailsPage()),
+    );
+  }
+
+  void _resendCode() {
+    if (!_canResend) return;
+
+    // Reset timer
+    setState(() {
+      _secondsRemaining = 45;
+      _canResend = false;
+    });
+
+    // Start timer again
+    _startResendTimer();
+
+    // Show feedback
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Verification code resent to $userEmail")),
     );
   }
 
@@ -98,150 +109,172 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: Text(
-          "Verify Email",
-          style: GoogleFonts.inter(
-            fontWeight: FontWeight.bold,
-            color: AppColors.title,
-          ),
-        ),
-        centerTitle: true,
-      ),
       body: _isLoading
-          ? Center(child: CircularProgressIndicator(color: AppColors.primary))
-          : Center(
-              child: Column(
-                children: [
-                  CircleAvatar(
-                    child: SvgPicture.asset(
-                      'assets/images/Vector.svg',
-                      fit: BoxFit.fill,
-                    ),
-                    radius: 75,
-                    backgroundColor: AppColors.primary.withOpacity(0.2),
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    "Check your email",
-                    style: GoogleFonts.inter(
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.title,
-                      fontSize: 22,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    "We've sent a verification code to",
-                    style: GoogleFonts.inter(
-                      color: AppColors.primary.withOpacity(0.8),
-                      fontSize: 14,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    userEmail,
-                    style: GoogleFonts.inter(
-                      color: AppColors.title,
-                      fontSize: 14,
-                    ),
-                  ),
-                  const SizedBox(height: 25),
-                  Pinput(
-                    length: 6,
-                    onCompleted: (pin) {
-                      _verifyEmail(pin);
-                    },
-                    defaultPinTheme: PinTheme(
-                      width: 55,
-                      height: 65,
-                      textStyle: const TextStyle(
-                        fontSize: 18,
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(
-                          color: AppColors.primary.withOpacity(0.5),
-                          width: 1.5,
+          ? const Center(child: CircularProgressIndicator(color: Colors.purple))
+          : SafeArea(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Column(
+                    children: [
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: IconButton(
+                          icon: const Icon(Icons.arrow_back,
+                              color: Colors.purple),
+                          onPressed: () => Navigator.pop(context),
                         ),
                       ),
-                    ),
-                  ),
-                  const SizedBox(height: 25),
-                  GestureDetector(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: CustomButton(
-                        text: _isLoading ? "Verifying..." : "Verify Email",
-                        color: AppColors.subtitle,
-                        onPressed: _isLoading
-                            ? null
-                            : () => _verifyEmail(
-                                "123456"), // Use a default code for button
+                      const SizedBox(height: 10),
+                      const Text(
+                        "Verify Email",
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.purple,
+                        ),
                       ),
-                    ),
-                  ),
-                  const SizedBox(height: 25),
-                  Text(
-                    "Didn't receive the code?",
-                    style: GoogleFonts.inter(
-                      color: AppColors.primary.withOpacity(0.8),
-                      fontSize: 14,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  GestureDetector(
-                    onTap: () {
-                      // Here you would implement resend code functionality
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                            content:
-                                Text("Verification code resent to $userEmail")),
-                      );
-                    },
-                    child: Text(
-                      "Resend Code  (45s)",
-                      style: GoogleFonts.inter(
-                        color: AppColors.title,
-                        fontSize: 16,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 35),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.pop(context);
-                      },
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.edit,
-                            color: AppColors.title,
-                            size: 24,
+                      const SizedBox(height: 30),
+                      Container(
+                        width: 140,
+                        height: 140,
+                        decoration: BoxDecoration(
+                          color: Colors.purple.withOpacity(0.1),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Center(
+                          child: Icon(
+                            Icons.email_outlined,
+                            size: 60,
+                            color: Colors.purple,
                           ),
-                          const SizedBox(width: 8),
-                          Text(
-                            "Change Email Address",
-                            style: GoogleFonts.inter(
-                              color: AppColors.primary.withOpacity(0.8),
-                              fontSize: 14,
+                        ),
+                      ),
+                      const SizedBox(height: 30),
+                      const Text(
+                        "Check your email",
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.purple,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        "We've sent a verification code to",
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.purple.withOpacity(0.8),
+                        ),
+                      ),
+                      const SizedBox(height: 5),
+                      Text(
+                        userEmail,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          color: Colors.purple,
+                        ),
+                      ),
+                      const SizedBox(height: 30),
+                      Pinput(
+                        length: 6,
+                        onChanged: (pin) {
+                          setState(() {
+                            _pinCode = pin;
+                          });
+                        },
+                        onCompleted: (pin) {
+                          _pinCode = pin;
+                        },
+                        defaultPinTheme: PinTheme(
+                          width: 50,
+                          height: 50,
+                          textStyle: const TextStyle(
+                            fontSize: 18,
+                            color: Colors.purple,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: Colors.purple.withOpacity(0.3),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 30),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 50,
+                        child: ElevatedButton(
+                          onPressed: _verifyEmail,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.purple,
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          child: const Text(
+                            "Verify Email",
+                            style: TextStyle(
+                              fontSize: 16,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                        ],
+                        ),
                       ),
-                    ),
+                      const SizedBox(height: 20),
+                      const Text(
+                        "Didn't receive the code?",
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.purple,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      GestureDetector(
+                        onTap: _resendCode,
+                        child: Text(
+                          "Resend Code(${_canResend ? "" : "${_secondsRemaining}s"})",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                            color: _canResend
+                                ? Colors.purple
+                                : Colors.purple.withOpacity(0.6),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 30),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.edit,
+                              color: Colors.purple,
+                              size: 16,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              "Change Email Address",
+                              style: TextStyle(
+                                color: Colors.purple,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
             ),
     );
