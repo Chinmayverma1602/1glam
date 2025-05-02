@@ -9,6 +9,8 @@ class CustomButton3 extends StatelessWidget {
   final double textSize;
   final bool isBold;
   final IconData leadingIcon;
+  final IconData? trailingIcon;
+  final double iconSize;
   final List<Color>? gradientColors;
   final VoidCallback? onTap;
 
@@ -21,6 +23,8 @@ class CustomButton3 extends StatelessWidget {
     required this.textSize,
     required this.isBold,
     required this.leadingIcon,
+    this.trailingIcon,
+    this.iconSize = 20,
     this.gradientColors,
     this.onTap,
   }) : super(key: key);
@@ -53,7 +57,7 @@ class CustomButton3 extends StatelessWidget {
           children: [
             Row(
               children: [
-                FaIcon(leadingIcon, color: iconColor, size: 20),
+                FaIcon(leadingIcon, color: iconColor, size: iconSize),
                 const SizedBox(width: 8),
                 Text(
                   text,
@@ -65,7 +69,8 @@ class CustomButton3 extends StatelessWidget {
                 ),
               ],
             ),
-            const Icon(Icons.chevron_right, color: Colors.white, size: 20),
+            Icon(trailingIcon ?? Icons.chevron_right,
+                color: Colors.white, size: iconSize),
           ],
         ),
       ),

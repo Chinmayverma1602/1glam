@@ -2,9 +2,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:glam1/constants/AppColors.dart';
+import 'package:glam1/constants/api_constants.dart';
 import 'package:glam1/screens/AddServicesPage.dart';
+import 'package:glam1/screens/HomePage.dart';
 import 'package:glam1/services/add_services_controller.dart';
+import 'package:glam1/services/api_service.dart';
 import 'package:glam1/widgets/CustomHeader.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class ServicesInfoPage extends StatefulWidget {
   const ServicesInfoPage({super.key});
@@ -183,7 +188,7 @@ class _ServicesInfoPageState extends State<ServicesInfoPage> {
                     // Continue Button
                     ElevatedButton(
                       onPressed: () {
-                        // Handle continue button
+                        _submitServicesToBackend();
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primary,
@@ -236,7 +241,7 @@ class _ServicesInfoPageState extends State<ServicesInfoPage> {
                       color: Color(0xFF3E0057),
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  //   SizedBox(height: 8),
                   Text(
                     duration,
                     style: TextStyle(
@@ -256,7 +261,7 @@ class _ServicesInfoPageState extends State<ServicesInfoPage> {
                       color: AppColors.primary,
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  //    const SizedBox(width: 8),
                   IconButton(
                     icon: const Icon(
                       Icons.delete_outline,
@@ -267,9 +272,16 @@ class _ServicesInfoPageState extends State<ServicesInfoPage> {
                       _showDeleteConfirmation(title, docId);
                     },
                   ),
-                  Icon(
-                    Icons.chevron_right,
-                    color: AppColors.primary,
+                  SizedBox(width: 1),
+                  IconButton(
+                    icon: const Icon(
+                      Icons.edit,
+                      color: AppColors.primary,
+                      size: 20,
+                    ),
+                    onPressed: () {
+                      _navigateToEditService(docId);
+                    },
                   ),
                 ],
               ),
@@ -351,5 +363,167 @@ class _ServicesInfoPageState extends State<ServicesInfoPage> {
         );
       }
     });
+  }
+
+  void _submitServicesToBackend() async {
+    try {
+      // Show loading indicator
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return const Center(
+            child: CircularProgressIndicator(
+              color: AppColors.primary,
+            ),
+          );
+        },
+      );
+
+      // Get token from TokenManager
+      String? token = await TokenManager.getToken();
+      String? userId = await TokenManager.getUserId();
+
+      if (token == null || userId == null) {
+        // If no token or userId, get from constants
+        token = ApiConstants.authToken.replaceAll("Bearer ", "");
+        userId = "68133e4f86d05522e98737eb"; // Default user ID from example
+      }
+
+      // API endpoint
+      const String apiUrl =
+          "https://1glambackend-production.up.railway.app/api/resource/userServices";
+
+      // Get services from Firebase
+      final snapshot = await FirebaseFirestore.instance
+          .collection('services')
+          .where('user_email', isEqualTo: 'user_email1@gmail.com')
+          .get();
+
+      if (snapshot.docs.isEmpty) {
+        Navigator.pop(context); // Close loading dialog
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("No services found. Please add services first."),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
+
+      // Determine if we're dealing with a bundle or single service
+      final isBundle =
+          snapshot.docs.any((doc) => (doc.data()['isBundle'] == true));
+
+      // Prepare data structure
+      Map<String, dynamic> requestBody = {
+        "user": userId,
+        "bundle": isBundle,
+      };
+
+      if (isBundle) {
+        // For bundles, create a bundle service with included services
+        String bundleName = "Service Bundle";
+        double totalDuration = 0;
+        List<Map<String, dynamic>> servicesIncluded = [];
+
+        // Process each service document
+        for (var doc in snapshot.docs) {
+          final data = doc.data();
+
+          // If it's the first document, use its name as the bundle name
+          if (servicesIncluded.isEmpty) {
+            bundleName = data['title'] ?? "Service Bundle";
+          }
+
+          // Parse duration and price
+          double duration = double.tryParse(data['duration'] ?? "0") ?? 0;
+          double price = double.tryParse(
+                  data['price']?.toString().replaceAll(',', '') ?? "0") ??
+              0;
+
+          totalDuration += duration;
+
+          // Add to included services
+          servicesIncluded.add({
+            "service_name": data['title'] ?? "Service",
+            "price": price,
+            "duration": duration * 60 // Convert to minutes
+          });
+        }
+
+        requestBody["service_name"] = bundleName;
+        requestBody["services_included"] = servicesIncluded;
+        requestBody["duration"] = totalDuration * 60; // Convert to minutes
+      } else {
+        // For single service
+        final doc = snapshot.docs.first;
+        final data = doc.data();
+
+        double duration = double.tryParse(data['duration'] ?? "0") ?? 0;
+        double price = double.tryParse(
+                data['price']?.toString().replaceAll(',', '') ?? "0") ??
+            0;
+        String serviceName = data['title'] ?? "Service";
+
+        requestBody["service_name"] = serviceName;
+        // For single service, add the service details to services_included
+        requestBody["services_included"] = [
+          {
+            "service_name": serviceName,
+            "price": price,
+            "duration": duration * 60 // Convert to minutes
+          }
+        ];
+        requestBody["duration"] = duration * 60; // Convert to minutes
+      }
+
+      // Make API call
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        headers: {
+          "Authorization": "Bearer $token",
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+        },
+        body: jsonEncode(requestBody),
+      );
+
+      // Close loading dialog
+      Navigator.pop(context);
+
+      // Handle response
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final responseData = jsonDecode(response.body);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            // content: Text(
+            //     responseData['message'] ?? "Service submitted successfully"),
+            content: Text(
+                responseData['message'] ?? "Service submitted successfully"),
+            backgroundColor: Colors.green,
+          ),
+        );
+
+        // Navigate to the next screen or handle success
+        Get.to(() => HomePage(lead: responseData['userService']));
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Failed to submit services: ${response.body}"),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      // Close loading dialog if open
+      Navigator.pop(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Error: $e"),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 }

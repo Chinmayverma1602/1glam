@@ -23,9 +23,10 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
 
-  int _totalBooking = 0;
+  int _totalBooking = 5;
   int _totalProposalSent = 0;
-  int _totalInquiryRecieved = 0;
+  int _totalInquiryRecieved = 12;
+  int _totalQualifiedLead = 8;
 
   @override
   void initState() {
@@ -102,45 +103,30 @@ class _HomePageState extends State<HomePage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         CustomTitle(
-                          title: "Welcome, Parinaaz!",
+                          title: "Welcome Parinaaz!",
                         ),
                         const SizedBox(height: 2),
                         CustomSubTitle(
-                            subtitle: "Tuesday, 15 Feb 2025",
-                            color: Color.fromRGBO(
-                                107, 114, 128, 1) //** AppColors.subtitle,
-                            ),
+                          subtitle: "Tuesday, 15 Feb 2025",
+                          color: Color.fromRGBO(107, 114, 128, 1),
+                        ),
                       ],
                     ),
-
-                    // profile icon
-                    CircleAvatar(
-                      radius: 20,
-                      backgroundColor: Colors.deepPurpleAccent,
-                    )
                   ],
                 ),
 
                 const SizedBox(height: 24),
 
-                // Section: Social Channels or Quick Actions
-                Text(
-                  "Social Channels",
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
-                ),
-                const SizedBox(height: 16),
-                // If you have many "buttons," you can put them in a row or column.
-                // You can also wrap them in a Card for an elevated look if you wish.
+                // Section: Social Channels - Updated with buttons like in the image
                 Column(
                   children: [
                     CustomButton3(
-                      text: "Automate your Instagram DM's",
+                      text: "Automate Instagram DMs",
                       borderColor: Colors.transparent,
                       iconColor: Colors.white,
                       leadingIcon: FontAwesomeIcons.instagram,
-                      //trailingImage: 'assets/images/c.svg',
+                      trailingIcon: Icons.arrow_forward_ios,
+                      iconSize: 20,
                       gradientColors: [
                         Color.fromRGBO(236, 72, 153, 1),
                         Color.fromRGBO(217, 70, 239, 1)
@@ -154,15 +140,16 @@ class _HomePageState extends State<HomePage> {
                     ),
                     const SizedBox(height: 16),
                     CustomButton3(
-                      text: "Automate your Whatsapp DM's",
+                      text: "Automate WhatsApp DMs",
                       borderColor: Colors.transparent,
                       iconColor: Colors.white,
                       leadingIcon: FontAwesomeIcons.whatsapp,
+                      trailingIcon: Icons.arrow_forward_ios,
+                      iconSize: 20,
                       gradientColors: [
                         Color.fromRGBO(16, 185, 129, 1),
                         Color.fromRGBO(16, 185, 129, 1)
                       ],
-                      //trailingImage: 'assets/images/c.svg',
                       textColor: Colors.white,
                       textSize: 16,
                       isBold: true,
@@ -173,11 +160,12 @@ class _HomePageState extends State<HomePage> {
                       borderColor: Colors.transparent,
                       iconColor: Colors.white,
                       leadingIcon: FontAwesomeIcons.userPen,
+                      trailingIcon: Icons.arrow_forward_ios,
+                      iconSize: 20,
                       gradientColors: [
                         Color.fromRGBO(139, 92, 246, 1),
                         Color.fromRGBO(139, 92, 246, 1)
                       ],
-                      //trailingImage: 'assets/images/c.svg',
                       textColor: Colors.white,
                       textSize: 16,
                       isBold: true,
@@ -187,98 +175,98 @@ class _HomePageState extends State<HomePage> {
                 const SizedBox(height: 24),
 
                 // Section: Today's Schedule
-                Card(
-                  color: Colors.white,
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Header row
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        // Header row
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              "Today's Schedule",
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleMedium
-                                  ?.copyWith(
+                        Text(
+                          "Today's Schedule",
+                          style:
+                              Theme.of(context).textTheme.titleMedium?.copyWith(
                                     fontWeight: FontWeight.w600,
                                     fontSize: 18,
                                   ),
-                            ),
-                            GestureDetector(
-                              onTap: () {
-                                // TODO: Navigate to full schedule page
-                              },
-                              child: Text(
-                                "View all",
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyMedium
-                                    ?.copyWith(
-                                      color: AppColors.primary,
-                                      fontWeight: FontWeight.w400,
-                                      fontSize: 14,
-                                    ),
-                              ),
-                            ),
-                          ],
                         ),
-                        const SizedBox(height: 16),
-                        CustomScheduleButton(
-                          time: "10:00",
-                          timeBlock: "AM",
-                          userName: "Priya Shah",
-                          makeupType: "Bridal Makeup",
-                        ),
-                        const SizedBox(height: 16),
-                        CustomScheduleButton(
-                          time: "02:30",
-                          timeBlock: "PM",
-                          userName: "Meera Kapoor",
-                          makeupType: "Party Makeup",
+                        GestureDetector(
+                          onTap: () {
+                            // Navigate to full schedule page
+                          },
+                          child: Text(
+                            "View all",
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  color: AppColors.primary,
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 14,
+                                ),
+                          ),
                         ),
                       ],
                     ),
-                  ),
+                    const SizedBox(height: 16),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Column(
+                        children: [
+                          CustomScheduleButton(
+                            time: "10:00",
+                            timeBlock: "AM",
+                            userName: "Priya Shah",
+                            makeupType: "Bridal Makeup",
+                          ),
+                          Divider(
+                              height: 1,
+                              thickness: 1,
+                              color: Colors.grey.shade200),
+                          CustomScheduleButton(
+                            time: "2:30",
+                            timeBlock: "PM",
+                            userName: "Meera Kapoor",
+                            makeupType: "Party Makeup",
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 24),
 
-                // Section: Add New Booking or other Home Services
-                Text(
-                  "Services",
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w800,
-                        fontSize: 18,
-                      ),
-                ),
-                const SizedBox(height: 16),
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: [
-                      CustomHomeServicesButton(
+                // Section: Services
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Expanded(
+                      child: CustomHomeServicesButton(
                         label: "Add New\nBooking",
-                        iconPath: 'assets/images/i3.svg',
+                        icon: Icons.calendar_month_outlined,
+                        iconColor: AppColors.primary,
                       ),
-                      const SizedBox(width: 16),
-                      CustomHomeServicesButton(
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: CustomHomeServicesButton(
                         label: "Send Follow\nUp",
-                        iconPath: 'assets/images/i-1.svg',
+                        icon: Icons.send_outlined,
+                        iconColor: AppColors.primary,
                       ),
-                      const SizedBox(width: 16),
-                      CustomHomeServicesButton(
-                        label: "Send\nInvoice",
-                        iconPath: 'assets/images/i-2.svg',
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: CustomHomeServicesButton(
+                        label: "Send Invoice",
+                        icon: Icons.receipt_long_outlined,
+                        iconColor: AppColors.primary,
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 32),
 
@@ -291,32 +279,106 @@ class _HomePageState extends State<HomePage> {
                       ),
                 ),
                 const SizedBox(height: 16),
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: [
-                      CustomStatsButton(
-                        label: "Inquiry Received",
-                        stats: _totalInquiryRecieved.toString(),
-                        textColor: AppColors.primary,
-                        labelColor: Colors.grey,
+
+                // Updated Lead Stages section to match the image
+                Row(
+                  children: [
+                    Expanded(
+                      child: Container(
+                        height: 100,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              "12",
+                              style: TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.primary,
+                              ),
+                            ),
+                            SizedBox(height: 8),
+                            Text(
+                              "Inquiry Received",
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        ),
                       ),
-                      const SizedBox(width: 16),
-                      CustomStatsButton(
-                        label: "Proposal Sent",
-                        stats: _totalProposalSent.toString(),
-                        textColor: AppColors.primary,
-                        labelColor: Colors.grey,
+                    ),
+                    SizedBox(width: 10),
+                    Expanded(
+                      child: Container(
+                        height: 100,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              "8",
+                              style: TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.primary,
+                              ),
+                            ),
+                            SizedBox(height: 8),
+                            Text(
+                              "Qualified Lead",
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        ),
                       ),
-                      const SizedBox(width: 16),
-                      CustomStatsButton(
-                        label: "Booked",
-                        stats: _totalBooking.toString(),
-                        textColor: AppColors.primary,
-                        labelColor: Colors.grey,
+                    ),
+                    SizedBox(width: 10),
+                    Expanded(
+                      child: Container(
+                        height: 100,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              "5",
+                              style: TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.primary,
+                              ),
+                            ),
+                            SizedBox(height: 8),
+                            Text(
+                              "Proposal Sent",
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ],
             ),
