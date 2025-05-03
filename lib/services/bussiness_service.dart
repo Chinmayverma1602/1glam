@@ -6,7 +6,7 @@ import 'package:glam1/services/api_service.dart';
 
 class BusinessProfileService {
   static final String _baseUrl =
-      "${ApiConstants.baseUrl}/api/resource/userBussiness";
+      "${ApiConstants.baseUrl}/api/resource/userBusiness";
 
   static Future<bool> createBusinessProfile(BusinessProfile profile) async {
     try {
