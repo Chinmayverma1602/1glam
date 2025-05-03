@@ -262,39 +262,172 @@ class _TravellingInfoPageState extends State<TravellingInfoPage> {
   }
 
   void _submitTravelFee() async {
-    // Get the user ID from TokenManager instead of email from SharedPreferences
-    String? userId = await TokenManager.getUserId();
-
-    if (userId == null || userId.isEmpty) {
-      // Fallback to SharedPreferences if TokenManager doesn't have it
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      userId = prefs.getString('user_id');
-
-      if (userId == null || userId.isEmpty) {
-        // Fallback to email as last resort
-        String email = prefs.getString('user_email') ?? "";
-        userId = email;
-      }
+    // Validate inputs first
+    if (_paymentController.dropDownValue == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Please select a payment method")),
+      );
+      return;
     }
 
-    print("Using user ID for travel fee: $userId");
-
-    TravelFee travelFee = TravelFee(
-      user: userId,
-      feeType: _travelFeeController.dropDownValue?.value ?? "",
-      fee: _paymentController.dropDownValue?.value ?? "",
-      maxDistance: sliderController.sliderValue.value.toInt(),
-    );
-
-    final result = await _travelFeeService.submitTravelFee(travelFee);
-    if (result != null) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => ServicesInfoPage()),
-      );
-    } else {
+    if (_travelFeeController.dropDownValue == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Failed to submit travel fee.")),
+        const SnackBar(
+            content: Text("Please select a travel fee type (per km/mile)")),
+      );
+      return;
+    }
+
+    // Show loading indicator
+    setState(() => isLoading = true);
+
+    try {
+      // Show a progress dialog
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return Dialog(
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CircularProgressIndicator(color: AppColors.primary),
+                  SizedBox(height: 20),
+                  Text("Saving travel fee information...")
+                ],
+              ),
+            ),
+          );
+        },
+      );
+
+      // Get the user ID from TokenManager instead of email from SharedPreferences
+      String? userId = await TokenManager.getUserId();
+
+      if (userId == null || userId.isEmpty) {
+        // Fallback to SharedPreferences if TokenManager doesn't have it
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        userId = prefs.getString('user_id');
+
+        if (userId == null || userId.isEmpty) {
+          // Fallback to email as last resort
+          String email = prefs.getString('user_email') ?? "";
+          userId = email;
+        }
+      }
+
+      print("Using user ID for travel fee: $userId");
+
+      if (userId.isEmpty) {
+        throw Exception("Could not determine user ID. Please log in again.");
+      }
+
+      TravelFee travelFee = TravelFee(
+        user: userId,
+        feeType: _travelFeeController.dropDownValue?.value ?? "",
+        fee: _paymentController.dropDownValue?.value ?? "",
+        maxDistance: sliderController.sliderValue.value.toInt(),
+      );
+
+      print("Creating travel fee with:");
+      print("User: ${travelFee.user}");
+      print("Fee type: ${travelFee.feeType}");
+      print("Fee: ${travelFee.fee}");
+      print("Max distance: ${travelFee.maxDistance}");
+
+      final result = await _travelFeeService.submitTravelFee(travelFee);
+
+      // Close the progress dialog
+      Navigator.of(context, rootNavigator: true).pop();
+
+      setState(() => isLoading = false);
+
+      if (result != null) {
+        // Show a brief success message
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Travel fee information saved"),
+            backgroundColor: Colors.green,
+            duration: Duration(seconds: 1),
+          ),
+        );
+
+        // Always proceed to the next screen, even if we had to use the fallback
+        Future.delayed(Duration(milliseconds: 500), () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => ServicesInfoPage()),
+          );
+        });
+      } else {
+        // If API failed completely, show an error but still allow proceeding
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text("Warning"),
+              content: Text(
+                  "Could not save your travel fee information. Do you want to proceed anyway?"),
+              actions: [
+                TextButton(
+                  child: Text("No"),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+                TextButton(
+                  child: Text("Yes"),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => ServicesInfoPage()),
+                    );
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      }
+    } catch (e) {
+      // Close any open dialogs
+      Navigator.of(context, rootNavigator: true).pop();
+
+      setState(() => isLoading = false);
+      print("Error in _submitTravelFee: $e");
+
+      // Show an error but let the user proceed
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Error"),
+            content: Text(
+                "Could not save travel fee information: $e\n\nDo you want to proceed anyway?"),
+            actions: [
+              TextButton(
+                child: Text("No"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+              TextButton(
+                child: Text("Yes"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => ServicesInfoPage()),
+                  );
+                },
+              ),
+            ],
+          );
+        },
       );
     }
   }
