@@ -37,6 +37,9 @@ class _LeadsPageState extends State<LeadsPage> {
     "Waitlisted"
   ];
 
+  // Map to store leads grouped by their status
+  Map<String, List<LeadsResponse>> _groupedLeads = {};
+
   @override
   void initState() {
     super.initState();
@@ -54,8 +57,28 @@ class _LeadsPageState extends State<LeadsPage> {
     setState(() {
       // _leads = await _leadsApiService.fetchAllLeads();//TODO : once the api is live we have to use this
       _leads = sampleLeads; // fornow using sample data
+      _groupLeadsByStatus(); // Group leads by status
       _isLoading = false;
     });
+  }
+
+  // Group leads by their status
+  void _groupLeadsByStatus() {
+    _groupedLeads.clear();
+
+    // Initialize all status categories
+    for (String status in leadsPageFilters.skip(1)) {
+      // Skip "All Leads"
+      _groupedLeads[status] = [];
+    }
+
+    // Group leads by status
+    for (var lead in _leads) {
+      String status = lead.data.leadStatus;
+      if (_groupedLeads.containsKey(status)) {
+        _groupedLeads[status]!.add(lead);
+      }
+    }
   }
 
   void _onItemTapped(int index) {
@@ -73,9 +96,12 @@ class _LeadsPageState extends State<LeadsPage> {
         Navigator.pushReplacementNamed(context, '/leads');
         break;
       case 2:
-        Navigator.pushReplacementNamed(context, '/calendar');
+        Navigator.pushReplacementNamed(context, '/calender');
         break;
       case 3:
+        // Payments tab - add appropriate navigation when available
+        break;
+      case 4:
         Navigator.pushReplacementNamed(context, '/SettingsScreen');
         break;
     }
@@ -85,7 +111,7 @@ class _LeadsPageState extends State<LeadsPage> {
     setState(() {
       _selectedFilter = filter;
     });
-    // TODO: Implement actual filtering logic when API is ready
+    // No need for additional filtering logic as grouping is now handled automatically
   }
 
   String _getCurrentDate() {
@@ -95,27 +121,6 @@ class _LeadsPageState extends State<LeadsPage> {
 
   @override
   Widget build(BuildContext context) {
-    // Calculate exact height for leads list to show 3 items
-    final double headerHeight =
-        MediaQuery.of(context).size.height * 0.04 + // Top padding
-            60 + // Header height (approximated)
-            20 + // Date text height (approximated)
-            MediaQuery.of(context).size.height * 0.025 + // Spacing
-            50 + // Filter bar height (approximated)
-            MediaQuery.of(context).size.height * 0.02; // Spacing
-
-    final double navBarHeight = 70; // Approximated bottom nav bar height
-    final double leadItemHeight = MediaQuery.of(context).size.height * 0.22 +
-        16; // Lead item height + vertical margin
-
-    // Calculate available height for leads list
-    final double availableHeight =
-        MediaQuery.of(context).size.height - headerHeight - navBarHeight;
-
-    // Calculate padding to ensure exactly 3 items are visible
-    final double topPadding = (availableHeight - (leadItemHeight * 3)) / 2;
-    final double verticalPadding = topPadding > 0 ? topPadding : 0;
-
     return Scaffold(
       backgroundColor: Colors.white,
       body: Column(
@@ -173,24 +178,7 @@ class _LeadsPageState extends State<LeadsPage> {
                           ],
                         ),
                       )
-                    : Column(
-                        children: [
-                          Expanded(
-                            child: ListView.builder(
-                              controller: _scrollController,
-                              padding: EdgeInsets.symmetric(
-                                vertical: verticalPadding,
-                                horizontal: 0,
-                              ),
-                              itemCount: _leads.length,
-                              physics: BouncingScrollPhysics(),
-                              itemBuilder: (context, index) {
-                                return LeadDetailsButton(lead: _leads[index]);
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
+                    : _buildLeadsList(),
           ),
         ],
       ),
@@ -199,5 +187,71 @@ class _LeadsPageState extends State<LeadsPage> {
         onTap: _onItemTapped,
       ),
     );
+  }
+
+  Widget _buildLeadsList() {
+    // If "All Leads" is selected, show all leads grouped by status
+    if (_selectedFilter == "All Leads") {
+      // Flatten all leads while preserving grouping
+      List<Widget> allLeadWidgets = [];
+
+      for (int index = 0; index < leadsPageFilters.length - 1; index++) {
+        String status = leadsPageFilters[index + 1]; // Skip "All Leads"
+        List<LeadsResponse> statusLeads = _groupedLeads[status] ?? [];
+
+        // Skip empty status groups
+        if (statusLeads.isEmpty) {
+          continue;
+        }
+
+        // Add all lead widgets directly without the status header
+        allLeadWidgets.addAll(
+            statusLeads.map((lead) => LeadDetailsButton(lead: lead)).toList());
+      }
+
+      return ListView(
+        controller: _scrollController,
+        physics: BouncingScrollPhysics(),
+        padding: EdgeInsets.symmetric(vertical: 8),
+        children: allLeadWidgets,
+      );
+    } else {
+      // If a specific filter is selected, show only leads of that status
+      List<LeadsResponse> filteredLeads = _groupedLeads[_selectedFilter] ?? [];
+
+      if (filteredLeads.isEmpty) {
+        return Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.content_paste_search_outlined,
+                size: 60,
+                color: AppColors.hintText,
+              ),
+              SizedBox(height: 16),
+              Text(
+                "No leads found for $_selectedFilter",
+                style: GoogleFonts.poppins(
+                  color: AppColors.hintText,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+        );
+      }
+
+      return ListView.builder(
+        controller: _scrollController,
+        padding: EdgeInsets.symmetric(vertical: 8),
+        itemCount: filteredLeads.length,
+        physics: BouncingScrollPhysics(),
+        itemBuilder: (context, index) {
+          return LeadDetailsButton(lead: filteredLeads[index]);
+        },
+      );
+    }
   }
 }

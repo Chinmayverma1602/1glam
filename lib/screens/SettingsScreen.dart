@@ -13,9 +13,10 @@ class SettingsScreen extends StatefulWidget {
   State<SettingsScreen> createState() => _SettingsScreenState();
 }
 
-int _selectedIndex = 4;
-
 class _SettingsScreenState extends State<SettingsScreen> {
+  // Correct index for settings tab (based on BottomNavBar.dart)
+  int _selectedIndex = 4;
+
   void _onItemTapped(int index) {
     if (index == _selectedIndex) return;
 
@@ -31,11 +32,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
         Navigator.pushReplacementNamed(context, '/leads');
         break;
       case 2:
-        // Navigator.pushReplacementNamed(context, '/calendar');
-        // Navigator.pushReplacementNamed(context, '/ShowInvoice');
+        Navigator.pushReplacementNamed(context, '/calender');
         break;
       case 3:
-        Navigator.pushReplacementNamed(context, '/SettingsScreen');
+        // Payments tab - add appropriate navigation when available
         break;
       case 4:
         Navigator.pushReplacementNamed(context, '/SettingsScreen');
@@ -114,7 +114,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ),
       ),
       bottomNavigationBar: BottomNavBar(
-        currentIndex: 4,
+        currentIndex: _selectedIndex,
         onTap: _onItemTapped,
       ),
     );

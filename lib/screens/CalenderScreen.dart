@@ -32,6 +32,7 @@ class _CalendarPageState extends State<CalenderPage> {
   DateTime _selectedDay = DateTime.now();
   bool isLoading = false;
   bool _initialDaySelected = false;
+  int _selectedIndex = 2; // Moved outside of build method
 
   // Initialize BookingController
   final BookingController bookingController = Get.put(BookingController());
@@ -142,8 +143,6 @@ class _CalendarPageState extends State<CalenderPage> {
 
   @override
   Widget build(BuildContext context) {
-    int _selectedIndex = 2;
-
     // Debug print all bookings in build method to ensure they're loaded
     print(
         '** DEBUG BUILD: Total bookings: ${bookingController.bookings.length}');
@@ -167,32 +166,6 @@ class _CalendarPageState extends State<CalenderPage> {
       print(
           '** DEBUG BUILD: Date $date has ${bookings.length} bookings: ${bookings.join(', ')}');
     });
-
-    void _onItemTapped(int index) {
-      if (index == _selectedIndex) return;
-
-      setState(() {
-        _selectedIndex = index;
-      });
-
-      switch (index) {
-        case 0:
-          Navigator.pushReplacementNamed(context, '/home');
-          break;
-        case 1:
-          Navigator.pushReplacementNamed(context, '/leads');
-          break;
-        case 2:
-          Navigator.pushReplacementNamed(context, '/calender');
-          break;
-        case 3:
-          Navigator.pushReplacementNamed(context, '/SettingsScreen');
-          break;
-        case 4:
-          Navigator.pushReplacementNamed(context, '/SettingsScreen');
-          break;
-      }
-    }
 
     return Scaffold(
       bottomNavigationBar: BottomNavBar(
@@ -572,6 +545,33 @@ class _CalendarPageState extends State<CalenderPage> {
         ),
       ),
     );
+  }
+
+  void _onItemTapped(int index) {
+    if (index == _selectedIndex) return;
+
+    setState(() {
+      _selectedIndex = index;
+    });
+
+    switch (index) {
+      case 0:
+        Navigator.pushReplacementNamed(context, '/home');
+        break;
+      case 1:
+        Navigator.pushReplacementNamed(context, '/leads');
+        break;
+      case 2:
+        Navigator.pushReplacementNamed(context, '/calender');
+        break;
+      case 3:
+        // This should be payments based on BottomNavBar.dart
+        // Navigate accordingly
+        break;
+      case 4:
+        Navigator.pushReplacementNamed(context, '/SettingsScreen');
+        break;
+    }
   }
 }
 
