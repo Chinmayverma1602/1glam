@@ -6,7 +6,9 @@ import 'package:glam1/services/add_services_controller.dart';
 import 'package:glam1/widgets/CustomButton.dart';
 import 'package:glam1/widgets/CustomButton2.dart';
 import 'package:glam1/widgets/CustomHeader.dart';
+import 'package:glam1/widgets/CustomLoadingAnimation.dart';
 import 'package:glam1/widgets/CustomServiceSelectionContainer.dart';
+import 'package:glam1/widgets/CustomToast.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AddServicesPage extends StatelessWidget {
@@ -20,9 +22,19 @@ class AddServicesPage extends StatelessWidget {
     void _saveServices() async {
       // Show loading indicator
       Get.dialog(
-        const Center(
-          child: CircularProgressIndicator(
-            color: AppColors.primary,
+        const Dialog(
+          backgroundColor: Colors.white,
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(16)),
+          ),
+          child: Padding(
+            padding: EdgeInsets.all(24.0),
+            child: CustomLoadingAnimation(
+              size: 50,
+              text: "Saving service...",
+              type: LoadingAnimationType.staggeredDotsWave,
+            ),
           ),
         ),
         barrierDismissible: false,
@@ -35,30 +47,21 @@ class AddServicesPage extends StatelessWidget {
       Get.back();
 
       if (success) {
-        // Show success message
-        Get.snackbar(
-          'Success',
-          'Your service has been saved',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.green.withOpacity(0.7),
-          colorText: Colors.white,
-          margin: const EdgeInsets.all(10),
-          borderRadius: 10,
-          duration: const Duration(seconds: 2),
+        // Show success message using our custom toast
+        CustomToast.showSuccess(
+          Get.context!,
+          message: 'Your service has been saved',
         );
 
-        // Navigate to the services info page
-        Get.to(() => ServicesInfoPage());
+        // Navigate to the services info page after a slight delay
+        Future.delayed(Duration(milliseconds: 300), () {
+          Get.to(() => ServicesInfoPage());
+        });
       } else {
-        // Show error message
-        Get.snackbar(
-          'Error',
-          'Failed to save service',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.red.withOpacity(0.7),
-          colorText: Colors.white,
-          margin: const EdgeInsets.all(10),
-          borderRadius: 10,
+        // Show error message using our custom toast
+        CustomToast.showError(
+          Get.context!,
+          message: 'Failed to save service',
         );
       }
     }
@@ -347,14 +350,10 @@ class AddServicesPage extends StatelessWidget {
                         onPressed: () {
                           // Check if there are services to save
                           if (controller.serviceWidgets.isEmpty) {
-                            Get.snackbar(
-                              'Error',
-                              'Please add at least one service before saving',
-                              snackPosition: SnackPosition.BOTTOM,
-                              backgroundColor: Colors.red.withOpacity(0.7),
-                              colorText: Colors.white,
-                              margin: const EdgeInsets.all(10),
-                              borderRadius: 10,
+                            CustomToast.showWarning(
+                              Get.context!,
+                              message:
+                                  'Please add at least one service before saving',
                             );
                             return;
                           }

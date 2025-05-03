@@ -7,9 +7,11 @@ import 'package:glam1/screens/TravellingInfo.dart';
 import 'package:glam1/services/address_service.dart';
 import 'package:glam1/widgets/CustomButton.dart';
 import 'package:glam1/widgets/CustomHeader.dart';
+import 'package:glam1/widgets/CustomLoadingAnimation.dart';
 import 'package:glam1/widgets/CustomSubtitle.dart';
 import 'package:glam1/widgets/CustomTextInputField.dart';
 import 'package:glam1/widgets/CustomTitle.dart';
+import 'package:glam1/widgets/CustomToast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -149,8 +151,9 @@ class _AddressDetailsPageState extends State<AddressDetailsPage> {
     } catch (e) {
       print(e);
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error fetching location: $e')),
+      CustomToast.showError(
+        context,
+        message: 'Error fetching location: $e',
       );
     } finally {
       setState(() {
@@ -229,9 +232,9 @@ class _AddressDetailsPageState extends State<AddressDetailsPage> {
       }
     } catch (e) {
       print('Error fetching address from geocoding: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content: Text('Could not determine address from your location')),
+      CustomToast.showWarning(
+        context,
+        message: 'Could not determine address from your location',
       );
     }
   }
@@ -295,8 +298,9 @@ class _AddressDetailsPageState extends State<AddressDetailsPage> {
         cityController.text.isEmpty ||
         zipController.text.isEmpty ||
         selectedState == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill all required fields')),
+      CustomToast.showWarning(
+        context,
+        message: 'Please fill all required fields',
       );
       return;
     }
@@ -308,13 +312,17 @@ class _AddressDetailsPageState extends State<AddressDetailsPage> {
 
     // Final check for user ID
     if (_userId == null || _userId!.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("User ID not found. Please log in again.")),
+      CustomToast.showError(
+        context,
+        message: "User ID not found. Please log in again.",
       );
       return;
     }
 
     setState(() => isLoading = true);
+    showLoadingDialog(context,
+        text: "Saving address...",
+        type: LoadingAnimationType.staggeredDotsWave);
 
     try {
       // Print debug info to verify API URL
@@ -357,29 +365,40 @@ class _AddressDetailsPageState extends State<AddressDetailsPage> {
         success = await _directApiCall(address);
       }
 
+      // Ensure the loading dialog is dismissed first
+      dismissLoadingDialog(context);
+      setState(() => isLoading = false);
+
       if (success) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Address saved successfully')),
+        CustomToast.showSuccess(
+          context,
+          message: 'Address saved successfully',
         );
 
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => TravellingInfoPage(
-                      fullAddress: address.toString(),
-                    )));
+        // Short delay to ensure toast is visible before navigation
+        Future.delayed(Duration(milliseconds: 300), () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => TravellingInfoPage(
+                        fullAddress: address.toString(),
+                      )));
+        });
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to save address. Please try again.')),
+        CustomToast.showError(
+          context,
+          message: 'Failed to save address. Please try again.',
         );
       }
     } catch (e) {
       print("Error saving address: $e");
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e')),
-      );
-    } finally {
+      dismissLoadingDialog(context);
       setState(() => isLoading = false);
+
+      CustomToast.showError(
+        context,
+        message: 'Error: $e',
+      );
     }
   }
 
@@ -553,7 +572,7 @@ class _AddressDetailsPageState extends State<AddressDetailsPage> {
                     ),
                     SizedBox(height: 15),
                     CustomButton(
-                      text: isLoading ? "Saving..." : "Continue",
+                      text: "Continue",
                       color: AppColors.subtitle,
                       onPressed: isLoading ? null : _saveAddress,
                     )

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:glam1/constants/AppColors.dart';
 import 'package:glam1/screens/EnterDetailsPage.dart';
 import 'package:glam1/services/api_service.dart';
+import 'package:glam1/widgets/CustomLoadingAnimation.dart';
+import 'package:glam1/widgets/CustomToast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pinput/pinput.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -100,8 +102,9 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
     _startResendTimer();
 
     // Show feedback
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Verification code resent to $userEmail")),
+    CustomToast.showInfo(
+      context,
+      message: "Verification code resent to $userEmail",
     );
   }
 
@@ -110,7 +113,13 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator(color: Colors.purple))
+          ? const Center(
+              child: CustomLoadingAnimation(
+                size: 50,
+                color: AppColors.primary,
+                type: LoadingAnimationType.staggeredDotsWave,
+              ),
+            )
           : SafeArea(
               child: SingleChildScrollView(
                 child: Padding(

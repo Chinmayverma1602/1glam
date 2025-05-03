@@ -7,27 +7,28 @@ class CustomLoadingAnimation extends StatelessWidget {
   final double size;
   final String? text;
   final bool showText;
+  final Color? color;
+  final LoadingAnimationType type;
 
   const CustomLoadingAnimation({
     Key? key,
     this.size = 50.0,
     this.text,
     this.showText = true,
+    this.color,
+    this.type = LoadingAnimationType.staggeredDotsWave,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final activeColor = color ?? AppColors.primary;
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        LoadingAnimationWidget.discreteCircle(
-          color: AppColors.primary,
-          secondRingColor: AppColors.primary.withOpacity(0.5),
-          thirdRingColor: AppColors.primary.withOpacity(0.2),
-          size: size,
-        ),
+        _buildAnimationByType(type, activeColor),
         if (showText) ...[
-          SizedBox(height: 20),
+          SizedBox(height: 16),
           Text(
             text ?? "Loading...",
             style: GoogleFonts.poppins(
@@ -40,6 +41,102 @@ class CustomLoadingAnimation extends StatelessWidget {
       ],
     );
   }
+
+  Widget _buildAnimationByType(LoadingAnimationType type, Color color) {
+    switch (type) {
+      case LoadingAnimationType.discreteCircle:
+        return LoadingAnimationWidget.discreteCircle(
+          color: color,
+          secondRingColor: color.withOpacity(0.5),
+          thirdRingColor: color.withOpacity(0.2),
+          size: size,
+        );
+      case LoadingAnimationType.staggeredDotsWave:
+        return LoadingAnimationWidget.staggeredDotsWave(
+          color: color,
+          size: size,
+        );
+      case LoadingAnimationType.threeArchedCircle:
+        return LoadingAnimationWidget.threeArchedCircle(
+          color: color,
+          size: size,
+        );
+      case LoadingAnimationType.twistingDots:
+        return LoadingAnimationWidget.twistingDots(
+          leftDotColor: color,
+          rightDotColor: color.withOpacity(0.5),
+          size: size,
+        );
+      case LoadingAnimationType.fourRotatingDots:
+        return LoadingAnimationWidget.fourRotatingDots(
+          color: color,
+          size: size,
+        );
+      case LoadingAnimationType.flickr:
+        return LoadingAnimationWidget.flickr(
+          leftDotColor: color,
+          rightDotColor: color.withOpacity(0.7),
+          size: size,
+        );
+      case LoadingAnimationType.newtonCradle:
+        return LoadingAnimationWidget.newtonCradle(
+          color: color,
+          size: size,
+        );
+      case LoadingAnimationType.beat:
+      default:
+        return LoadingAnimationWidget.beat(
+          color: color,
+          size: size,
+        );
+    }
+  }
+}
+
+enum LoadingAnimationType {
+  discreteCircle,
+  staggeredDotsWave,
+  threeArchedCircle,
+  twistingDots,
+  fourRotatingDots,
+  flickr,
+  newtonCradle,
+  beat,
+}
+
+// Helper function to easily show a centered loading animation in a dialog
+void showLoadingDialog(BuildContext context,
+    {String? text,
+    LoadingAnimationType type = LoadingAnimationType.staggeredDotsWave}) {
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (BuildContext context) {
+      return Dialog(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CustomLoadingAnimation(
+                size: 50,
+                text: text ?? "Loading...",
+                type: type,
+              ),
+            ],
+          ),
+        ),
+      );
+    },
+  );
+}
+
+// Helper function to dismiss the loading dialog
+void dismissLoadingDialog(BuildContext context) {
+  Navigator.of(context, rootNavigator: true).pop();
 }
 
 // Alternative loading animations that can be used

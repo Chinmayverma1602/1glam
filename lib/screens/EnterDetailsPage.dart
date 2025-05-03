@@ -6,6 +6,8 @@ import 'package:glam1/constants/AppColors.dart';
 import 'package:glam1/screens/AboutMePage.dart';
 import 'package:glam1/widgets/CustomButton.dart';
 import 'package:glam1/widgets/CustomHeader.dart';
+import 'package:glam1/widgets/CustomLoadingAnimation.dart';
+import 'package:glam1/widgets/CustomToast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class EnterDetailsPage extends StatefulWidget {
@@ -231,17 +233,20 @@ class _EnterDetailsPageState extends State<EnterDetailsPage> {
               const SizedBox(height: 20), // Spacing before button
               Center(
                 child: isLoading
-                    ? const CircularProgressIndicator()
+                    ? const CustomLoadingAnimation(
+                        size: 40,
+                        type: LoadingAnimationType.staggeredDotsWave,
+                        showText: false,
+                      )
                     : CustomButton(
                         text: "Proceed to enter my details",
                         color: AppColors.subtitle,
                         icon: null,
                         onPressed: () {
                           if (selectedIndex == null) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text("Please select a business type"),
-                              ),
+                            CustomToast.showWarning(
+                              context,
+                              message: "Please select a business type",
                             );
                             return;
                           }

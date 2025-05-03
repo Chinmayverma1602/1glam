@@ -13,8 +13,10 @@ import 'package:glam1/services/api_service.dart';
 import 'package:glam1/widgets/CustomButton.dart';
 import 'package:glam1/widgets/CustomDistanceSlider.dart';
 import 'package:glam1/widgets/CustomHeader.dart';
+import 'package:glam1/widgets/CustomLoadingAnimation.dart';
 import 'package:glam1/widgets/CustomSubtitle.dart';
 import 'package:glam1/widgets/CustomTitle.dart';
+import 'package:glam1/widgets/CustomToast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:http/http.dart' as http;
@@ -107,8 +109,9 @@ class _TravellingInfoPageState extends State<TravellingInfoPage> {
     } catch (e) {
       print(e);
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error fetching location: $e')),
+      CustomToast.showError(
+        context,
+        message: 'Error fetching location: $e',
       );
     } finally {
       setState(() {
@@ -187,9 +190,9 @@ class _TravellingInfoPageState extends State<TravellingInfoPage> {
       }
     } catch (e) {
       print('Error fetching address from geocoding: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content: Text('Could not determine address from your location')),
+      CustomToast.showWarning(
+        context,
+        message: 'Could not determine address from your location',
       );
     }
   }
@@ -199,13 +202,17 @@ class _TravellingInfoPageState extends State<TravellingInfoPage> {
         cityController.text.isEmpty ||
         zipController.text.isEmpty ||
         selectedState == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill all required fields')),
+      CustomToast.showWarning(
+        context,
+        message: 'Please fill all required fields',
       );
       return;
     }
 
     setState(() => isLoading = true);
+    showLoadingDialog(context,
+        text: "Saving address...",
+        type: LoadingAnimationType.staggeredDotsWave);
 
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -229,21 +236,41 @@ class _TravellingInfoPageState extends State<TravellingInfoPage> {
       );
 
       final savedAddress = await _addressService.saveAddress(address);
+
+      // Dismiss loading dialog before navigation
+      dismissLoadingDialog(context);
+      setState(() => isLoading = false);
+
       if (savedAddress != null) {
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => TravellingInfoPage(
-                      fullAddress: address.toString(),
-                    )));
+        CustomToast.showSuccess(
+          context,
+          message: 'Address saved successfully',
+        );
+
+        // Add a small delay to ensure toast shows before navigation
+        Future.delayed(Duration(milliseconds: 300), () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => TravellingInfoPage(
+                        fullAddress: address.toString(),
+                      )));
+        });
+      } else {
+        CustomToast.showError(
+          context,
+          message: 'Failed to save address',
+        );
       }
     } catch (e) {
       print(e);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('$e')),
-      );
-    } finally {
+      dismissLoadingDialog(context);
       setState(() => isLoading = false);
+
+      CustomToast.showError(
+        context,
+        message: '$e',
+      );
     }
   }
 
@@ -264,16 +291,17 @@ class _TravellingInfoPageState extends State<TravellingInfoPage> {
   void _submitTravelFee() async {
     // Validate inputs first
     if (_paymentController.dropDownValue == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Please select a payment method")),
+      CustomToast.showWarning(
+        context,
+        message: "Please select a payment method",
       );
       return;
     }
 
     if (_travelFeeController.dropDownValue == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content: Text("Please select a travel fee type (per km/mile)")),
+      CustomToast.showWarning(
+        context,
+        message: "Please select a travel fee type (per km/mile)",
       );
       return;
     }
@@ -282,25 +310,11 @@ class _TravellingInfoPageState extends State<TravellingInfoPage> {
     setState(() => isLoading = true);
 
     try {
-      // Show a progress dialog
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (BuildContext context) {
-          return Dialog(
-            child: Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  CircularProgressIndicator(color: AppColors.primary),
-                  SizedBox(height: 20),
-                  Text("Saving travel fee information...")
-                ],
-              ),
-            ),
-          );
-        },
+      // Show a modern loading dialog
+      showLoadingDialog(
+        context,
+        text: "Saving travel fee information...",
+        type: LoadingAnimationType.staggeredDotsWave,
       );
 
       // Get the user ID from TokenManager instead of email from SharedPreferences
@@ -340,18 +354,16 @@ class _TravellingInfoPageState extends State<TravellingInfoPage> {
       final result = await _travelFeeService.submitTravelFee(travelFee);
 
       // Close the progress dialog
-      Navigator.of(context, rootNavigator: true).pop();
+      dismissLoadingDialog(context);
 
       setState(() => isLoading = false);
 
       if (result != null) {
         // Show a brief success message
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("Travel fee information saved"),
-            backgroundColor: Colors.green,
-            duration: Duration(seconds: 1),
-          ),
+        CustomToast.showSuccess(
+          context,
+          message: "Travel fee information saved",
+          duration: Duration(seconds: 1),
         );
 
         // Always proceed to the next screen, even if we had to use the fallback
@@ -366,36 +378,81 @@ class _TravellingInfoPageState extends State<TravellingInfoPage> {
         showDialog(
           context: context,
           builder: (BuildContext context) {
-            return AlertDialog(
-              title: Text("Warning"),
-              content: Text(
-                  "Could not save your travel fee information. Do you want to proceed anyway?"),
-              actions: [
-                TextButton(
-                  child: Text("No"),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
+            return Dialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.warning_amber_rounded,
+                      color: Colors.orange,
+                      size: 48,
+                    ),
+                    SizedBox(height: 16),
+                    Text(
+                      "Warning",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(height: 12),
+                    Text(
+                      "Could not save your travel fee information. Do you want to proceed anyway?",
+                      textAlign: TextAlign.center,
+                    ),
+                    SizedBox(height: 24),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            foregroundColor: AppColors.primary,
+                            side: BorderSide(color: AppColors.primary),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: Text("No"),
+                        ),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.primary,
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => ServicesInfoPage()),
+                            );
+                          },
+                          child: Text("Yes"),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
-                TextButton(
-                  child: Text("Yes"),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => ServicesInfoPage()),
-                    );
-                  },
-                ),
-              ],
+              ),
             );
           },
         );
       }
     } catch (e) {
       // Close any open dialogs
-      Navigator.of(context, rootNavigator: true).pop();
+      dismissLoadingDialog(context);
 
       setState(() => isLoading = false);
       print("Error in _submitTravelFee: $e");
@@ -404,28 +461,83 @@ class _TravellingInfoPageState extends State<TravellingInfoPage> {
       showDialog(
         context: context,
         builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text("Error"),
-            content: Text(
-                "Could not save travel fee information: $e\n\nDo you want to proceed anyway?"),
-            actions: [
-              TextButton(
-                child: Text("No"),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
+          return Dialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.error_outline,
+                    color: Colors.red,
+                    size: 48,
+                  ),
+                  SizedBox(height: 16),
+                  Text(
+                    "Error",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(height: 12),
+                  Text(
+                    "Could not save travel fee information. Do you want to proceed anyway?",
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(height: 8),
+                  Text(
+                    e.toString(),
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey[600],
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(height: 24),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          foregroundColor: AppColors.primary,
+                          side: BorderSide(color: AppColors.primary),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: Text("No"),
+                      ),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primary,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ServicesInfoPage()),
+                          );
+                        },
+                        child: Text("Yes"),
+                      ),
+                    ],
+                  ),
+                ],
               ),
-              TextButton(
-                child: Text("Yes"),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => ServicesInfoPage()),
-                  );
-                },
-              ),
-            ],
+            ),
           );
         },
       );

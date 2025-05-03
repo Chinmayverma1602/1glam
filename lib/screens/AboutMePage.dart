@@ -7,7 +7,9 @@ import 'package:glam1/widgets/CustomButton.dart';
 import 'package:glam1/widgets/CustomCheckBox.dart';
 import 'package:glam1/widgets/CustomCheckBoxAboutMePage.dart';
 import 'package:glam1/widgets/CustomHeader.dart';
+import 'package:glam1/widgets/CustomLoadingAnimation.dart';
 import 'package:glam1/widgets/CustomTextInputField.dart';
+import 'package:glam1/widgets/CustomToast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:glam1/services/api_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -107,8 +109,9 @@ class _AboutMePageState extends State<AboutMePage> {
     if (_businessNameController.text.isEmpty ||
         _ownerNameController.text.isEmpty ||
         _phoneController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Please fill all required fields")),
+      CustomToast.showWarning(
+        context,
+        message: "Please fill all required fields",
       );
       return;
     }
@@ -120,15 +123,24 @@ class _AboutMePageState extends State<AboutMePage> {
 
     // Final check for user ID
     if (_userId == null || _userId!.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("User ID not found. Please log in again.")),
+      CustomToast.showError(
+        context,
+        message: "User ID not found. Please log in again.",
       );
       return;
     }
 
+    // Set loading state and show centered loading dialog
     setState(() {
       _isLoading = true;
     });
+
+    // Show modern loading indicator in the center of screen
+    showLoadingDialog(
+      context,
+      text: "Saving business profile...",
+      type: LoadingAnimationType.staggeredDotsWave,
+    );
 
     print("Creating business profile with user ID: $_userId");
 
@@ -147,28 +159,42 @@ class _AboutMePageState extends State<AboutMePage> {
     try {
       bool success =
           await BusinessProfileService.createBusinessProfile(profile);
+
+      // Dismiss loading dialog and update state
+      dismissLoadingDialog(context);
       setState(() {
         _isLoading = false;
       });
 
       if (success) {
-        Navigator.push(
+        CustomToast.showSuccess(
           context,
-          MaterialPageRoute(builder: (context) => AddressDetailsPage()),
+          message: "Business profile saved successfully",
         );
+
+        // Add a small delay to ensure toast is visible
+        Future.delayed(Duration(milliseconds: 300), () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => AddressDetailsPage()),
+          );
+        });
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content:
-                  Text("Failed to save business profile. Please try again.")),
+        CustomToast.showError(
+          context,
+          message: "Failed to save business profile. Please try again.",
         );
       }
     } catch (e) {
+      // Dismiss loading dialog and update state
+      dismissLoadingDialog(context);
       setState(() {
         _isLoading = false;
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("An error occurred: $e")),
+
+      CustomToast.showError(
+        context,
+        message: "An error occurred: $e",
       );
     }
   }
@@ -315,7 +341,12 @@ class _AboutMePageState extends State<AboutMePage> {
               padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
               child: Center(
                 child: _isLoading
-                    ? CircularProgressIndicator(color: AppColors.subtitle)
+                    ? CustomLoadingAnimation(
+                        size: 40,
+                        color: AppColors.subtitle,
+                        type: LoadingAnimationType.staggeredDotsWave,
+                        showText: false,
+                      )
                     : CustomButton(
                         text: "Continue",
                         color: AppColors.subtitle,

@@ -8,6 +8,8 @@ import 'package:glam1/screens/HomePage.dart';
 import 'package:glam1/services/add_services_controller.dart';
 import 'package:glam1/services/api_service.dart';
 import 'package:glam1/widgets/CustomHeader.dart';
+import 'package:glam1/widgets/CustomLoadingAnimation.dart';
+import 'package:glam1/widgets/CustomToast.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -39,7 +41,12 @@ class _ServicesInfoPageState extends State<ServicesInfoPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: Obx(() => controller.isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? const Center(
+              child: CustomLoadingAnimation(
+                size: 50,
+                type: LoadingAnimationType.staggeredDotsWave,
+              ),
+            )
           : SafeArea(
               child: Padding(
                 padding: const EdgeInsets.all(20.0),
@@ -86,7 +93,11 @@ class _ServicesInfoPageState extends State<ServicesInfoPage> {
                           if (snapshot.connectionState ==
                               ConnectionState.waiting) {
                             return const Center(
-                                child: CircularProgressIndicator());
+                                child: CustomLoadingAnimation(
+                              size: 40,
+                              type: LoadingAnimationType.staggeredDotsWave,
+                              showText: false,
+                            ));
                           }
 
                           if (!snapshot.hasData ||
@@ -321,9 +332,9 @@ class _ServicesInfoPageState extends State<ServicesInfoPage> {
   void _deleteService(String docId, String serviceName) {
     // Skip deletion for demo items
     if (docId.startsWith('demo')) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content: Text("This is a demo service and cannot be deleted.")),
+      CustomToast.showWarning(
+        context,
+        message: "This is a demo service and cannot be deleted.",
       );
       return;
     }
@@ -333,12 +344,14 @@ class _ServicesInfoPageState extends State<ServicesInfoPage> {
         .doc(docId)
         .delete()
         .then((_) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Service '$serviceName' deleted successfully")),
+      CustomToast.showSuccess(
+        context,
+        message: "Service '$serviceName' deleted successfully",
       );
     }).catchError((error) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error deleting service: $error")),
+      CustomToast.showError(
+        context,
+        message: "Error deleting service: $error",
       );
     });
   }
@@ -346,20 +359,31 @@ class _ServicesInfoPageState extends State<ServicesInfoPage> {
   void _navigateToEditService(String docId) {
     // For demo services, show a message
     if (docId.startsWith('demo')) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Demo services cannot be edited.")),
+      CustomToast.showWarning(
+        context,
+        message: "Demo services cannot be edited.",
       );
       return;
     }
 
+    // Show loading indicator while loading service for editing
+    showLoadingDialog(
+      context,
+      text: "Loading service details...",
+      type: LoadingAnimationType.staggeredDotsWave,
+    );
+
     // For real services, navigate to edit page
     controller.editService(docId).then((success) {
+      // Dismiss loading dialog
+      dismissLoadingDialog(context);
+
       if (success) {
         Get.to(() => AddServicesPage());
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text("Failed to load service details for editing")),
+        CustomToast.showError(
+          context,
+          message: "Failed to load service details for editing",
         );
       }
     });
@@ -367,17 +391,11 @@ class _ServicesInfoPageState extends State<ServicesInfoPage> {
 
   void _submitServicesToBackend() async {
     try {
-      // Show loading indicator
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (BuildContext context) {
-          return const Center(
-            child: CircularProgressIndicator(
-              color: AppColors.primary,
-            ),
-          );
-        },
+      // Show loading indicator with modern circular indicator
+      showLoadingDialog(
+        context,
+        text: "Submitting services...",
+        type: LoadingAnimationType.staggeredDotsWave,
       );
 
       // Get token from TokenManager
@@ -401,12 +419,10 @@ class _ServicesInfoPageState extends State<ServicesInfoPage> {
           .get();
 
       if (snapshot.docs.isEmpty) {
-        Navigator.pop(context); // Close loading dialog
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("No services found. Please add services first."),
-            backgroundColor: Colors.red,
-          ),
+        dismissLoadingDialog(context); // Close loading dialog
+        CustomToast.showWarning(
+          context,
+          message: "No services found. Please add services first.",
         );
         return;
       }
@@ -490,39 +506,38 @@ class _ServicesInfoPageState extends State<ServicesInfoPage> {
       );
 
       // Close loading dialog
-      Navigator.pop(context);
+      dismissLoadingDialog(context);
 
       // Handle response
       if (response.statusCode == 200 || response.statusCode == 201) {
         final responseData = jsonDecode(response.body);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            // content: Text(
-            //     responseData['message'] ?? "Service submitted successfully"),
-            content: Text(
-                responseData['message'] ?? "Service submitted successfully"),
-            backgroundColor: Colors.green,
-          ),
+
+        // Show success message using CustomToast
+        CustomToast.showSuccess(
+          context,
+          message: responseData['message'] ?? "Service submitted successfully",
         );
 
-        // Navigate to the next screen or handle success
-        Get.to(() => HomePage(lead: responseData['userService']));
+        // Add a small delay to ensure toast is visible before navigation
+        Future.delayed(Duration(milliseconds: 300), () {
+          // Navigate to the next screen or handle success
+          Get.to(() => HomePage(lead: responseData['userService']));
+        });
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text("Failed to submit services: ${response.body}"),
-            backgroundColor: Colors.red,
-          ),
+        // Show error message using CustomToast
+        CustomToast.showError(
+          context,
+          message: "Failed to submit services: ${response.body}",
         );
       }
     } catch (e) {
       // Close loading dialog if open
-      Navigator.pop(context);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("Error: $e"),
-          backgroundColor: Colors.red,
-        ),
+      dismissLoadingDialog(context);
+
+      // Show error message using CustomToast
+      CustomToast.showError(
+        context,
+        message: "Error: $e",
       );
     }
   }
