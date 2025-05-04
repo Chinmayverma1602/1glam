@@ -24,6 +24,7 @@ import 'dart:convert';
 
 class TravellingInfoPage extends StatefulWidget {
   final String fullAddress;
+
   const TravellingInfoPage({
     super.key,
     required this.fullAddress,
@@ -43,6 +44,7 @@ class _TravellingInfoPageState extends State<TravellingInfoPage> {
   String? selectedState;
   bool isLoading = false;
   bool isLoadingLocation = false;
+  late String fullAddress;
 
   // Text controllers
   final TextEditingController addressLine1Controller = TextEditingController();
@@ -249,12 +251,8 @@ class _TravellingInfoPageState extends State<TravellingInfoPage> {
 
         // Add a small delay to ensure toast shows before navigation
         Future.delayed(Duration(milliseconds: 300), () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => TravellingInfoPage(
-                        fullAddress: address.toString(),
-                      )));
+          Get.toNamed('/travelInfo',
+              arguments: {'fullAddress': address.toString()});
         });
       } else {
         CustomToast.showError(
@@ -277,8 +275,17 @@ class _TravellingInfoPageState extends State<TravellingInfoPage> {
   @override
   void initState() {
     super.initState();
+    // Get the fullAddress from widget or from GetX arguments
+    Map<String, dynamic>? args = Get.arguments;
+    fullAddress = widget.fullAddress.isNotEmpty
+        ? widget.fullAddress
+        : args != null && args.containsKey('fullAddress')
+            ? args['fullAddress']
+            : '';
+
     _paymentController = SingleValueDropDownController();
     _travelFeeController = SingleValueDropDownController();
+    addressController.text = fullAddress;
   }
 
   @override
@@ -368,10 +375,7 @@ class _TravellingInfoPageState extends State<TravellingInfoPage> {
 
         // Always proceed to the next screen, even if we had to use the fallback
         Future.delayed(Duration(milliseconds: 500), () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => ServicesInfoPage()),
-          );
+          Get.toNamed('/services');
         });
       } else {
         // If API failed completely, show an error but still allow proceeding
@@ -433,11 +437,7 @@ class _TravellingInfoPageState extends State<TravellingInfoPage> {
                           ),
                           onPressed: () {
                             Navigator.of(context).pop();
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => ServicesInfoPage()),
-                            );
+                            Get.toNamed('/services');
                           },
                           child: Text("Yes"),
                         ),
@@ -525,11 +525,7 @@ class _TravellingInfoPageState extends State<TravellingInfoPage> {
                         ),
                         onPressed: () {
                           Navigator.of(context).pop();
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => ServicesInfoPage()),
-                          );
+                          Get.toNamed('/services');
                         },
                         child: Text("Yes"),
                       ),

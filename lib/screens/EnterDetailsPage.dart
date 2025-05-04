@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:http/http.dart' as http;
+import 'package:get/get.dart';
 import 'package:glam1/constants/AppColors.dart';
 import 'package:glam1/screens/AboutMePage.dart';
 import 'package:glam1/widgets/CustomButton.dart';
@@ -250,15 +251,10 @@ class _EnterDetailsPageState extends State<EnterDetailsPage> {
                             );
                             return;
                           }
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => AboutMePage(
-                                bussinessType: selectedBusiness,
-                                selectedEmail: selectedEmail ?? "",
-                              ),
-                            ),
-                          );
+                          Get.toNamed('/about', arguments: {
+                            'bussinessType': selectedBusiness,
+                            'selectedEmail': selectedEmail ?? "",
+                          });
                         },
                       ),
               ),

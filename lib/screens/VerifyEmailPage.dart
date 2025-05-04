@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:glam1/constants/AppColors.dart';
 import 'package:glam1/screens/EnterDetailsPage.dart';
 import 'package:glam1/services/api_service.dart';
@@ -83,10 +85,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
     await Future.delayed(const Duration(milliseconds: 500));
     setState(() => _isLoading = false);
 
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const EnterDetailsPage()),
-    );
+    Get.toNamed('/details');
   }
 
   void _resendCode() {
@@ -131,7 +130,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                         child: IconButton(
                           icon: const Icon(Icons.arrow_back,
                               color: Colors.purple),
-                          onPressed: () => Navigator.pop(context),
+                          onPressed: () => Get.back(),
                         ),
                       ),
                       const SizedBox(height: 10),
@@ -259,7 +258,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                       const SizedBox(height: 30),
                       GestureDetector(
                         onTap: () {
-                          Navigator.pop(context);
+                          Get.back();
                         },
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,

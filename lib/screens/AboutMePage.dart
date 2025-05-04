@@ -13,6 +13,7 @@ import 'package:glam1/widgets/CustomToast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:glam1/services/api_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:get/get.dart';
 
 class AboutMePage extends StatefulWidget {
   final bussinessType;
@@ -32,6 +33,8 @@ class _AboutMePageState extends State<AboutMePage> {
   String _selectedCode = '+91';
   bool _isLoading = false;
   String? _userId;
+  String? _businessType;
+  String? _selectedEmail;
 
   // List of country codes with flags
   final List<Map<String, String>> countryList = [
@@ -56,6 +59,14 @@ class _AboutMePageState extends State<AboutMePage> {
   @override
   void initState() {
     super.initState();
+
+    // Get arguments from GetX if available
+    Map<String, dynamic>? args = Get.arguments;
+    _businessType =
+        widget.bussinessType ?? (args != null ? args['bussinessType'] : null);
+    _selectedEmail =
+        widget.selectedEmail ?? (args != null ? args['selectedEmail'] : null);
+
     _fetchUserId();
     // Set default values for testing if needed
     _businessNameController.text = "Test Business";
@@ -174,10 +185,7 @@ class _AboutMePageState extends State<AboutMePage> {
 
         // Add a small delay to ensure toast is visible
         Future.delayed(Duration(milliseconds: 300), () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => AddressDetailsPage()),
-          );
+          Get.toNamed('/address');
         });
       } else {
         CustomToast.showError(

@@ -64,7 +64,23 @@ class MyApp extends StatelessWidget {
                 )),
         GetPage(name: '/leads', page: () => const LeadsPage()),
         // GetPage(name: '/settings', page: () => const HomePage()),
-        GetPage(name: '/about', page: () => const AboutMePage()),
+        GetPage(
+            name: '/about',
+            page: () {
+              final args = Get.arguments;
+              final businessType =
+                  args != null && args.containsKey('bussinessType')
+                      ? args['bussinessType']
+                      : null;
+              final selectedEmail =
+                  args != null && args.containsKey('selectedEmail')
+                      ? args['selectedEmail']
+                      : null;
+              return AboutMePage(
+                bussinessType: businessType,
+                selectedEmail: selectedEmail,
+              );
+            }),
         GetPage(name: '/address', page: () => const AddressDetailsPage()),
         // GetPage(name: '/bundle', page: () => const BundleServicePage()),
         GetPage(name: '/details', page: () => const EnterDetailsPage()),
@@ -74,9 +90,14 @@ class MyApp extends StatelessWidget {
         GetPage(name: '/verify', page: () => const VerifyEmailPage()),
         GetPage(
             name: '/travelInfo',
-            page: () => const TravellingInfoPage(
-                  fullAddress: "",
-                )),
+            page: () {
+              final args = Get.arguments;
+              final fullAddress =
+                  args != null && args.containsKey('fullAddress')
+                      ? args['fullAddress'] as String
+                      : "";
+              return TravellingInfoPage(fullAddress: fullAddress);
+            }),
         GetPage(name: '/calender', page: () => const CalenderPage()),
         GetPage(
             name: '/PreviewPage', page: () => const EstimatePreviewScreen()),

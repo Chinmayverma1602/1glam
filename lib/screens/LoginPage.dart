@@ -7,10 +7,12 @@ import 'package:glam1/services/api_service.dart';
 import 'package:glam1/widgets/CustomButton.dart';
 import 'package:glam1/widgets/CustomButton2.dart';
 import 'package:glam1/widgets/CustomHeader.dart';
+import 'package:glam1/widgets/CustomLoadingAnimation.dart';
 import 'package:glam1/widgets/CustomTextInputField.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:glam1/widgets/CustomToast.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -27,10 +29,13 @@ class _LoginPageState extends State<LoginPage> {
   final GoogleSignIn _googleSignIn = GoogleSignIn();
   bool _isLoading = false;
   bool _isGoogleLoading = false;
+  bool _isFacebookLoading = false;
 
   Future<void> _handleFacebookSignIn() async {
     try {
-      setState(() => _isLoading = true);
+      setState(() {
+        _isFacebookLoading = true;
+      });
 
       // Trigger Facebook login
       final LoginResult result = await FacebookAuth.instance.login();
@@ -71,10 +76,9 @@ class _LoginPageState extends State<LoginPage> {
             });
           }
 
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-                content:
-                    Text("Signed in with Facebook as ${user.displayName}")),
+          CustomToast.showSuccess(
+            context,
+            message: "Signed in with Facebook as ${user.displayName}",
           );
 
           // Navigate to VerifyEmailPage
@@ -87,13 +91,14 @@ class _LoginPageState extends State<LoginPage> {
         throw Exception("Facebook login failed: ${result.status}");
       }
     } catch (e) {
-      setState(() => _isLoading = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Facebook sign-in failed: ${e.toString()}")),
+      setState(() => _isFacebookLoading = false);
+      CustomToast.showError(
+        context,
+        message: "Facebook sign-in failed: ${e.toString()}",
       );
       print("Facebook sign-in error: $e");
     } finally {
-      setState(() => _isLoading = false);
+      setState(() => _isFacebookLoading = false);
     }
   }
 
@@ -155,9 +160,9 @@ class _LoginPageState extends State<LoginPage> {
           });
         }
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content: Text("Signed in with Google as ${user.displayName}")),
+        CustomToast.showSuccess(
+          context,
+          message: "Signed in with Google as ${user.displayName}",
         );
 
         // Navigate to the appropriate screen
@@ -168,8 +173,9 @@ class _LoginPageState extends State<LoginPage> {
       }
     } catch (e) {
       setState(() => _isGoogleLoading = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Google sign-in failed: ${e.toString()}")),
+      CustomToast.showError(
+        context,
+        message: "Google sign-in failed: ${e.toString()}",
       );
       print("Google sign-in error: $e");
     }
@@ -177,15 +183,17 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<void> _handleLogin() async {
     if (_nameController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Please enter your name")),
+      CustomToast.showWarning(
+        context,
+        message: "Please enter your name",
       );
       return;
     }
 
     if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Please enter email and password")),
+      CustomToast.showWarning(
+        context,
+        message: "Please enter email and password",
       );
       return;
     }
@@ -203,24 +211,24 @@ class _LoginPageState extends State<LoginPage> {
 
       if (response != null && response.containsKey("token")) {
         print("Success Response: $response");
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content:
-                  Text("Account created for ${response['user']['email']}")),
+        CustomToast.showSuccess(
+          context,
+          message: "Account created for ${response['user']['email']}",
         );
         Navigator.push(context,
             MaterialPageRoute(builder: (context) => VerifyEmailPage()));
       } else {
         print("Failed Response: $response");
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content: Text(response?["error"] ?? "Failed to create account")),
+        CustomToast.showError(
+          context,
+          message: response?["error"] ?? "Failed to create account",
         );
       }
     } catch (e) {
       setState(() => _isLoading = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error: ${e.toString()}")),
+      CustomToast.showError(
+        context,
+        message: "Error: ${e.toString()}",
       );
     }
   }
@@ -302,10 +310,36 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   const SizedBox(height: 20),
                   CustomButton(
-                    text: _isLoading ? "Creating Account..." : "Continue",
+                    text: _isLoading ? "" : "Continue",
                     color: AppColors.subtitle,
                     onPressed: _isLoading ? null : _handleLogin,
                   ),
+
+                  // Display loading animation separately when loading
+                  if (_isLoading)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 10),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          CustomLoadingAnimation(
+                            size: 24,
+                            color: AppColors.subtitle,
+                            type: LoadingAnimationType.staggeredDotsWave,
+                            showText: false,
+                          ),
+                          SizedBox(width: 10),
+                          Text(
+                            "Creating Account...",
+                            style: TextStyle(
+                              color: AppColors.subtitle,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
                   const SizedBox(height: 16),
                   const Text(
                     "or continue with",
@@ -313,9 +347,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   const SizedBox(height: 16),
                   CustomButton(
-                    text: _isGoogleLoading
-                        ? "Signing in..."
-                        : "Continue with Google",
+                    text: "Continue with Google",
                     borderThickness: 0.4,
                     svgIcon: 'assets/images/google.svg',
                     textColor: Colors.black,
@@ -325,6 +357,32 @@ class _LoginPageState extends State<LoginPage> {
                     icon: Icons.abc,
                     onPressed: _isGoogleLoading ? null : _handleGoogleSignIn,
                   ),
+
+                  // Display Google loading animation when Google is loading
+                  if (_isGoogleLoading)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 10),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          CustomLoadingAnimation(
+                            size: 24,
+                            color: AppColors.primary,
+                            type: LoadingAnimationType.staggeredDotsWave,
+                            showText: false,
+                          ),
+                          SizedBox(width: 10),
+                          Text(
+                            "Signing in with Google...",
+                            style: TextStyle(
+                              color: AppColors.primary,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
                   const SizedBox(height: 12),
                   CustomButton(
                     text: "Continue with Apple",
@@ -335,13 +393,39 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   const SizedBox(height: 12),
                   CustomButton(
-                    text:
-                        _isLoading ? "Signing in..." : "Continue with Facebook",
+                    text: "Continue with Facebook",
                     icon: Icons.facebook,
                     color: AppColors.facebookBlue,
                     iconColor: Colors.white,
-                    onPressed: _isLoading ? null : _handleFacebookSignIn,
+                    onPressed:
+                        _isFacebookLoading ? null : _handleFacebookSignIn,
                   ),
+
+                  // Display Facebook loading animation when Facebook is loading
+                  if (_isFacebookLoading)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 10),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          CustomLoadingAnimation(
+                            size: 24,
+                            color: AppColors.facebookBlue,
+                            type: LoadingAnimationType.staggeredDotsWave,
+                            showText: false,
+                          ),
+                          SizedBox(width: 10),
+                          Text(
+                            "Signing in with Facebook...",
+                            style: TextStyle(
+                              color: AppColors.facebookBlue,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
                   const SizedBox(height: 20),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,

@@ -17,6 +17,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:glam1/services/api_service.dart';
 import 'package:glam1/constants/api_constants.dart';
+import 'package:get/get.dart';
 
 class AddressDetailsPage extends StatefulWidget {
   const AddressDetailsPage({super.key});
@@ -377,12 +378,8 @@ class _AddressDetailsPageState extends State<AddressDetailsPage> {
 
         // Short delay to ensure toast is visible before navigation
         Future.delayed(Duration(milliseconds: 300), () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => TravellingInfoPage(
-                        fullAddress: address.toString(),
-                      )));
+          Get.toNamed('/travelInfo',
+              arguments: {'fullAddress': address.toString()});
         });
       } else {
         CustomToast.showError(
