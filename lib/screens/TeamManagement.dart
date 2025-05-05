@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:glam1/constants/AppColors.dart';
 import 'package:glam1/screens/AddTeamMembersPage.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class TeamMembersScreen extends StatelessWidget {
   const TeamMembersScreen({Key? key}) : super(key: key);
@@ -8,7 +10,7 @@ class TeamMembersScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xffF9FAFB),
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
@@ -16,105 +18,141 @@ class TeamMembersScreen extends StatelessWidget {
           icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text('Team Members',
-            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+        title: Text(
+          'Team Members',
+          style: GoogleFonts.poppins(
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+            color: AppColors.title,
+          ),
+        ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.add, color: Colors.purple),
+            icon: const Icon(Icons.add, color: AppColors.primary),
             onPressed: () {
               Get.to(() => AddTeamMembersPage());
             },
           ),
         ],
       ),
-      body: Column(
-        children: [
-          // Stats card
-          Container(
-            margin: const EdgeInsets.all(16),
-            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.1),
-                  spreadRadius: 1,
-                  blurRadius: 5,
-                ),
-              ],
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                _buildStatItem('12', 'Total', Colors.purple),
-                _buildStatItem('8', 'Active', Colors.green),
-                _buildStatItem('4', 'Pending', Colors.orange),
-              ],
-            ),
-          ),
+      body: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
+        child: Column(
+          children: [
+            // Stats card
+            _buildStatsCard(),
 
-          // Team members list
-          Expanded(
-            child: ListView(
-              children: [
-                _buildMemberItem(
-                  name: 'Sarah Johnson',
-                  role: 'Senior Stylist',
-                  imageUrl: 'https://randomuser.me/api/portraits/women/44.jpg',
-                  status: 'Active',
-                  statusColor: Colors.green,
-                  joinDate: 'Joined: Jan 15, 2025',
-                ),
-                _buildMemberItem(
-                  name: 'Mike Chen',
-                  role: 'Makeup Artist',
-                  imageUrl: 'https://randomuser.me/api/portraits/men/32.jpg',
-                  status: 'Pending',
-                  statusColor: Colors.orange,
-                  joinDate: 'Invited: Feb 1, 2025',
-                  isPending: true,
-                ),
-              ],
+            // Team members list
+            _buildMemberItem(
+              name: 'Sarah Johnson',
+              role: 'Senior Stylist',
+              imageUrl: 'https://randomuser.me/api/portraits/women/44.jpg',
+              status: 'Active',
+              statusColor: Colors.green,
+              joinDate: 'Joined: Jan 15, 2025',
             ),
-          ),
+            _buildMemberItem(
+              name: 'Mike Chen',
+              role: 'Makeup Artist',
+              imageUrl: 'https://randomuser.me/api/portraits/men/32.jpg',
+              status: 'Pending',
+              statusColor: Colors.orange,
+              joinDate: 'Invited: Feb 1, 2025',
+              isPending: true,
+            ),
 
-          // Add member input
-          Container(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    decoration: InputDecoration(
-                      hintText: 'Enter email address',
-                      hintStyle: TextStyle(color: Colors.grey[400]),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide.none,
-                      ),
-                      filled: true,
-                      fillColor: Colors.grey[100],
-                      contentPadding:
-                          const EdgeInsets.symmetric(horizontal: 16),
-                    ),
+            const SizedBox(height: 16),
+          ],
+        ),
+      ),
+      // Add member input at bottom
+      bottomSheet: Container(
+        color: Colors.white,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Row(
+          children: [
+            Expanded(
+              child: TextField(
+                decoration: InputDecoration(
+                  hintText: 'Enter email address',
+                  hintStyle: GoogleFonts.poppins(
+                    color: Colors.grey.shade400,
+                    fontSize: 14,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
+                  filled: true,
+                  fillColor: Colors.grey.shade100,
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                  prefixIcon: Icon(
+                    Icons.email_outlined,
+                    color: AppColors.primary.withOpacity(0.7),
+                    size: 20,
                   ),
                 ),
-                const SizedBox(width: 12),
-                Container(
-                  width: 48,
-                  height: 48,
-                  decoration: BoxDecoration(
-                    color: Colors.purple,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const Icon(Icons.add, color: Colors.white),
-                ),
-              ],
+              ),
             ),
+            const SizedBox(width: 12),
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: AppColors.primary,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.primary.withOpacity(0.3),
+                    blurRadius: 8,
+                    spreadRadius: 1,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: const Icon(Icons.add, color: Colors.white),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStatsCard() {
+    return Container(
+      margin: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 24),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 6,
+            spreadRadius: 1,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          _buildStatItem('12', 'Total', AppColors.primary),
+          _buildStatDivider(),
+          _buildStatItem('8', 'Active', Colors.green),
+          _buildStatDivider(),
+          _buildStatItem('4', 'Pending', Colors.orange),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatDivider() {
+    return Container(
+      height: 40,
+      width: 1,
+      color: Colors.grey.shade200,
     );
   }
 
@@ -123,7 +161,7 @@ class TeamMembersScreen extends StatelessWidget {
       children: [
         Text(
           count,
-          style: TextStyle(
+          style: GoogleFonts.poppins(
             fontSize: 24,
             fontWeight: FontWeight.bold,
             color: color,
@@ -132,9 +170,9 @@ class TeamMembersScreen extends StatelessWidget {
         const SizedBox(height: 4),
         Text(
           label,
-          style: TextStyle(
+          style: GoogleFonts.poppins(
             fontSize: 14,
-            color: Colors.grey[600],
+            color: AppColors.secondaryText,
           ),
         ),
       ],
@@ -151,25 +189,38 @@ class TeamMembersScreen extends StatelessWidget {
     bool isPending = false,
   }) {
     return Container(
-      margin: const EdgeInsets.all(16),
-      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
-      //     padding: const EdgeInsets.all(16),
+      margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(17),
+        borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            spreadRadius: 2,
+            blurRadius: 6,
+            spreadRadius: 1,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
       child: Row(
         children: [
-          CircleAvatar(
-            radius: 24,
-            backgroundImage: NetworkImage(imageUrl),
+          Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(25),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 4,
+                  spreadRadius: 1,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: CircleAvatar(
+              radius: 25,
+              backgroundImage: NetworkImage(imageUrl),
+            ),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -178,25 +229,26 @@ class TeamMembersScreen extends StatelessWidget {
               children: [
                 Text(
                   name,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
+                  style: GoogleFonts.poppins(
+                    fontWeight: FontWeight.w600,
                     fontSize: 16,
+                    color: AppColors.text,
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   role,
-                  style: TextStyle(
-                    color: Colors.grey[600],
+                  style: GoogleFonts.poppins(
+                    color: AppColors.secondaryText,
                     fontSize: 14,
                   ),
                 ),
                 const SizedBox(height: 6),
                 Text(
                   joinDate,
-                  style: TextStyle(
-                    color: Colors.grey[600],
-                    fontSize: 14,
+                  style: GoogleFonts.poppins(
+                    color: AppColors.secondaryText,
+                    fontSize: 12,
                   ),
                 ),
               ],
@@ -209,16 +261,20 @@ class TeamMembersScreen extends StatelessWidget {
                 padding: const EdgeInsets.only(bottom: 12.0),
                 child: Container(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 7,
+                    horizontal: 12,
+                    vertical: 6,
                   ),
                   decoration: BoxDecoration(
                     color: statusColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: statusColor.withOpacity(0.3),
+                      width: 1,
+                    ),
                   ),
                   child: Text(
                     status,
-                    style: TextStyle(
+                    style: GoogleFonts.poppins(
                       color: statusColor,
                       fontSize: 12,
                       fontWeight: FontWeight.w500,
@@ -227,20 +283,38 @@ class TeamMembersScreen extends StatelessWidget {
                 ),
               ),
               if (isPending)
-                Padding(
-                  padding: const EdgeInsets.only(top: 8),
-                  child: Row(
-                    children: [
-                      Icon(Icons.close, color: Colors.red, size: 20),
-                      const SizedBox(width: 8),
-                      Icon(Icons.send, color: Colors.purple, size: 20),
-                    ],
-                  ),
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        color: Colors.red.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child:
+                          const Icon(Icons.close, color: Colors.red, size: 16),
+                    ),
+                    const SizedBox(width: 8),
+                    Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        color: AppColors.primary.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child:
+                          Icon(Icons.send, color: AppColors.primary, size: 16),
+                    ),
+                  ],
                 ),
               if (!isPending)
-                Padding(
-                  padding: const EdgeInsets.only(top: 8),
-                  child: Icon(Icons.more_vert, color: Colors.grey[400]),
+                Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade100,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Icon(Icons.more_vert,
+                      color: Colors.grey.shade600, size: 18),
                 ),
             ],
           ),

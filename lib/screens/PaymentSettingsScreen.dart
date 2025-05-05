@@ -4,6 +4,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:glam1/constants/AppColors.dart';
 import 'package:glam1/widgets/BottomNavBar.dart';
 import 'package:glam1/widgets/CustomeTextfield.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class PaymentSettingsScreen extends StatefulWidget {
   const PaymentSettingsScreen({super.key});
@@ -60,50 +61,50 @@ class _PaymentSettingsScreenState extends State<PaymentSettingsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey.shade100,
+      backgroundColor: const Color(0xffF9FAFB),
       appBar: AppBar(
-        // centerTitle: false,
         title: Text(
           'Payment Settings',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+          style: GoogleFonts.poppins(
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+            color: AppColors.title,
+          ),
         ),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () => Navigator.pop(context),
         ),
+        backgroundColor: Colors.white,
+        elevation: 0,
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(16.0),
+        physics: const BouncingScrollPhysics(),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
+            _buildSectionTitle('Due Date Configuration'),
+            const SizedBox(height: 12),
+            _buildContainer([
+              CustomTextField(
+                label: 'Days',
+                hintText: 'Enter days...',
+                controller: daysController,
               ),
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                spacing: 2,
+              const SizedBox(height: 16),
+              Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildSectionTitle('Due Date Configuration'),
-                  CustomTextField(
-                    label: 'Days',
-                    hintText: 'Enter days...',
-                    controller: daysController,
-                  ),
-                  // SizedBox(height: 17,)
                   Text(
                     "Due Date Type",
-                    style: TextStyle(
+                    style: GoogleFonts.poppins(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
-                      color: Color(0xff374151),
+                      color: AppColors.text,
                     ),
                   ),
-
+                  const SizedBox(height: 8),
                   _buildToggleButtons(
                       ['Before', 'After', 'On'], selectedDueDateIndex,
                       (newIndex) {
@@ -111,205 +112,157 @@ class _PaymentSettingsScreenState extends State<PaymentSettingsScreen> {
                       selectedDueDateIndex = newIndex;
                     });
                   }),
-                  SizedBox(
-                    height: 4,
-                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
                   Text(
                     'Reference Date',
-                    style: TextStyle(
+                    style: GoogleFonts.poppins(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
-                      color: Color(0xff374151),
+                      color: AppColors.text,
                     ),
                   ),
+                  const SizedBox(height: 8),
                   _buildDropdownField('Booking Date'),
                 ],
               ),
-            ),
-            SizedBox(
-              height: 24,
-            ),
-            Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
+            ]),
+            const SizedBox(height: 24),
+            _buildSectionTitle('Payment Gateway'),
+            const SizedBox(height: 12),
+            _buildContainer([
+              _buildToggleOption(
+                  title: "Stripe",
+                  value: isStripeEnabled,
+                  svgPath: 'assets/images/stripe.svg',
+                  onChanged: (newValue) {
+                    setState(() {
+                      isStripeEnabled = newValue;
+                    });
+                  }),
+              const SizedBox(height: 16),
+              _buildToggleOption(
+                  title: "PayPal",
+                  value: ispaypalEnabled,
+                  svgPath: 'assets/images/paypal1.svg',
+                  onChanged: (newValue) {
+                    setState(() {
+                      ispaypalEnabled = newValue;
+                    });
+                  }),
+            ]),
+            const SizedBox(height: 24),
+            _buildSectionTitle('Deposit Configuration'),
+            const SizedBox(height: 12),
+            _buildContainer([
+              CustomTextField(
+                label: 'Deposit Percentage',
+                hintText: 'Enter percentage...',
+                controller: depositController,
+                suffix: '%',
               ),
-              padding: const EdgeInsets.all(16),
-              child: Column(
+            ]),
+            const SizedBox(height: 24),
+            _buildSectionTitle('Estimate Configuration'),
+            const SizedBox(height: 12),
+            _buildContainer([
+              CustomTextField(
+                label: 'Expiry Days',
+                hintText: 'Enter expiry days...',
+                controller: expiryDaysController,
+              ),
+            ]),
+            const SizedBox(height: 24),
+            _buildSectionTitle('Default Terms & Notes'),
+            const SizedBox(height: 12),
+            _buildContainer([
+              CustomTextField(
+                label: 'Terms',
+                hintText: 'Enter default terms...',
+                controller: termsController,
+                maxLines: 4,
+              ),
+              CustomTextField(
+                label: 'Notes',
+                hintText: 'Enter default notes...',
+                controller: notesController,
+                maxLines: 4,
+              ),
+            ]),
+            const SizedBox(height: 24),
+            _buildSectionTitle('Reminder Settings'),
+            const SizedBox(height: 12),
+            _buildContainer([
+              Text(
+                'Estimate Reminders',
+                style: GoogleFonts.poppins(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.text,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildSectionTitle('Payment Gateway'),
-                  _buildToggleOption(
-                      title: "Stripe",
-                      value: isStripeEnabled,
-                      svgPath: 'assets/images/stripe.svg',
-                      onChanged: (newValue) {
-                        setState(() {
-                          isStripeEnabled = newValue;
-                        });
-                      }),
-                  SizedBox(
-                    height: 16,
-                  ),
-                  _buildToggleOption(
-                      title: "PayPal",
-                      value: ispaypalEnabled,
-                      svgPath: 'assets/images/paypal1.svg',
-                      onChanged: (newValue) {
-                        setState(() {
-                          ispaypalEnabled = newValue;
-                        });
-                      }),
-                ],
-              ),
-            ),
-            SizedBox(
-              height: 24,
-            ),
-            Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildSectionTitle('Deposit Configuration'),
-                  CustomTextField(
-                    label: 'Deposit Percentage',
-                    hintText: 'Enter percentage...',
-                    controller: depositController,
-                    suffix: '%',
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(
-              height: 24,
-            ),
-            Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildSectionTitle('Estimate Configuration'),
-                  
-                  CustomTextField(
-                    label: 'Expiry Days',
-                    hintText: 'Enter expiry days...',
-                    controller: expiryDaysController,
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(
-              height: 24,
-            ),
-            Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildSectionTitle('Default Terms & Notes'),
-                  CustomTextField(
-                    label: 'Terms',
-                    hintText: 'Enter default terms...',
-                    controller: termsController,
-                    maxLines: 4,
-                  ),
-                  CustomTextField(
-                    label: 'Notes',
-                    hintText: 'Enter default notes...',
-                    controller: notesController,
-                    maxLines: 4,
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(
-              height: 24,
-            ),
-            Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildSectionTitle('Reminder Settings'),
-                  Text(
-                    'Estimate Reminders',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      color: Color(0xff374151),
-                    ),
-                  ),
-                  SizedBox(height: 18,),
                   Text(
                     "Schedule",
-                    style: TextStyle(
+                    style: GoogleFonts.poppins(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
-                      color: Color(0xff374151),
+                      color: AppColors.text,
                     ),
                   ),
+                  const SizedBox(height: 8),
                   _buildDropdownField('Every 3 days'),
-                  CustomTextField(
-                    label: 'Message Template',
-                    hintText: 'Enter reminder message...',
-                    controller: estimateMessageController,
-                    maxLines: 3,
-                  ),
-                  SizedBox(height: 10,),
-                  Text(
-                    'Invoice Reminders',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      color: Color(0xff374151),
-                    ),
-                  ),
-                  SizedBox(height: 18,),
-                  Text(
-                    "Schedule",
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: Color(0xff374151),
-                    ),
-                  ),
-                  _buildDropdownField('3 days before due date'),
-                  CustomTextField(
-                    label: 'Message Template',
-                    hintText: 'Enter reminder message...',
-                    controller: invoiceMessageController,
-                    maxLines: 3,
-                  ),
                 ],
               ),
-            ),
+              CustomTextField(
+                label: 'Message Template',
+                hintText: 'Enter reminder message...',
+                controller: estimateMessageController,
+                maxLines: 3,
+              ),
+              const SizedBox(height: 24),
+              Text(
+                'Invoice Reminders',
+                style: GoogleFonts.poppins(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.text,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Schedule",
+                    style: GoogleFonts.poppins(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: AppColors.text,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  _buildDropdownField('3 days before due date'),
+                ],
+              ),
+              CustomTextField(
+                label: 'Message Template',
+                hintText: 'Enter reminder message...',
+                controller: invoiceMessageController,
+                maxLines: 3,
+              ),
+            ]),
+            const SizedBox(height: 40),
           ],
         ),
       ),
-
-
       bottomNavigationBar: BottomNavBar(
         currentIndex: 4,
         onTap: _onItemTapped,
@@ -318,11 +271,37 @@ class _PaymentSettingsScreenState extends State<PaymentSettingsScreen> {
   }
 
   Widget _buildSectionTitle(String title) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Text(
-        title,
-        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+    return Text(
+      title,
+      style: GoogleFonts.poppins(
+        fontSize: 18,
+        fontWeight: FontWeight.w600,
+        color: AppColors.title,
+      ),
+    );
+  }
+
+  Widget _buildContainer(List<Widget> children) {
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 6,
+            spreadRadius: 1,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: children,
+        ),
       ),
     );
   }
@@ -335,31 +314,47 @@ class _PaymentSettingsScreenState extends State<PaymentSettingsScreen> {
       'Every 3 days'
     ];
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.only(bottom: 16),
       child: DropdownButtonFormField<String>(
         decoration: InputDecoration(
-          // labelText: label,
-          // border: OutlineInputBorder(),
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(12),
             borderSide: BorderSide(color: Colors.grey.shade300, width: 1.5),
           ),
           enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(12),
             borderSide: BorderSide(color: Colors.grey.shade300, width: 1.5),
           ),
           focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8),
-            borderSide: BorderSide(color: Colors.grey.shade300, width: 1.12),
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(color: AppColors.primary, width: 1.5),
           ),
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        ),
+        style: GoogleFonts.poppins(
+          fontSize: 16,
+          color: AppColors.text,
         ),
         value: options.contains(selectedValue) ? selectedValue : null,
         onChanged: (String? newValue) {},
+        icon: Icon(
+          Icons.arrow_drop_down,
+          color: AppColors.primary.withOpacity(0.7),
+        ),
+        dropdownColor: Colors.white,
         items: options
             .map((value) => DropdownMenuItem(
-                  child: Text(value),
                   value: value,
+                  child: Text(
+                    value,
+                    style: GoogleFonts.poppins(
+                      fontSize: 14,
+                      color: AppColors.text,
+                    ),
+                  ),
                 ))
             .toList(),
       ),
@@ -368,75 +363,94 @@ class _PaymentSettingsScreenState extends State<PaymentSettingsScreen> {
 
   Widget _buildToggleButtons(
       List<String> options, int selectedIndex, Function(int) onSelected) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      children: options.asMap().entries.map((entry) {
-        int index = entry.key;
-        String option = entry.value;
-        bool isSelected = index == selectedIndex;
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.only(bottom: 8),
+      child: Row(
+        children: options.asMap().entries.map((entry) {
+          int index = entry.key;
+          String option = entry.value;
+          bool isSelected = index == selectedIndex;
 
-        return Expanded(
-          child: GestureDetector(
-            onTap: () {
-              onSelected(index); // Update the selection
-            },
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              margin: EdgeInsets.only(right: 8),
-              decoration: BoxDecoration(
-                color: isSelected ? Color(0xFFF5D0FE) : Colors.transparent,
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(
-                  color: isSelected ? AppColors.primary : Colors.grey.shade300,
-                  width: 1.5,
+          return Expanded(
+            child: GestureDetector(
+              onTap: () {
+                onSelected(index);
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                margin:
+                    EdgeInsets.only(right: index < options.length - 1 ? 8 : 0),
+                decoration: BoxDecoration(
+                  color: isSelected ? Color(0xFFF5D0FE) : Colors.transparent,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color:
+                        isSelected ? AppColors.primary : Colors.grey.shade300,
+                    width: 1.5,
+                  ),
                 ),
-              ),
-              child: Center(
-                child: Text(
-                  option,
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: isSelected ? AppColors.primary : Colors.black,
-                    fontWeight: FontWeight.w400,
+                child: Center(
+                  child: Text(
+                    option,
+                    style: GoogleFonts.poppins(
+                      fontSize: 14,
+                      color: isSelected ? AppColors.primary : AppColors.text,
+                      fontWeight:
+                          isSelected ? FontWeight.w600 : FontWeight.w400,
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-        );
-      }).toList(),
+          );
+        }).toList(),
+      ),
     );
   }
 
   Widget _buildToggleOption({
     required String title,
-    required String svgPath, // New parameter for SVG icon
+    required String svgPath,
     required bool value,
     required Function(bool) onChanged,
   }) {
     return StatefulBuilder(
       builder: (context, setState) {
         return Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           decoration: BoxDecoration(
-            border: Border.all(color: Colors.grey.shade300),
-            borderRadius: BorderRadius.circular(15),
+            border: Border.all(color: Colors.grey.shade200),
+            borderRadius: BorderRadius.circular(12),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Row(
                 children: [
-                  SvgPicture.asset(
-                    svgPath,
-                    width: 18,
-                    height: 18,
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: value
+                          ? AppColors.primary.withOpacity(0.1)
+                          : Colors.grey.shade100,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: SvgPicture.asset(
+                      svgPath,
+                      width: 24,
+                      height: 24,
+                      colorFilter: value
+                          ? null
+                          : ColorFilter.mode(
+                              Colors.grey.shade700, BlendMode.srcIn),
+                    ),
                   ),
-                  const SizedBox(width: 8), // Spacing between icon and text
+                  const SizedBox(width: 16),
                   Text(
                     title,
-                    style: TextStyle(
-                      color: Colors.black,
+                    style: GoogleFonts.poppins(
+                      color: AppColors.text,
                       fontWeight: FontWeight.w500,
                       fontSize: 16,
                     ),
@@ -446,8 +460,8 @@ class _PaymentSettingsScreenState extends State<PaymentSettingsScreen> {
               Switch(
                 value: value,
                 onChanged: (bool newValue) {
-                  setState(() => value = newValue); // Update the UI locally
-                  onChanged(newValue); // Notify the parent
+                  setState(() => value = newValue);
+                  onChanged(newValue);
                 },
                 activeColor: AppColors.primary,
               ),

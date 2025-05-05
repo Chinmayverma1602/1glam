@@ -10,6 +10,7 @@ import 'package:glam1/screens/LoginScreen.dart';
 import 'package:glam1/screens/NewEstimatePage.dart';
 import 'package:glam1/screens/NewInvoice.dart';
 import 'package:glam1/screens/PaymentSettingsScreen.dart';
+import 'package:glam1/screens/ProfileSettingsScreen.dart';
 import 'package:glam1/screens/SettingsScreen.dart';
 import 'package:glam1/screens/ShowInvoicePage.dart';
 import 'package:glam1/screens/TeamManagement.dart';
@@ -41,7 +42,9 @@ void main() async {
 
 Future<String> getInitialRoute() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  return prefs.getString('user_email') != null ? '/login' : '/calender';
+  return prefs.getString('user_email') != null
+      ? '/SettingsScreen'
+      : '/SettingsScreen';
 }
 
 class MyApp extends StatelessWidget {
@@ -114,6 +117,9 @@ class MyApp extends StatelessWidget {
         GetPage(
             name: '/PaymentSettings',
             page: () => const PaymentSettingsScreen()),
+        GetPage(
+            name: '/ProfileSettings',
+            page: () => const ProfileSettingsScreen()),
         GetPage(
             name: '/TeamMembersScreen', page: () => const TeamMembersScreen()),
       ],

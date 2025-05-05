@@ -4,8 +4,10 @@ import 'package:get/route_manager.dart';
 import 'package:glam1/constants/AppColors.dart';
 import 'package:glam1/screens/GeneralSettingScreen.dart';
 import 'package:glam1/screens/PaymentSettingsScreen.dart';
+import 'package:glam1/screens/ProfileSettingsScreen.dart';
 import 'package:glam1/screens/TeamManagement.dart';
 import 'package:glam1/widgets/BottomNavBar.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -46,71 +48,70 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xffF9FAFB),
+      backgroundColor: const Color(0xffF9FAFB),
       appBar: AppBar(
         title: Text(
           'Settings',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+          style: GoogleFonts.poppins(
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+            color: AppColors.title,
+          ),
         ),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () => Navigator.pop(context),
         ),
         backgroundColor: Colors.white,
         elevation: 0,
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(height: 10),
-            Container(
-              padding: EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(17),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
-                    blurRadius: 10,
-                    spreadRadius: 2,
-                  ),
-                ],
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 10),
+              _buildProfileCard(),
+              const SizedBox(height: 24),
+              Text(
+                'Account Settings',
+                style: GoogleFonts.poppins(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.secondaryText,
+                ),
               ),
-              child: ListTile(
-                leading: CircleAvatar(
-                  // backgroundImage: AssetImage('assets/user_avatar.png'),
-                  backgroundColor: Colors.cyan,
-                  radius: 32,
+              const SizedBox(height: 12),
+              _buildSettingsTile(Icons.settings, 'General Settings',
+                  Colors.blue, () => Get.to(() => GeneralSettingsScreen())),
+              _buildSettingsTile(
+                  Icons.payment,
+                  'Payment Settings',
+                  AppColors.primary,
+                  () => Get.to(() => PaymentSettingsScreen())),
+              _buildSettingsTile(Icons.group, 'Team Management', Colors.green,
+                  () => Get.to(() => TeamMembersScreen()),
+                  subtitle: '5 members'),
+              _buildSettingsTile(Icons.person, 'Profile Settings',
+                  Colors.orange, () => Get.toNamed('/ProfileSettings')),
+              const SizedBox(height: 24),
+              Text(
+                'More Options',
+                style: GoogleFonts.poppins(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.secondaryText,
                 ),
-                title: Text(
-                  'John Anderson',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-                ),
-                subtitle: Text(
-                  'john@company.com',
-                  style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400,
-                      color: Color(0xff6B7280)),
-                ),
-                trailing: Icon(Icons.arrow_forward_ios,
-                    size: 16, color: AppColors.primary),
-                onTap: () {},
               ),
-            ),
-            SizedBox(height: 20),
-            _buildSettingsTile(Icons.settings, 'General Settings', Colors.blue,
-                () => Get.to(() => GeneralSettingsScreen())),
-            _buildSettingsTile(Icons.payment, 'Payment Settings',
-                AppColors.primary, () => Get.to(() => PaymentSettingsScreen())),
-            _buildSettingsTile(Icons.group, 'Team Management', Colors.green,
-                () => Get.to(() => TeamMembersScreen()),
-                subtitle: '5 members'),
-            _buildSettingsTile(
-                Icons.person, 'Profile Settings', Colors.orange, () {}),
-          ],
+              const SizedBox(height: 12),
+              _buildSettingsTile(
+                  Icons.help_outline, 'Help & Support', Colors.teal, () {}),
+              _buildSettingsTile(Icons.privacy_tip_outlined, 'Privacy & Terms',
+                  Colors.indigo, () {}),
+              _buildLogoutTile(),
+            ],
+          ),
         ),
       ),
       bottomNavigationBar: BottomNavBar(
@@ -120,33 +121,184 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
+  Widget _buildProfileCard() {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            spreadRadius: 1,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            height: 64,
+            width: 64,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(32),
+              gradient: const LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  AppColors.primary,
+                  Color(0xFF8B5CF6),
+                ],
+              ),
+            ),
+            child: const Center(
+              child: Text(
+                'JA',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'John Anderson',
+                  style: GoogleFonts.poppins(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.text,
+                  ),
+                ),
+                Text(
+                  'john@company.com',
+                  style: GoogleFonts.poppins(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400,
+                    color: AppColors.secondaryText,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          IconButton(
+            icon: const Icon(
+              Icons.edit_outlined,
+              color: AppColors.primary,
+              size: 20,
+            ),
+            onPressed: () {},
+          )
+        ],
+      ),
+    );
+  }
+
   Widget _buildSettingsTile(
       IconData icon, String title, Color color, VoidCallback onTap,
       {String? subtitle}) {
     return Container(
-      height: 80,
-      padding: const EdgeInsets.only(bottom: 12.0),
+      margin: const EdgeInsets.only(bottom: 12.0),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 6,
+            spreadRadius: 1,
+            offset: const Offset(0, 1),
+          ),
+        ],
+      ),
       child: ListTile(
-        tileColor: Colors.white,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        leading: CircleAvatar(
-          backgroundColor: color.withOpacity(0.1),
+        leading: Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(10),
+          ),
           child: Icon(
             icon,
             color: color,
+            size: 22,
           ),
-          radius: 20,
         ),
         title: Text(
           title,
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+          style: GoogleFonts.poppins(
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+            color: AppColors.text,
+          ),
         ),
         subtitle: subtitle != null
-            ? Text(subtitle,
-                style: TextStyle(fontSize: 12, color: Colors.grey[600]))
+            ? Text(
+                subtitle,
+                style: GoogleFonts.poppins(
+                  fontSize: 12,
+                  color: AppColors.secondaryText,
+                ),
+              )
             : null,
-        trailing: Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
+        trailing: const Icon(Icons.arrow_forward_ios,
+            size: 16, color: AppColors.secondaryText),
         onTap: onTap,
+      ),
+    );
+  }
+
+  Widget _buildLogoutTile() {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12.0),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 6,
+            spreadRadius: 1,
+            offset: const Offset(0, 1),
+          ),
+        ],
+      ),
+      child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        leading: Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: Colors.red.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: const Icon(
+            Icons.logout,
+            color: Colors.red,
+            size: 22,
+          ),
+        ),
+        title: Text(
+          'Logout',
+          style: GoogleFonts.poppins(
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+            color: Colors.red,
+          ),
+        ),
+        trailing:
+            const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.red),
+        onTap: () {
+          // Implement logout functionality
+        },
       ),
     );
   }
