@@ -489,7 +489,7 @@ class BookingController extends GetxController {
 
       final response = await http.post(
         Uri.parse(
-            'https://1glambackend-production.up.railway.app/api/resource/userBookings'),
+            'https://1glambackend-production.up.railway.app/api/bookings/userBookings'),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
@@ -542,8 +542,8 @@ class BookingController extends GetxController {
 
     // List of possible URL variations to try
     List<String> urlVariations = [
-      'https://1glambackend-production.up.railway.app/api/resource/userBookings',
-      'https://1glambackend-production.up.railway.app/api/resource/userBooking',
+      'https://1glambackend-production.up.railway.app/api/bookings/userBookings',
+      'https://1glambackend-production.up.railway.app/api/bookings/userBooking',
       'https://1glambackend-production.up.railway.app/api/userBookings',
       'https://1glambackend-production.up.railway.app/api/bookings'
     ];
