@@ -29,10 +29,15 @@ class _HomePageState extends State<HomePage> {
   String _userName = "User"; // Default user name
 
   // Lead statistics counts
-  int _totalBookings = 0;
+  int _totalInbound = 0;
+  int _totalQualifying = 0;
   int _totalProposalSent = 0;
-  int _totalInquiryReceived = 0;
-  int _totalQualifiedLead = 0;
+  int _totalProposalAccepted = 0;
+  int _totalDepositRequested = 0;
+  int _totalDepositReceived = 0;
+  int _totalConfirmed = 0;
+  int _totalClosedLost = 0;
+  int _totalWaitlisted = 0;
 
   @override
   void initState() {
@@ -89,28 +94,48 @@ class _HomePageState extends State<HomePage> {
 
   void _countLeadsByStatus() {
     // Reset all counters
-    _totalInquiryReceived = 0;
+    _totalInbound = 0;
+    _totalQualifying = 0;
     _totalProposalSent = 0;
-    _totalBookings = 0;
-    _totalQualifiedLead = 0;
+    _totalProposalAccepted = 0;
+    _totalDepositRequested = 0;
+    _totalDepositReceived = 0;
+    _totalConfirmed = 0;
+    _totalClosedLost = 0;
+    _totalWaitlisted = 0;
 
     // Count leads by status
     for (var lead in sampleLeads) {
       final status = lead.data.leadStatus;
 
-      if (status == 'Inbound' || status == 'Qualifying') {
-        _totalInquiryReceived++;
-
-        // Count qualifying leads separately
-        if (status == 'Qualifying') {
-          _totalQualifiedLead++;
-        }
-      } else if (status == 'Proposal Sent' || status == 'Proposal Accepted') {
-        _totalProposalSent++;
-      } else if (status == 'Deposit Requested' ||
-          status == 'Deposit Received' ||
-          status == 'Confirmed') {
-        _totalBookings++;
+      switch (status) {
+        case 'Inbound':
+          _totalInbound++;
+          break;
+        case 'Qualifying':
+          _totalQualifying++;
+          break;
+        case 'Proposal Sent':
+          _totalProposalSent++;
+          break;
+        case 'Proposal Accepted':
+          _totalProposalAccepted++;
+          break;
+        case 'Deposit Requested':
+          _totalDepositRequested++;
+          break;
+        case 'Deposit Received':
+          _totalDepositReceived++;
+          break;
+        case 'Confirmed':
+          _totalConfirmed++;
+          break;
+        case 'Closed / Lost':
+          _totalClosedLost++;
+          break;
+        case 'Waitlisted':
+          _totalWaitlisted++;
+          break;
       }
     }
   }
@@ -408,7 +433,7 @@ class _HomePageState extends State<HomePage> {
                 ),
                 const SizedBox(height: 16),
 
-                // Updated Lead Stages section to match the image
+                // Updated Lead Stages section to match the lead screen
                 Row(
                   children: [
                     Expanded(
@@ -422,16 +447,16 @@ class _HomePageState extends State<HomePage> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              "$_totalInquiryReceived",
+                              "$_totalInbound",
                               style: TextStyle(
                                 fontSize: 24,
                                 fontWeight: FontWeight.bold,
-                                color: AppColors.primary,
+                                color: Color(0xFF0284C7),
                               ),
                             ),
                             SizedBox(height: 8),
                             Text(
-                              "Inquiry Received",
+                              "Inbound",
                               style: TextStyle(
                                 fontSize: 12,
                                 color: Colors.grey,
@@ -454,16 +479,16 @@ class _HomePageState extends State<HomePage> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              "$_totalQualifiedLead",
+                              "$_totalQualifying",
                               style: TextStyle(
                                 fontSize: 24,
                                 fontWeight: FontWeight.bold,
-                                color: AppColors.primary,
+                                color: Color(0xFFB45309),
                               ),
                             ),
                             SizedBox(height: 8),
                             Text(
-                              "Qualified Lead",
+                              "Qualifying",
                               style: TextStyle(
                                 fontSize: 12,
                                 color: Colors.grey,
@@ -475,6 +500,44 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
                     SizedBox(width: 10),
+                    Expanded(
+                      child: Container(
+                        height: 100,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              "$_totalConfirmed",
+                              style: TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.inquiryTextColor,
+                              ),
+                            ),
+                            SizedBox(height: 8),
+                            Text(
+                              "Confirmed",
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+
+                // Second row of lead stages
+                SizedBox(height: 10),
+                Row(
+                  children: [
                     Expanded(
                       child: Container(
                         height: 100,
@@ -490,12 +553,76 @@ class _HomePageState extends State<HomePage> {
                               style: TextStyle(
                                 fontSize: 24,
                                 fontWeight: FontWeight.bold,
-                                color: AppColors.primary,
+                                color: Color(0xFF15803D),
                               ),
                             ),
                             SizedBox(height: 8),
                             Text(
                               "Proposal Sent",
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 10),
+                    Expanded(
+                      child: Container(
+                        height: 100,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              "$_totalDepositRequested",
+                              style: TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFFEA580C),
+                              ),
+                            ),
+                            SizedBox(height: 8),
+                            Text(
+                              "Deposit\nRequested",
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 10),
+                    Expanded(
+                      child: Container(
+                        height: 100,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              "$_totalDepositReceived",
+                              style: TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF7E22CE),
+                              ),
+                            ),
+                            SizedBox(height: 8),
+                            Text(
+                              "Deposit\nReceived",
                               style: TextStyle(
                                 fontSize: 12,
                                 color: Colors.grey,

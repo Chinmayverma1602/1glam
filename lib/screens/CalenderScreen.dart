@@ -11,6 +11,7 @@ import 'package:glam1/widgets/BottomNavBar.dart';
 import 'package:glam1/widgets/CustomeNewBooking.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 // Simple Event class for the calendar
 class CalendarEvent {
@@ -190,7 +191,6 @@ class _CalendarPageState extends State<CalenderPage> {
               : Obx(() => _buildSelectedDayBookings()),
         ],
       ),
-      floatingActionButton: NewBookingButton(),
     );
   }
 
@@ -419,14 +419,8 @@ class _CalendarPageState extends State<CalenderPage> {
   Widget _buildBookingItem(BuildContext context, Booking booking) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => EditBookingScreen(booking: booking)),
-        ).then((_) {
-          // Refresh bookings when returning from edit screen
-          _refreshData();
-        });
+        // Show bottom sheet for all bookings instead of navigating to edit screen
+        showBookingDetailsBottomSheet(context, booking);
       },
       child: Container(
         margin: EdgeInsets.only(bottom: 16),
@@ -543,6 +537,165 @@ class _CalendarPageState extends State<CalenderPage> {
               ? Colors.amber[800]
               : Colors.green[800],
         ),
+      ),
+    );
+  }
+
+  // Show booking details in a bottom sheet
+  void showBookingDetailsBottomSheet(BuildContext context, Booking booking) {
+    showMaterialModalBottomSheet(
+      context: context,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (context) => Container(
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(context).size.height * 0.7,
+        ),
+        padding: EdgeInsets.all(16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Header
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                IconButton(
+                  icon: Icon(Icons.close, color: Colors.black),
+                  onPressed: () => Navigator.pop(context),
+                ),
+                Text(
+                  "Booking Details",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                ),
+                TextButton(
+                  onPressed: () {
+                    // Edit button that navigates to full edit screen
+                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              EditBookingScreen(booking: booking)),
+                    ).then((_) {
+                      _refreshData();
+                    });
+                  },
+                  child: Text(
+                    "Edit",
+                    style: TextStyle(
+                        fontSize: 15,
+                        color: AppColors.primary,
+                        fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ],
+            ),
+            Divider(thickness: 1.2),
+            SizedBox(height: 8),
+
+            // Content
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Customer info
+                    Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 24,
+                          backgroundColor: Colors.grey[300],
+                          child: Icon(Icons.person,
+                              size: 28, color: Colors.black54),
+                        ),
+                        SizedBox(width: 12),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(booking.customerName,
+                                style: TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.w600)),
+                            Text(booking.phoneNo,
+                                style: TextStyle(color: Colors.grey)),
+                          ],
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 24),
+
+                    // Booking details - using similar style to EditBookingScreen
+                    _bottomSheetTile(
+                      icon: Icons.event_available,
+                      title: "Service",
+                      subtitle: booking.serviceName,
+                    ),
+
+                    _bottomSheetTile(
+                      icon: Icons.access_time,
+                      title: "Time",
+                      subtitle:
+                          "${DateFormat('h:mm a').format(booking.startTime)} - ${DateFormat('h:mm a').format(booking.endTime)}",
+                    ),
+
+                    _bottomSheetTile(
+                      icon: Icons.calendar_month,
+                      title: "Date",
+                      subtitle: DateFormat("dd MMMM yyyy").format(booking.date),
+                    ),
+
+                    _bottomSheetTile(
+                      icon: Icons.currency_rupee,
+                      title: "Price",
+                      subtitle: "₹${booking.price}",
+                    ),
+
+                    _bottomSheetTile(
+                      icon: Icons.timer,
+                      title: "Duration",
+                      subtitle: "${booking.duration.inMinutes} mins",
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Helper for bottom sheet tiles
+  Widget _bottomSheetTile({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+  }) {
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 6, vertical: 6),
+      padding: EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.grey[200],
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Row(
+        children: [
+          CircleAvatar(
+            radius: 20,
+            backgroundColor: AppColors.primary.withOpacity(0.1),
+            child: Icon(icon, color: AppColors.primary),
+          ),
+          SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: TextStyle(fontWeight: FontWeight.bold)),
+                Text(subtitle, style: TextStyle(color: Colors.grey[600])),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
