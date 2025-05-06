@@ -10,6 +10,10 @@ import 'package:glam1/widgets/CustomStatsButton.dart';
 import 'package:glam1/widgets/CustomSubtitle.dart';
 import 'package:glam1/widgets/CustomTitle.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:intl/intl.dart';
+import 'package:get/get.dart';
+import 'package:glam1/screens/NewBookingPage.dart';
 
 class HomePage extends StatefulWidget {
   final dynamic lead;
@@ -22,30 +26,91 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
+  String _userName = "User"; // Default user name
 
-  int _totalBooking = 5;
+  // Lead statistics counts
+  int _totalBookings = 0;
   int _totalProposalSent = 0;
-  int _totalInquiryRecieved = 12;
-  int _totalQualifiedLead = 8;
+  int _totalInquiryReceived = 0;
+  int _totalQualifiedLead = 0;
 
   @override
   void initState() {
     super.initState();
-    _countStatusTypes();
+    _loadUserName();
+    _countLeadsByStatus();
   }
 
-  void _countStatusTypes() {
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Reload username every time the page is displayed
+    _loadUserName();
+    _countLeadsByStatus();
+  }
+
+  @override
+  void didUpdateWidget(HomePage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Reload when widget is updated
+    _loadUserName();
+    _countLeadsByStatus();
+  }
+
+  Future<void> _loadUserName() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    // Try to get user name from various sources
+    String? name = prefs.getString('user_name');
+
+    if (name == null || name.isEmpty) {
+      // Try to get first name if full name not available
+      name = prefs.getString('first_name');
+    }
+
+    if (name == null || name.isEmpty) {
+      // Try to extract name from email as last resort
+      String? email = prefs.getString('user_email');
+      if (email != null && email.contains('@')) {
+        name = email.split('@')[0];
+        // Capitalize first letter
+        if (name.isNotEmpty) {
+          name = name[0].toUpperCase() + name.substring(1);
+        }
+      }
+    }
+
+    if (name != null && name.isNotEmpty) {
+      setState(() {
+        _userName = name!;
+      });
+    }
+  }
+
+  void _countLeadsByStatus() {
+    // Reset all counters
+    _totalInquiryReceived = 0;
+    _totalProposalSent = 0;
+    _totalBookings = 0;
+    _totalQualifiedLead = 0;
+
+    // Count leads by status
     for (var lead in sampleLeads) {
       final status = lead.data.leadStatus;
 
       if (status == 'Inbound' || status == 'Qualifying') {
-        _totalInquiryRecieved++;
+        _totalInquiryReceived++;
+
+        // Count qualifying leads separately
+        if (status == 'Qualifying') {
+          _totalQualifiedLead++;
+        }
       } else if (status == 'Proposal Sent' || status == 'Proposal Accepted') {
         _totalProposalSent++;
       } else if (status == 'Deposit Requested' ||
           status == 'Deposit Received' ||
           status == 'Confirmed') {
-        _totalBooking++;
+        _totalBookings++;
       }
     }
   }
@@ -76,8 +141,43 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  // This method will always get a fresh copy of the user name from SharedPreferences
+  Future<String> _getUserNameFromSharedPrefs() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    // Try to get user name from various possible keys
+    String? name = prefs.getString('user_name') ??
+        prefs.getString('userName') ??
+        prefs.getString('name') ??
+        prefs.getString('displayName') ??
+        prefs.getString('first_name');
+
+    if (name == null || name.isEmpty) {
+      // Try to extract name from email as last resort
+      String? email = prefs.getString('user_email');
+      if (email != null && email.contains('@')) {
+        name = email.split('@')[0];
+        // Capitalize first letter
+        if (name.isNotEmpty) {
+          name = name[0].toUpperCase() + name.substring(1);
+        }
+      }
+    }
+
+    // If we found a name, update the state
+    if (name != null && name.isNotEmpty && name != _userName) {
+      setState(() {
+        _userName = name!;
+      });
+    }
+
+    return name ?? "User";
+  }
+
   @override
   Widget build(BuildContext context) {
+    _loadUserName(); // Attempt to reload the username on each build
+
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 247, 247, 247),
       bottomNavigationBar: BottomNavBar(
@@ -102,12 +202,20 @@ class _HomePageState extends State<HomePage> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        CustomTitle(
-                          title: "Welcome Parinaaz!",
+                        FutureBuilder<String>(
+                          future: _getUserNameFromSharedPrefs(),
+                          builder: (context, snapshot) {
+                            // Use the snapshot data if available, otherwise fallback to current state
+                            final displayName = snapshot.data ?? _userName;
+                            return CustomTitle(
+                              title: "Welcome $displayName!",
+                            );
+                          },
                         ),
                         const SizedBox(height: 2),
                         CustomSubTitle(
-                          subtitle: "Tuesday, 15 Feb 2025",
+                          subtitle: DateFormat('EEEE, MMMM d, yyyy')
+                              .format(DateTime.now()),
                           color: Color.fromRGBO(107, 114, 128, 1),
                         ),
                       ],
@@ -248,6 +356,14 @@ class _HomePageState extends State<HomePage> {
                         label: "Add New\nBooking",
                         icon: Icons.calendar_month_outlined,
                         iconColor: AppColors.primary,
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const NewBookingScreen(),
+                            ),
+                          );
+                        },
                       ),
                     ),
                     const SizedBox(width: 10),
@@ -256,6 +372,14 @@ class _HomePageState extends State<HomePage> {
                         label: "Send Follow\nUp",
                         icon: Icons.send_outlined,
                         iconColor: AppColors.primary,
+                        onTap: () {
+                          // TODO: Implement Send Follow Up functionality
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                                content:
+                                    Text('Send Follow Up feature coming soon')),
+                          );
+                        },
                       ),
                     ),
                     const SizedBox(width: 10),
@@ -264,6 +388,10 @@ class _HomePageState extends State<HomePage> {
                         label: "Send Invoice",
                         icon: Icons.receipt_long_outlined,
                         iconColor: AppColors.primary,
+                        onTap: () {
+                          // Navigate to invoice creation page
+                          Navigator.pushNamed(context, '/newInvoicePgae');
+                        },
                       ),
                     ),
                   ],
@@ -294,7 +422,7 @@ class _HomePageState extends State<HomePage> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              "12",
+                              "$_totalInquiryReceived",
                               style: TextStyle(
                                 fontSize: 24,
                                 fontWeight: FontWeight.bold,
@@ -326,7 +454,7 @@ class _HomePageState extends State<HomePage> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              "8",
+                              "$_totalQualifiedLead",
                               style: TextStyle(
                                 fontSize: 24,
                                 fontWeight: FontWeight.bold,
@@ -358,7 +486,7 @@ class _HomePageState extends State<HomePage> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              "5",
+                              "$_totalProposalSent",
                               style: TextStyle(
                                 fontSize: 24,
                                 fontWeight: FontWeight.bold,

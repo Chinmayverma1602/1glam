@@ -16,9 +16,9 @@ class PaymentSettingsScreen extends StatefulWidget {
 class _PaymentSettingsScreenState extends State<PaymentSettingsScreen> {
   final TextEditingController daysController = TextEditingController(text: '7');
   final TextEditingController depositController =
-      TextEditingController(text: '50');
+      TextEditingController(text: '');
   final TextEditingController expiryDaysController =
-      TextEditingController(text: '30');
+      TextEditingController(text: '');
   final TextEditingController termsController = TextEditingController();
   final TextEditingController notesController = TextEditingController();
   final TextEditingController estimateMessageController =
@@ -63,6 +63,7 @@ class _PaymentSettingsScreenState extends State<PaymentSettingsScreen> {
     return Scaffold(
       backgroundColor: const Color(0xffF9FAFB),
       appBar: AppBar(
+        centerTitle: true,
         title: Text(
           'Payment Settings',
           style: GoogleFonts.poppins(

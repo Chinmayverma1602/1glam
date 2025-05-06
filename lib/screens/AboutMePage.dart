@@ -155,6 +155,19 @@ class _AboutMePageState extends State<AboutMePage> {
 
     print("Creating business profile with user ID: $_userId");
 
+    // Save business data to SharedPreferences for other screens to use
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('user_business_name', _businessNameController.text);
+      await prefs.setString(
+          'user_business_type', widget.bussinessType ?? "Other");
+      await prefs.setString('user_owner_name', _ownerNameController.text);
+      await prefs.setString(
+          'user_phone', "$_selectedCode${_phoneController.text}");
+    } catch (e) {
+      print("Error saving business data to SharedPreferences: $e");
+    }
+
     BusinessProfile profile = BusinessProfile(
       user: _userId!,
       businessName: _businessNameController.text,

@@ -42,6 +42,52 @@ class LoginService {
           final prefs = await SharedPreferences.getInstance();
           await prefs.setString('auth_token', loginResponse.token!);
 
+          // Save user email
+          await prefs.setString('user_email', email);
+
+          // Save user data (name, etc.) if available
+          String? userNameToSave = null;
+          if (loginResponse.userData != null) {
+            // Try to find user name in different possible keys
+            var userData = loginResponse.userData!;
+
+            // Look for name in common keys
+            userNameToSave = userData['full_name'] ??
+                userData['name'] ??
+                userData['firstName'] ??
+                userData['first_name'];
+
+            if (userNameToSave != null && userNameToSave.isNotEmpty) {
+              await prefs.setString('user_name', userNameToSave);
+            } else {
+              // If no name found, use email username part as fallback
+              String emailName = email.split('@')[0];
+              // Capitalize first letter
+              if (emailName.isNotEmpty) {
+                emailName = emailName[0].toUpperCase() + emailName.substring(1);
+                userNameToSave = emailName;
+                await prefs.setString('user_name', userNameToSave);
+              }
+            }
+          } else {
+            // If no user data available, just use email as fallback
+            String emailName = email.split('@')[0];
+            // Capitalize first letter
+            if (emailName.isNotEmpty) {
+              emailName = emailName[0].toUpperCase() + emailName.substring(1);
+              userNameToSave = emailName;
+              await prefs.setString('user_name', userNameToSave);
+            }
+          }
+
+          // Save the name to a few alternative keys to ensure it's found
+          if (userNameToSave != null && userNameToSave.isNotEmpty) {
+            await prefs.setString('user_name', userNameToSave);
+            await prefs.setString('userName', userNameToSave);
+            await prefs.setString('name', userNameToSave);
+            await prefs.setString('displayName', userNameToSave);
+          }
+
           // Navigate to home screen
           print("Navigating to home screen");
           Get.offAllNamed('/home');

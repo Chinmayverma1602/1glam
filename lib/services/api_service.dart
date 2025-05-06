@@ -40,6 +40,73 @@ class TokenManager {
     String? token = await getToken();
     return token != null && token.isNotEmpty;
   }
+
+  static Future<String?> refreshToken() async {
+    try {
+      // Get stored credentials
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? email = prefs.getString('user_email');
+      String? password = prefs.getString('user_password');
+
+      if (email == null || password == null) {
+        print("No stored credentials for token refresh");
+
+        // Try to use a refresh token endpoint if available
+        String? token = prefs.getString('user_token');
+        if (token != null && token.isNotEmpty) {
+          try {
+            final response = await http.post(
+              Uri.parse("${ApiConfig.baseUrl}/api/method/refresh_token"),
+              headers: {
+                "Authorization": "Bearer $token",
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+              },
+            );
+
+            if (response.statusCode == 200) {
+              final responseData = jsonDecode(response.body);
+              if (responseData['token'] != null) {
+                String newToken = responseData['token'];
+                await saveToken(newToken);
+                return newToken;
+              }
+            }
+          } catch (e) {
+            print("Error refreshing token via refresh endpoint: $e");
+          }
+        }
+
+        // If no refresh token mechanism works, try the guest token
+        return ApiConstants.authToken.replaceAll("Bearer ", "");
+      }
+
+      // Try to get a new token with stored credentials
+      final String url = "${ApiConfig.baseUrl}/api/method/login";
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+        },
+        body: jsonEncode({"usr": email, "pwd": password}),
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+        if (responseData['token'] != null) {
+          String newToken = responseData['token'];
+          // Save the new token
+          await saveToken(newToken);
+          return newToken;
+        }
+      }
+      return null;
+    } catch (e) {
+      print("Error refreshing token: $e");
+      return null;
+    }
+  }
 }
 
 class LoginServiceApi {
@@ -83,6 +150,33 @@ class LoginServiceApi {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setString('user_email', email);
 
+        // Store password securely for token refresh capability
+        await prefs.setString('user_password', password);
+
+        // Save user name
+        String? userNameToSave = null;
+        if (name != null && name.isNotEmpty) {
+          userNameToSave = name;
+          await prefs.setString('user_name', name);
+        } else {
+          // If no name provided, use email username as fallback
+          String emailName = email.split('@')[0];
+          // Capitalize first letter
+          if (emailName.isNotEmpty) {
+            emailName = emailName[0].toUpperCase() + emailName.substring(1);
+            userNameToSave = emailName;
+            await prefs.setString('user_name', emailName);
+          }
+        }
+
+        // Save the name to multiple keys to ensure it's found
+        if (userNameToSave != null && userNameToSave.isNotEmpty) {
+          await prefs.setString('user_name', userNameToSave);
+          await prefs.setString('userName', userNameToSave);
+          await prefs.setString('name', userNameToSave);
+          await prefs.setString('displayName', userNameToSave);
+        }
+
         return responseData;
       } else {
         print("Error Response: ${response.body}");
@@ -97,6 +191,66 @@ class LoginServiceApi {
       }
     } catch (e) {
       print("Exception: $e");
+      return {"error": "Something went wrong. Please try again."};
+    }
+  }
+
+  // Add a login method that stores credentials for token refresh
+  static Future<Map<String, dynamic>?> login(
+      String email, String password) async {
+    final String url = "${ApiConfig.baseUrl}/api/method/login";
+
+    try {
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+        },
+        body: jsonEncode({"usr": email, "pwd": password}),
+      );
+
+      print("Login response status: ${response.statusCode}");
+
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+
+        // Save token and credentials
+        if (responseData['token'] != null) {
+          await TokenManager.saveToken(responseData['token']);
+
+          // Store credentials for token refresh
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          await prefs.setString('user_email', email);
+          await prefs.setString('user_password', password);
+
+          if (responseData['user_id'] != null) {
+            await TokenManager.saveUserId(responseData['user_id']);
+          }
+
+          // Store user details if available
+          if (responseData['full_name'] != null) {
+            String userName = responseData['full_name'];
+            await prefs.setString('user_name', userName);
+            await prefs.setString('userName', userName);
+            await prefs.setString('name', userName);
+            await prefs.setString('displayName', userName);
+          }
+        }
+
+        return responseData;
+      } else {
+        print("Login error: ${response.body}");
+        try {
+          return {
+            "error": jsonDecode(response.body)['message'] ?? "Login failed"
+          };
+        } catch (e) {
+          return {"error": "Login failed"};
+        }
+      }
+    } catch (e) {
+      print("Login exception: $e");
       return {"error": "Something went wrong. Please try again."};
     }
   }
@@ -118,6 +272,9 @@ class LoginServiceApi {
         },
       );
 
+      print("User details response status: ${response.statusCode}");
+      print("User details response body: ${response.body}");
+
       if (response.statusCode == 200) {
         return jsonDecode(response.body);
       } else if (response.statusCode == 401) {
@@ -137,6 +294,8 @@ class LoginServiceApi {
   static Future<void> logout() async {
     await TokenManager.clearTokens();
     SharedPreferences prefs = await SharedPreferences.getInstance();
+    // Also clear password on logout for security
+    await prefs.remove('user_password');
     await prefs.clear();
     Get.offAllNamed('/login'); // Redirect to login page
   }

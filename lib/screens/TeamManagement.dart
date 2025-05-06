@@ -12,6 +12,7 @@ class TeamMembersScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xffF9FAFB),
       appBar: AppBar(
+        centerTitle: true,
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(

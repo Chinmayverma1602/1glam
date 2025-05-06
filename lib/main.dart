@@ -7,6 +7,7 @@ import 'package:glam1/screens/ConfirmBooking.dart';
 import 'package:glam1/screens/EditBookingScreen.dart';
 import 'package:glam1/screens/GeneralSettingScreen.dart';
 import 'package:glam1/screens/LoginScreen.dart';
+import 'package:glam1/screens/NewBookingPage.dart';
 import 'package:glam1/screens/NewEstimatePage.dart';
 import 'package:glam1/screens/NewInvoice.dart';
 import 'package:glam1/screens/PaymentSettingsScreen.dart';
@@ -59,10 +60,13 @@ class MyApp extends StatelessWidget {
       initialRoute: initialRoute,
       getPages: [
         GetPage(
-            name: '/home',
-            page: () => HomePage(
-                  lead: sampleLeads,
-                )),
+          name: '/home',
+          page: () => HomePage(
+            lead: sampleLeads,
+            key: UniqueKey(),
+          ),
+          preventDuplicates: false,
+        ),
         GetPage(name: '/leads', page: () => const LeadsPage()),
         // GetPage(name: '/settings', page: () => const HomePage()),
         GetPage(
@@ -120,6 +124,7 @@ class MyApp extends StatelessWidget {
             page: () => const ProfileSettingsScreen()),
         GetPage(
             name: '/TeamMembersScreen', page: () => const TeamMembersScreen()),
+        GetPage(name: '/NewBooking', page: () => const NewBookingScreen()),
       ],
     );
   }

@@ -13,6 +13,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:glam1/widgets/CustomToast.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -74,6 +75,44 @@ class _LoginPageState extends State<LoginPage> {
                 .update({
               'lastLogin': FieldValue.serverTimestamp(),
             });
+          }
+
+          // Save user name to SharedPreferences for HomePage
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          String userName = user.displayName ?? _nameController.text;
+          if (userName.isNotEmpty) {
+            await prefs.setString('user_name', userName);
+            await prefs.setString('userName', userName);
+            await prefs.setString('name', userName);
+            await prefs.setString('displayName', userName);
+          }
+
+          // Also save email
+          if (user.email != null) {
+            await prefs.setString('user_email', user.email!);
+
+            // Store Firebase token as a fallback for API token
+            String? firebaseToken = await user.getIdToken();
+            if (firebaseToken != null && firebaseToken.isNotEmpty) {
+              await prefs.setString('firebase_token', firebaseToken);
+
+              // Try to get an API token using the email
+              try {
+                // Generate a random password for API use (won't be needed by the user)
+                String randomPassword =
+                    DateTime.now().millisecondsSinceEpoch.toString();
+                await prefs.setString('user_password', randomPassword);
+
+                // Create an API user with this email
+                await LoginServiceApi.createUser(
+                  user.email!,
+                  randomPassword,
+                  name: user.displayName ?? userName,
+                );
+              } catch (e) {
+                print("Error creating API user: $e");
+              }
+            }
           }
 
           CustomToast.showSuccess(
@@ -160,6 +199,44 @@ class _LoginPageState extends State<LoginPage> {
           });
         }
 
+        // Save user name to SharedPreferences for HomePage
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        String userName = user.displayName ?? _nameController.text;
+        if (userName.isNotEmpty) {
+          await prefs.setString('user_name', userName);
+          await prefs.setString('userName', userName);
+          await prefs.setString('name', userName);
+          await prefs.setString('displayName', userName);
+        }
+
+        // Also save email
+        if (user.email != null) {
+          await prefs.setString('user_email', user.email!);
+
+          // Store Firebase token as a fallback for API token
+          String? firebaseToken = await user.getIdToken();
+          if (firebaseToken != null && firebaseToken.isNotEmpty) {
+            await prefs.setString('firebase_token', firebaseToken);
+
+            // Try to get an API token using the email
+            try {
+              // Generate a random password for API use (won't be needed by the user)
+              String randomPassword =
+                  DateTime.now().millisecondsSinceEpoch.toString();
+              await prefs.setString('user_password', randomPassword);
+
+              // Create an API user with this email
+              await LoginServiceApi.createUser(
+                user.email!,
+                randomPassword,
+                name: user.displayName ?? userName,
+              );
+            } catch (e) {
+              print("Error creating API user: $e");
+            }
+          }
+        }
+
         CustomToast.showSuccess(
           context,
           message: "Signed in with Google as ${user.displayName}",
@@ -201,6 +278,28 @@ class _LoginPageState extends State<LoginPage> {
     setState(() => _isLoading = true);
 
     try {
+      // First try to log in with the provided credentials
+      final loginResponse = await LoginServiceApi.login(
+        _emailController.text,
+        _passwordController.text,
+      );
+
+      if (loginResponse != null && loginResponse.containsKey("token")) {
+        // Login successful
+        setState(() => _isLoading = false);
+
+        print("Login Success Response: $loginResponse");
+        CustomToast.showSuccess(
+          context,
+          message: "Login successful!",
+        );
+
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => VerifyEmailPage()));
+        return;
+      }
+
+      // If login failed, try to create a new account
       final response = await LoginServiceApi.createUser(
         _emailController.text,
         _passwordController.text,
@@ -210,7 +309,12 @@ class _LoginPageState extends State<LoginPage> {
       setState(() => _isLoading = false);
 
       if (response != null && response.containsKey("token")) {
-        print("Success Response: $response");
+        print("Account Creation Success Response: $response");
+
+        // Also store password for token refresh
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString('user_password', _passwordController.text);
+
         CustomToast.showSuccess(
           context,
           message: "Account created for ${response['user']['email']}",

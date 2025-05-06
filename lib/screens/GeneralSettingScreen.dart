@@ -47,6 +47,7 @@ class _GeneralSettingsScreenState extends State<GeneralSettingsScreen> {
     return Scaffold(
       backgroundColor: const Color(0xffF9FAFB),
       appBar: AppBar(
+        centerTitle: true,
         title: Text(
           'General Settings',
           style: GoogleFonts.poppins(

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:glam1/model/address_model.dart';
 import 'package:glam1/constants/api_constants.dart';
 import 'package:glam1/services/api_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AddressService {
   // Direct URL string instead of using the constant for debugging
@@ -46,6 +47,9 @@ class AddressService {
         "booth_no": address.boothNo ?? "",
       };
 
+      // Also save to SharedPreferences for offline access
+      saveAddressToPrefs(address);
+
       // Log the request details with direct URL for verification
       print("Making API request to: $fullApiUrl");
       print("With user ID: ${address.user}");
@@ -75,6 +79,31 @@ class AddressService {
     } catch (e) {
       print("Exception creating address: $e");
       return null;
+    }
+  }
+
+  // New method to save address to SharedPreferences
+  Future<void> saveAddressToPrefs(UserAddress address) async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+
+      // Convert address to JSON
+      Map<String, dynamic> addressMap = address.toJson();
+      String addressJson = jsonEncode(addressMap);
+
+      // Save to preferences
+      await prefs.setString('user_address', addressJson);
+
+      // Also save individual components for easier access
+      await prefs.setString('user_address_line1', address.addressLine1);
+      await prefs.setString('user_address_line2', address.addressLine2 ?? '');
+      await prefs.setString('user_city', address.city);
+      await prefs.setString('user_state', address.state);
+      await prefs.setString('user_zipcode', address.zipCode);
+
+      print("Address saved to SharedPreferences");
+    } catch (e) {
+      print("Error saving address to SharedPreferences: $e");
     }
   }
 }

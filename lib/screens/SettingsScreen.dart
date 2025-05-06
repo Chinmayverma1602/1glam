@@ -6,9 +6,13 @@ import 'package:glam1/screens/GeneralSettingScreen.dart';
 import 'package:glam1/screens/PaymentSettingsScreen.dart';
 import 'package:glam1/screens/ProfileSettingsScreen.dart';
 import 'package:glam1/screens/TeamManagement.dart';
-import 'package:glam1/services/login_service.dart';
+import 'package:glam1/services/api_service.dart';
+import 'package:glam1/services/bussiness_service.dart';
 import 'package:glam1/widgets/BottomNavBar.dart';
+import 'package:glam1/widgets/CustomLoadingAnimation.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -19,6 +23,81 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   // Correct index for settings tab (based on BottomNavBar.dart)
   int _selectedIndex = 4;
+  bool _isLoading = true;
+  String _userName = '';
+  String _userEmail = '';
+  String _userInitials = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+
+  Future<void> _loadUserData() async {
+    setState(() => _isLoading = true);
+
+    try {
+      // First try to get user data from the backend
+      final userProfile = await BusinessProfileService.getCombinedUserProfile();
+
+      String name = userProfile['name'] ?? '';
+      String email = userProfile['email'] ?? '';
+
+      // If we couldn't get the data from backend, try SharedPreferences
+      if (name.isEmpty || email.isEmpty) {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        name = prefs.getString('user_name') ??
+            prefs.getString('userName') ??
+            prefs.getString('name') ??
+            prefs.getString('displayName') ??
+            '';
+        email = prefs.getString('user_email') ?? '';
+      }
+
+      setState(() {
+        _userName = name;
+        _userEmail = email;
+        _userInitials = _getInitials(name);
+        _isLoading = false;
+      });
+    } catch (e) {
+      print("Error loading user data: $e");
+      // Try to get from SharedPreferences as fallback
+      try {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        String name = prefs.getString('user_name') ??
+            prefs.getString('userName') ??
+            prefs.getString('name') ??
+            prefs.getString('displayName') ??
+            '';
+        String email = prefs.getString('user_email') ?? '';
+
+        setState(() {
+          _userName = name;
+          _userEmail = email;
+          _userInitials = _getInitials(name);
+          _isLoading = false;
+        });
+      } catch (e) {
+        print("Error loading from SharedPrefs: $e");
+        setState(() => _isLoading = false);
+      }
+    }
+  }
+
+  String _getInitials(String name) {
+    if (name.isEmpty) return "?";
+
+    List<String> nameParts = name.split(" ");
+    if (nameParts.length > 1) {
+      return nameParts[0][0].toUpperCase() + nameParts[1][0].toUpperCase();
+    } else if (name.length > 0) {
+      return name[0].toUpperCase();
+    } else {
+      return "?";
+    }
+  }
 
   void _onItemTapped(int index) {
     if (index == _selectedIndex) return;
@@ -51,6 +130,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return Scaffold(
       backgroundColor: const Color(0xffF9FAFB),
       appBar: AppBar(
+        centerTitle: true,
         title: Text(
           'Settings',
           style: GoogleFonts.poppins(
@@ -123,6 +203,32 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Widget _buildProfileCard() {
+    if (_isLoading) {
+      return Container(
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+        height: 96,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 10,
+              spreadRadius: 1,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Center(
+          child: CustomLoadingAnimation(
+            size: 40,
+            type: LoadingAnimationType.staggeredDotsWave,
+            showText: false,
+          ),
+        ),
+      );
+    }
+
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
       decoration: BoxDecoration(
@@ -153,9 +259,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ],
               ),
             ),
-            child: const Center(
+            child: Center(
               child: Text(
-                'JA',
+                _userInitials,
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 24,
@@ -170,7 +276,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'John Anderson',
+                  _userName.isNotEmpty ? _userName : 'User',
                   style: GoogleFonts.poppins(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
@@ -178,9 +284,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ),
                 ),
                 Text(
-                  'john@company.com',
+                  _userEmail.isNotEmpty ? _userEmail : 'email@example.com',
                   style: GoogleFonts.poppins(
-                    fontSize: 14,
+                    fontSize: 12,
                     fontWeight: FontWeight.w400,
                     color: AppColors.secondaryText,
                   ),
@@ -188,14 +294,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ],
             ),
           ),
-          IconButton(
-            icon: const Icon(
-              Icons.edit_outlined,
-              color: AppColors.primary,
-              size: 20,
-            ),
-            onPressed: () {},
-          )
         ],
       ),
     );
@@ -298,10 +396,117 @@ class _SettingsScreenState extends State<SettingsScreen> {
         trailing:
             const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.red),
         onTap: () {
-          // Use the login service to logout
-          LoginService.logout(context);
+          // Show confirmation dialog before logout
+          _showLogoutConfirmationDialog();
         },
       ),
+    );
+  }
+
+  void _showLogoutConfirmationDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          backgroundColor: Colors.white,
+          title: Column(
+            children: [
+              Container(
+                width: 50,
+                height: 50,
+                decoration: BoxDecoration(
+                  color: Colors.red.withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.logout,
+                  color: Colors.red,
+                  size: 24,
+                ),
+              ),
+              SizedBox(height: 16),
+              Text(
+                'Logout',
+                style: GoogleFonts.poppins(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.title,
+                ),
+              ),
+            ],
+          ),
+          content: Padding(
+            padding: const EdgeInsets.only(top: 8.0),
+            child: Text(
+              'Are you sure you want to logout?',
+              textAlign: TextAlign.center,
+              style: GoogleFonts.poppins(
+                fontSize: 16,
+                color: AppColors.text,
+              ),
+            ),
+          ),
+          actionsPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          actions: [
+            Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).pop(); // Close dialog
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.grey.shade200,
+                      foregroundColor: AppColors.text,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      padding: EdgeInsets.symmetric(vertical: 12),
+                    ),
+                    child: Text(
+                      'No',
+                      style: GoogleFonts.poppins(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(width: 16),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).pop(); // Close dialog
+                      // Proceed with logout
+                      LoginServiceApi.logout();
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      padding: EdgeInsets.symmetric(vertical: 12),
+                    ),
+                    child: Text(
+                      'Yes',
+                      style: GoogleFonts.poppins(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        );
+      },
     );
   }
 }
