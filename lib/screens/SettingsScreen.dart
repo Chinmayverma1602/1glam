@@ -6,6 +6,7 @@ import 'package:glam1/screens/GeneralSettingScreen.dart';
 import 'package:glam1/screens/PaymentSettingsScreen.dart';
 import 'package:glam1/screens/ProfileSettingsScreen.dart';
 import 'package:glam1/screens/TeamManagement.dart';
+import 'package:glam1/services/login_service.dart';
 import 'package:glam1/widgets/BottomNavBar.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -297,7 +298,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
         trailing:
             const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.red),
         onTap: () {
-          // Implement logout functionality
+          // Use the login service to logout
+          LoginService.logout(context);
         },
       ),
     );
