@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:glam1/constants/AppColors.dart';
@@ -9,6 +10,7 @@ import 'package:glam1/widgets/CustomToast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pinput/pinput.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:email_otp/email_otp.dart';
 
 class VerifyEmailPage extends StatefulWidget {
   final String? email;
@@ -27,12 +29,21 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
   int _secondsRemaining = 45;
   bool _canResend = false;
   String _pinCode = "";
+  String _generatedOTP = "";
+  bool _showTestOTP = true;
 
   @override
   void initState() {
     super.initState();
     _getUserData();
     _startResendTimer();
+    _generateOTP();
+  }
+
+  // Generate a 6-digit OTP for testing
+  void _generateOTP() {
+    final Random random = Random();
+    _generatedOTP = List.generate(6, (_) => random.nextInt(10)).join();
   }
 
   void _startResendTimer() {
@@ -70,41 +81,139 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
     _userId = await TokenManager.getUserId();
 
     setState(() => _isLoading = false);
+
+    // Send OTP right away
+    await _sendOTP();
   }
 
-  Future<void> _verifyEmail() async {
-    // Remove PIN validation to ensure navigation always works
-    // if (_pinCode.length != 6) return;
+  Future<void> _sendOTP() async {
+    if (userEmail.isEmpty) {
+      CustomToast.showError(
+        context,
+        message: "Email is required to send OTP",
+      );
+      return;
+    }
 
     setState(() => _isLoading = true);
 
-    // For now, since we don't have the actual email verification API,
-    // we'll just simulate verification and proceed
+    try {
+      // For production, use real email service
+      bool useEmailService = false;
 
-    // Simulated successful verification
-    await Future.delayed(const Duration(milliseconds: 500));
-    setState(() => _isLoading = false);
+      if (useEmailService) {
+        // Configure EmailOTP for the application
+        EmailOTP.config(
+          appName: "1Glam",
+          appEmail: "noreply@1glam.com",
+          otpLength: 6,
+          otpType: OTPType.numeric,
+        );
 
-    Get.toNamed('/details');
+        // Try to send OTP via email service
+        await EmailOTP.sendOTP(email: userEmail);
+
+        // Get the OTP that was generated
+        _generatedOTP = EmailOTP.getOTP() ?? _generatedOTP;
+      }
+
+      setState(() {
+        _isLoading = false;
+        _showTestOTP = true;
+      });
+
+      // For testing, show the OTP
+      print("Testing OTP: $_generatedOTP");
+
+      // Show a longer toast notification
+      CustomToast.showInfo(
+        context,
+        message: "For testing, use code: $_generatedOTP",
+        duration: const Duration(seconds: 6), // Longer duration
+      );
+
+      // Automatically hide test OTP after 60 seconds
+      Future.delayed(const Duration(seconds: 60), () {
+        if (mounted) {
+          setState(() {
+            _showTestOTP = false;
+          });
+        }
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+        _showTestOTP = true;
+      });
+
+      // Show the test OTP
+      CustomToast.showInfo(
+        context,
+        message: "For testing, use code: $_generatedOTP",
+        duration: const Duration(seconds: 6), // Longer duration
+      );
+    }
   }
 
-  void _resendCode() {
+  Future<void> _verifyEmail() async {
+    if (_pinCode.length != 6) {
+      CustomToast.showWarning(
+        context,
+        message: "Please enter a valid 6-digit OTP",
+      );
+      return;
+    }
+
+    setState(() => _isLoading = true);
+
+    try {
+      // For testing purposes, verify against our locally generated OTP
+      bool isValid = _pinCode == _generatedOTP;
+
+      setState(() => _isLoading = false);
+
+      if (isValid) {
+        // OTP verified successfully, navigate to next screen
+        CustomToast.showSuccess(
+          context,
+          message: "Email verified successfully!",
+        );
+
+        Get.toNamed('/details');
+      } else {
+        // Invalid OTP
+        CustomToast.showError(
+          context,
+          message: "Invalid verification code. Please try again.",
+        );
+      }
+    } catch (e) {
+      setState(() => _isLoading = false);
+      CustomToast.showError(
+        context,
+        message: "Error verifying code: ${e.toString()}",
+      );
+    }
+  }
+
+  void _resendCode() async {
     if (!_canResend) return;
+
+    // Generate a new OTP
+    _generateOTP();
 
     // Reset timer
     setState(() {
       _secondsRemaining = 45;
       _canResend = false;
+      _showTestOTP = true;
     });
 
     // Start timer again
     _startResendTimer();
 
-    // Show feedback
-    CustomToast.showInfo(
-      context,
-      message: "Verification code resent to $userEmail",
-    );
+    // Resend the OTP
+    await _sendOTP();
   }
 
   @override
@@ -183,6 +292,43 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                           color: Colors.purple,
                         ),
                       ),
+
+                      // Display the test OTP prominently
+                      if (_showTestOTP) ...[
+                        const SizedBox(height: 20),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 10),
+                          decoration: BoxDecoration(
+                            color: Colors.purple.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(color: Colors.purple, width: 1),
+                          ),
+                          child: Column(
+                            children: [
+                              const Text(
+                                "Demo Mode: Use this verification code",
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.purple,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                _generatedOTP,
+                                style: const TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.purple,
+                                  letterSpacing: 5,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+
                       const SizedBox(height: 30),
                       Pinput(
                         length: 6,
