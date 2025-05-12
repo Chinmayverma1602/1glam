@@ -6,6 +6,8 @@ import 'package:glam1/screens/GeneralSettingScreen.dart';
 import 'package:glam1/screens/PaymentSettingsScreen.dart';
 import 'package:glam1/screens/ProfileSettingsScreen.dart';
 import 'package:glam1/screens/TeamManagement.dart';
+import 'package:glam1/screens/HelpSupportScreen.dart';
+import 'package:glam1/screens/PrivacyTermsScreen.dart';
 import 'package:glam1/services/api_service.dart';
 import 'package:glam1/services/bussiness_service.dart';
 import 'package:glam1/widgets/BottomNavBar.dart';
@@ -164,18 +166,31 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
               ),
               const SizedBox(height: 12),
-              _buildSettingsTile(Icons.settings, 'General Settings',
-                  Colors.blue, () => Get.to(() => GeneralSettingsScreen())),
               _buildSettingsTile(
-                  Icons.payment,
-                  'Payment Settings',
-                  AppColors.primary,
-                  () => Get.to(() => PaymentSettingsScreen())),
-              _buildSettingsTile(Icons.group, 'Team Management', Colors.green,
-                  () => Get.to(() => TeamMembersScreen()),
-                  subtitle: '5 members'),
-              _buildSettingsTile(Icons.person, 'Profile Settings',
-                  Colors.orange, () => Get.toNamed('/ProfileSettings')),
+                Icons.settings,
+                'General Settings',
+                () => Get.to(() => GeneralSettingsScreen()),
+                color: Colors.blue,
+              ),
+              _buildSettingsTile(
+                Icons.payment,
+                'Payment Settings',
+                () => Get.to(() => PaymentSettingsScreen()),
+                color: AppColors.primary,
+              ),
+              _buildSettingsTile(
+                Icons.group,
+                'Team Management',
+                () => Get.to(() => TeamMembersScreen()),
+                color: Colors.green,
+                subtitle: '5 members',
+              ),
+              _buildSettingsTile(
+                Icons.person,
+                'Profile Settings',
+                () => Get.toNamed('/ProfileSettings'),
+                color: Colors.orange,
+              ),
               const SizedBox(height: 24),
               Text(
                 'More Options',
@@ -187,9 +202,31 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
               const SizedBox(height: 12),
               _buildSettingsTile(
-                  Icons.help_outline, 'Help & Support', Colors.teal, () {}),
-              _buildSettingsTile(Icons.privacy_tip_outlined, 'Privacy & Terms',
-                  Colors.indigo, () {}),
+                Icons.help_outline,
+                'Help & Support',
+                () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const HelpSupportScreen(),
+                    ),
+                  );
+                },
+                color: Colors.teal,
+              ),
+              _buildSettingsTile(
+                Icons.privacy_tip_outlined,
+                'Privacy & Terms',
+                () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const PrivacyTermsScreen(),
+                    ),
+                  );
+                },
+                color: Colors.indigo,
+              ),
               _buildLogoutTile(),
             ],
           ),
@@ -300,56 +337,52 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Widget _buildSettingsTile(
-      IconData icon, String title, Color color, VoidCallback onTap,
-      {String? subtitle}) {
+    IconData icon,
+    String title,
+    VoidCallback onTap, {
+    Color? color,
+    String? subtitle,
+  }) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 12.0),
+      margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
-            blurRadius: 6,
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
             spreadRadius: 1,
-            offset: const Offset(0, 1),
           ),
         ],
       ),
       child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         leading: Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: color.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(10),
+            color: (color ?? Colors.blue).withOpacity(0.1),
+            borderRadius: BorderRadius.circular(8),
           ),
-          child: Icon(
-            icon,
-            color: color,
-            size: 22,
-          ),
+          child: Icon(icon, color: color ?? Colors.blue),
         ),
         title: Text(
           title,
           style: GoogleFonts.poppins(
             fontSize: 16,
             fontWeight: FontWeight.w500,
-            color: AppColors.text,
+            color: AppColors.title,
           ),
         ),
         subtitle: subtitle != null
             ? Text(
                 subtitle,
                 style: GoogleFonts.poppins(
-                  fontSize: 12,
+                  fontSize: 14,
                   color: AppColors.secondaryText,
                 ),
               )
             : null,
-        trailing: const Icon(Icons.arrow_forward_ios,
-            size: 16, color: AppColors.secondaryText),
+        trailing: const Icon(Icons.arrow_forward_ios, size: 16),
         onTap: onTap,
       ),
     );

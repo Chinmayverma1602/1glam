@@ -68,10 +68,6 @@ class _AboutMePageState extends State<AboutMePage> {
         widget.selectedEmail ?? (args != null ? args['selectedEmail'] : null);
 
     _fetchUserId();
-    // Set default values for testing if needed
-    _businessNameController.text = "Test Business";
-    _ownerNameController.text = "Test Owner";
-    _phoneController.text = "1234567890";
   }
 
   Future<void> _fetchUserId() async {
@@ -83,7 +79,6 @@ class _AboutMePageState extends State<AboutMePage> {
       setState(() {
         _userId = userId;
       });
-      print("Using TokenManager userId: $_userId");
       return;
     }
 
@@ -92,7 +87,6 @@ class _AboutMePageState extends State<AboutMePage> {
       setState(() {
         _userId = widget.selectedEmail;
       });
-      print("Using selectedEmail as userId: $_userId");
       return;
     }
 
@@ -103,17 +97,8 @@ class _AboutMePageState extends State<AboutMePage> {
       setState(() {
         _userId = storedUserId;
       });
-      print("Using SharedPreferences userId: $_userId");
       return;
     }
-
-    // If all fails, use a mock ID for testing (remove in production)
-    // setState(() {
-    //   _userId = "68147786cc7c79ccbf7e39f1"; // Sample ID for testing
-    // });
-    // print("Using mock userId for testing: $_userId");
-
-    print("USER ID NOT FOUND - please log in again");
   }
 
   void _submitForm() async {
@@ -152,8 +137,6 @@ class _AboutMePageState extends State<AboutMePage> {
       text: "Saving business profile...",
       type: LoadingAnimationType.staggeredDotsWave,
     );
-
-    print("Creating business profile with user ID: $_userId");
 
     // Save business data to SharedPreferences for other screens to use
     try {
@@ -255,14 +238,6 @@ class _AboutMePageState extends State<AboutMePage> {
                       fontWeight: FontWeight.w400,
                       fontSize: 14,
                     ),
-                  ),
-                ),
-                // Debug text to show user ID (remove in production)
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Text(
-                    "User ID: ${_userId ?? 'Not found'}",
-                    style: TextStyle(fontSize: 10, color: Colors.grey),
                   ),
                 ),
                 SizedBox(height: 20),

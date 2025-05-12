@@ -1,7 +1,5 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:http/http.dart' as http;
 import 'package:get/get.dart';
 import 'package:glam1/constants/AppColors.dart';
 import 'package:glam1/screens/AboutMePage.dart';
@@ -20,17 +18,16 @@ class EnterDetailsPage extends StatefulWidget {
 
 class _EnterDetailsPageState extends State<EnterDetailsPage> {
   final List<Map<String, dynamic>> users = [
-    {"business": "Nail Salon", "imageLocation": "assets/images/nailSalon.svg"},
+    {"business": "Nail Salon", "icon": Icons.spa, "isSelected": true},
+    {"business": "Hairstylist", "icon": Icons.content_cut, "isSelected": true},
+    {"business": "Makeup Artist", "icon": Icons.face, "isSelected": true},
     {
-      "business": "Hairstylist",
-      "imageLocation": "assets/images/hairStylist.svg"
+      "business": "Other",
+      "icon": Icons.add_circle_outline,
+      "isSelected": false
     },
-    {"business": "Makeup Artist", "imageLocation": "assets/images/makeup.svg"},
-    {"business": "Other", "imageLocation": "assets/images/other.svg"},
   ];
 
-  int? selectedIndex;
-  String selectedBusiness = '';
   bool isLoading = false;
   String? selectedEmail = '';
   TextEditingController serviceController = TextEditingController();
@@ -50,7 +47,6 @@ class _EnterDetailsPageState extends State<EnterDetailsPage> {
   }
 
   void _showAddServiceDialog() {
-    // Reset controller when opening dialog
     serviceController.clear();
 
     showDialog(
@@ -109,10 +105,9 @@ class _EnterDetailsPageState extends State<EnterDetailsPage> {
                   setState(() {
                     users.insert(users.length - 1, {
                       "business": serviceController.text.trim(),
-                      "imageLocation": "assets/images/custom.svg",
+                      "icon": Icons.star,
+                      "isSelected": true
                     });
-                    selectedIndex = users.length - 2;
-                    selectedBusiness = serviceController.text.trim();
                   });
                   Navigator.pop(context);
                 }
@@ -137,10 +132,8 @@ class _EnterDetailsPageState extends State<EnterDetailsPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        // Prevents overflow by respecting system UI areas
         child: Padding(
-          padding: const EdgeInsets.symmetric(
-              horizontal: 16.0, vertical: 8.0), // Consistent horizontal padding
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -154,33 +147,30 @@ class _EnterDetailsPageState extends State<EnterDetailsPage> {
                   color: AppColors.title,
                 ),
               ),
-              const SizedBox(height: 20), // Added spacing after title
+              const SizedBox(height: 20),
               Expanded(
                 child: GridView.count(
                   crossAxisCount: 2,
-                  crossAxisSpacing: 16, // Increased spacing for better layout
+                  crossAxisSpacing: 16,
                   mainAxisSpacing: 16,
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 8.0), // Padding inside GridView
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
                   children: List.generate(users.length, (index) {
-                    bool isSelected = selectedIndex == index;
+                    bool isSelected = users[index]["isSelected"] as bool;
                     return GestureDetector(
                       onTap: () {
                         if (users[index]["business"] == "Other") {
                           _showAddServiceDialog();
                         } else {
                           setState(() {
-                            selectedIndex = index;
-                            selectedBusiness = users[index]["business"];
+                            users[index]["isSelected"] = !isSelected;
                           });
                         }
                       },
                       child: Column(
-                        mainAxisSize:
-                            MainAxisSize.min, // Prevents unnecessary expansion
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           Container(
-                            width: 120, // Reduced size to fit better
+                            width: 120,
                             height: 120,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
@@ -192,22 +182,16 @@ class _EnterDetailsPageState extends State<EnterDetailsPage> {
                               ),
                             ),
                             child: CircleAvatar(
-                              radius: 60, // Adjusted to fit container
+                              radius: 60,
                               backgroundColor: isSelected
                                   ? AppColors.primary.withOpacity(0.1)
                                   : Colors.transparent,
-                              child: SvgPicture.asset(
-                                users[index]["imageLocation"],
-                                width: 30,
-                                height: 30,
-                                fit: BoxFit
-                                    .fill, // Changed to contain for better rendering
-                                colorFilter: ColorFilter.mode(
-                                  isSelected
-                                      ? AppColors.primary
-                                      : Colors.grey.shade700,
-                                  BlendMode.srcIn,
-                                ),
+                              child: Icon(
+                                users[index]["icon"] as IconData,
+                                size: 40,
+                                color: isSelected
+                                    ? AppColors.primary
+                                    : Colors.grey.shade700,
                               ),
                             ),
                           ),
@@ -231,7 +215,7 @@ class _EnterDetailsPageState extends State<EnterDetailsPage> {
                   }),
                 ),
               ),
-              const SizedBox(height: 20), // Spacing before button
+              const SizedBox(height: 20),
               Center(
                 child: isLoading
                     ? const CustomLoadingAnimation(
@@ -244,21 +228,27 @@ class _EnterDetailsPageState extends State<EnterDetailsPage> {
                         color: AppColors.subtitle,
                         icon: null,
                         onPressed: () {
-                          if (selectedIndex == null) {
+                          List<String> selectedServices = users
+                              .where((user) => user["isSelected"] as bool)
+                              .map((user) => user["business"] as String)
+                              .toList();
+
+                          if (selectedServices.isEmpty) {
                             CustomToast.showWarning(
                               context,
-                              message: "Please select a business type",
+                              message:
+                                  "Please select at least one business type",
                             );
                             return;
                           }
                           Get.toNamed('/about', arguments: {
-                            'bussinessType': selectedBusiness,
+                            'bussinessType': selectedServices.join(", "),
                             'selectedEmail': selectedEmail ?? "",
                           });
                         },
                       ),
               ),
-              const SizedBox(height: 16), // Bottom padding to avoid overlap
+              const SizedBox(height: 16),
             ],
           ),
         ),

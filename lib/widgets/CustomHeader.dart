@@ -31,20 +31,6 @@ class CustomHeader extends StatelessWidget {
                 fontWeight: FontWeight.bold,
                 color: AppColors.subtitle),
           ),
-          GestureDetector(
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => HomePage(
-                              lead: sampleLeads,
-                            )));
-              },
-              child: Text(
-                "Skip",
-                style:
-                    GoogleFonts.inter(fontSize: 14, color: AppColors.subtitle),
-              )),
         ],
       ),
     );

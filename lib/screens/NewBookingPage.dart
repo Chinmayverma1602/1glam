@@ -266,7 +266,15 @@ class _NewBookingScreenState extends State<NewBookingScreen> {
           price = 1000;
       }
 
-      // Build new booking object
+      // Calculate booking duration based on start and end times
+      int durationMinutes = (endTime.hour - startTime.hour) * 60 +
+          (endTime.minute - startTime.minute);
+      if (durationMinutes <= 0) {
+        // Default to 1 hour if end time is earlier than start time
+        durationMinutes = 60;
+      }
+
+      // Build new booking object with all user-entered data
       final dynamic newBooking = {
         "customer_name": clientNameController.text,
         "phone_no": clientPhoneNumberController.text,
@@ -275,6 +283,7 @@ class _NewBookingScreenState extends State<NewBookingScreen> {
         "price": price,
         "start_time": startTime,
         "end_time": endTime,
+        "duration_minutes": durationMinutes,
         "notes": notesController.text,
         "location": selectedLocation,
         "address": selectedLocation == "Client Location"
@@ -285,10 +294,14 @@ class _NewBookingScreenState extends State<NewBookingScreen> {
       // Print booking details for debugging
       print('Creating new booking:');
       print('Customer: ${newBooking["customer_name"]}');
+      print('Phone: ${newBooking["phone_no"]}');
       print('Date: ${DateFormat('yyyy-MM-dd').format(newBooking["date"])}');
       print('Service: ${newBooking["service_name"]}');
       print(
           'Time: ${_formatTimeOfDay(newBooking["start_time"])} - ${_formatTimeOfDay(newBooking["end_time"])}');
+      print('Location: ${newBooking["location"]}');
+      print('Address: ${newBooking["address"]}');
+      print('Notes: ${newBooking["notes"]}');
 
       // Save to API
       bool success = await bookingController.addBookingToApi(newBooking);

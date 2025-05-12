@@ -326,6 +326,7 @@ class BookingController extends GetxController {
   Future<bool> addBookingToApi(Map<String, dynamic> bookingData) async {
     try {
       isLoading.value = true;
+      print('Adding new booking with data: ${bookingData.toString()}');
 
       // Format booking date to YYYY-MM-DD
       String formattedDate =
@@ -341,6 +342,18 @@ class BookingController extends GetxController {
         phoneNumber = "+$phoneNumber";
       }
 
+      // Calculate duration between start and end time
+      Duration duration = Duration(
+        hours: bookingData["end_time"].hour - bookingData["start_time"].hour,
+        minutes:
+            bookingData["end_time"].minute - bookingData["start_time"].minute,
+      );
+
+      // Ensure duration is positive
+      if (duration.inMinutes <= 0) {
+        duration = Duration(minutes: 60); // Default to 1 hour
+      }
+
       // Hardcoded user ID that works
       String userId = "68147786cc7c79ccbf7e39f1";
 
@@ -354,7 +367,9 @@ class BookingController extends GetxController {
         "lead_status": "Confirmed",
         "phone_number": phoneNumber,
         "price": bookingData["price"],
-        "notes": bookingData["notes"] ?? ""
+        "notes": bookingData["notes"] ?? "",
+        "location": bookingData["location"] ?? "Studio",
+        "address": bookingData["address"] ?? "",
       };
 
       print('============ Request body =============');
@@ -390,18 +405,7 @@ class BookingController extends GetxController {
           bookingData["start_time"].minute,
         );
 
-        Duration duration = Duration(
-          hours: bookingData["end_time"].hour - bookingData["start_time"].hour,
-          minutes:
-              bookingData["end_time"].minute - bookingData["start_time"].minute,
-        );
-
-        // Ensure duration is at least 30 minutes
-        if (duration.inMinutes <= 0) {
-          duration = Duration(minutes: 30);
-        }
-
-        // Create local booking
+        // Create local booking with exact user data
         final localBooking = Booking(
           id: 'local_${DateTime.now().millisecondsSinceEpoch}',
           customerName: bookingData["customer_name"],
@@ -415,20 +419,51 @@ class BookingController extends GetxController {
 
         // Add to the local bookings list
         bookings.add(localBooking);
-        print('Added booking to local list');
+        print(
+            'Added user-created booking to local list: ${localBooking.customerName} - ${localBooking.serviceName}');
 
         return true;
       } else {
         print('Server rejected the booking. Adding locally only.');
 
-        // Add a local booking even if server rejects it
+        // Add a local booking even if server rejects it - with exact user data
+        DateTime bookingDate = bookingData["date"];
         final localBooking = Booking(
           id: 'local_${DateTime.now().millisecondsSinceEpoch}',
           customerName: bookingData["customer_name"],
           phoneNo: phoneNumber,
-          date: bookingData["date"],
+          date: bookingDate,
           serviceName: bookingData["service_name"],
           price: bookingData["price"],
+          duration: duration,
+          startTime: DateTime(
+            bookingDate.year,
+            bookingDate.month,
+            bookingDate.day,
+            bookingData["start_time"].hour,
+            bookingData["start_time"].minute,
+          ),
+        );
+
+        // Add to the local bookings list
+        bookings.add(localBooking);
+        print('Added local booking with user data as fallback');
+
+        // Return true for UI purposes
+        return true;
+      }
+    } catch (e) {
+      print('Error creating booking: $e');
+
+      // As a final fallback, add a local booking with as much user data as possible
+      try {
+        final localBooking = Booking(
+          id: 'emergency_${DateTime.now().millisecondsSinceEpoch}',
+          customerName: bookingData["customer_name"] ?? "Unknown Customer",
+          phoneNo: bookingData["phone_no"]?.toString() ?? "",
+          date: bookingData["date"] ?? DateTime.now(),
+          serviceName: bookingData["service_name"] ?? "Unknown Service",
+          price: bookingData["price"] ?? 0,
           duration: Duration(hours: 1),
           startTime: DateTime(
             bookingData["date"].year,
@@ -439,31 +474,9 @@ class BookingController extends GetxController {
           ),
         );
 
-        // Add to the local bookings list
         bookings.add(localBooking);
-        print('Added local booking as fallback');
-
-        // Return true for UI purposes
-        return true;
-      }
-    } catch (e) {
-      print('Error creating booking: $e');
-
-      // As a final fallback, add a local booking
-      try {
-        final localBooking = Booking(
-          id: 'emergency_${DateTime.now().millisecondsSinceEpoch}',
-          customerName: bookingData["customer_name"] ?? "Unknown Customer",
-          phoneNo: bookingData["phone_no"]?.toString() ?? "",
-          date: bookingData["date"] ?? DateTime.now(),
-          serviceName: bookingData["service_name"] ?? "Unknown Service",
-          price: bookingData["price"] ?? 0,
-          duration: Duration(hours: 1),
-          startTime: DateTime.now(),
-        );
-
-        bookings.add(localBooking);
-        print('Added emergency fallback booking after exception');
+        print(
+            'Added emergency fallback booking with user data after exception');
         return true;
       } catch (innerError) {
         print('Complete failure to create booking: $innerError');
@@ -491,26 +504,12 @@ class BookingController extends GetxController {
 
   // Add a utility method to ensure we have test data (for development)
   Future<void> ensureTestDataLoaded() async {
+    // We no longer add test data automatically
+    // Real user-entered data will be used instead
     if (bookings.isEmpty) {
-      print('No bookings found - adding test data for visibility testing');
-
-      // Today's booking
-      DateTime today = DateTime.now();
-
-      // Add at least one booking for today for testing
-      final todayBooking = Booking(
-        id: 'test_today_${DateTime.now().millisecondsSinceEpoch}',
-        customerName: 'Test Customer',
-        phoneNo: '+1234567890',
-        date: today,
-        serviceName: 'Test Service',
-        price: 1500,
-        duration: Duration(hours: 1),
-        startTime: DateTime(today.year, today.month, today.day, 10, 0),
-      );
-
-      bookings.add(todayBooking);
-      print('Added test booking for today');
+      print(
+          'No bookings found - but we will not add test data to avoid confusion');
+      // The app will now only show actual user-created bookings
     }
   }
 }

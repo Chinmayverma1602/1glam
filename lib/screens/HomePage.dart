@@ -286,6 +286,22 @@ class _HomePageState extends State<HomePage> {
                       textColor: Colors.white,
                       textSize: 16,
                       isBold: true,
+                      onTap: () async {
+                        // Try to open WhatsApp app
+                        final whatsappUri =
+                            Uri.parse("whatsapp://send?text=Hello");
+                        if (await canLaunchUrl(whatsappUri)) {
+                          await launchUrl(whatsappUri);
+                        } else {
+                          // If WhatsApp app is not installed, open WhatsApp Web
+                          final webWhatsappUri =
+                              Uri.parse("https://web.whatsapp.com/");
+                          await launchUrl(
+                            webWhatsappUri,
+                            mode: LaunchMode.externalApplication,
+                          );
+                        }
+                      },
                     ),
                     const SizedBox(height: 16),
                     CustomButton3(
