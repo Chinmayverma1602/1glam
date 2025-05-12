@@ -29,6 +29,7 @@ class ServiceItem {
   final RxString artistImage;
   String? documentId;
   String? userEmail;
+  final RxBool isUpdating = false.obs;
 
   ServiceItem(
       {required this.id,
@@ -59,6 +60,25 @@ class ServiceItem {
         leadingIconColor = leadingIconColor.obs,
         trailingIconColor = trailingIconColor.obs,
         artistImage = artistImage.obs;
+
+  // Initialize field listeners to update totals when changes occur
+  void initListeners(Function onUpdate) {
+    durationController.addListener(() {
+      isUpdating.value = true;
+      onUpdate();
+      Future.delayed(const Duration(milliseconds: 500), () {
+        isUpdating.value = false;
+      });
+    });
+
+    priceController.addListener(() {
+      isUpdating.value = true;
+      onUpdate();
+      Future.delayed(const Duration(milliseconds: 500), () {
+        isUpdating.value = false;
+      });
+    });
+  }
 
   Map<String, dynamic> toJson() {
     return {
@@ -91,8 +111,8 @@ class ServiceItem {
             text: data['description'] ?? 'Service description'),
         serviceCategoryController: SingleValueDropDownController(
             data: DropDownValueModel(
-                name: data['serviceCategory'] ?? 'Luxury',
-                value: data['serviceCategory'] ?? 'Luxury')),
+                name: data['serviceCategory'] ?? 'Standard',
+                value: data['serviceCategory'] ?? 'Standard')),
         buttonBorderColor: AppColors.hintText.withOpacity(0.4),
         borderColor: AppColors.hintText,
         hintText: data['hintText'] ?? 'Service description',
@@ -132,6 +152,11 @@ class AddServicesController extends GetxController {
   // Computed property to get current service items based on mode
   RxList<ServiceItem> get serviceWidgets =>
       isBundle.value ? tempbundleServiceWidgets : tempsingleServiceWidget;
+
+  // Total time and price
+  RxInt totalTime = 0.obs;
+  RxString totalPrice = '0'.obs;
+  RxBool isRefreshing = false.obs;
 
   final RxBool _isLoading = false.obs;
   bool get isLoading => _isLoading.value;
@@ -177,6 +202,7 @@ class AddServicesController extends GetxController {
         final isServiceBundle = data['isBundle'] == true;
 
         final serviceItem = ServiceItem.fromFirestore(doc, _serviceIdCounter++);
+        serviceItem.initListeners(updateTotals);
 
         if (isServiceBundle) {
           bundleServiceWidgets.add(serviceItem);
@@ -184,6 +210,8 @@ class AddServicesController extends GetxController {
           singleServiceWidget.add(serviceItem);
         }
       }
+
+      updateTotals();
     } catch (e) {
       print('Error fetching services: $e');
     } finally {
@@ -194,6 +222,7 @@ class AddServicesController extends GetxController {
   // Toggle between Bundle and Single mode
   void toggleMode() {
     isBundle.value = !isBundle.value;
+    updateTotals();
   }
 
   // Add a new service to the current mode
@@ -210,7 +239,7 @@ class AddServicesController extends GetxController {
         descriptionController:
             TextEditingController(text: 'Service description'),
         serviceCategoryController: SingleValueDropDownController(
-            data: DropDownValueModel(name: "Luxury", value: "Luxury")),
+            data: DropDownValueModel(name: "Standard", value: "Standard")),
         buttonBorderColor: AppColors.hintText.withOpacity(0.4),
         borderColor: AppColors.hintText,
         hintText: 'Service description',
@@ -227,13 +256,33 @@ class AddServicesController extends GetxController {
         artistImage: 'assets/images/img.svg',
         userEmail: 'user_email1@gmail.com');
 
+    // Initialize listeners for the new service
+    newServiceItem.initListeners(updateTotals);
+
     if (isBundle.value) {
       tempbundleServiceWidgets.add(newServiceItem);
     } else {
       tempsingleServiceWidget.add(newServiceItem);
     }
 
+    updateTotals();
     update(); // Trigger UI update
+  }
+
+  // Update total time and price when changes occur
+  void updateTotals() {
+    isRefreshing.value = true;
+
+    // Calculate total time
+    totalTime.value = calculateTotalTime();
+
+    // Calculate total price
+    totalPrice.value = calculateTotalPrice();
+
+    // Set a short delay to simulate refreshing
+    Future.delayed(const Duration(milliseconds: 800), () {
+      isRefreshing.value = false;
+    });
   }
 
   void removeServiceFromFirebase(int id) async {
@@ -279,6 +328,7 @@ class AddServicesController extends GetxController {
 
         // Remove from list
         bundleServiceWidgets.removeAt(index);
+        updateTotals();
       }
     } else {
       final index = singleServiceWidget.indexWhere((item) => item.id == id);
@@ -321,6 +371,7 @@ class AddServicesController extends GetxController {
 
         // Remove from list
         singleServiceWidget.removeAt(index);
+        updateTotals();
       }
     }
   }
@@ -343,12 +394,11 @@ class AddServicesController extends GetxController {
 
         // Remove from list
         tempbundleServiceWidgets.removeAt(index);
+        updateTotals();
       }
     } else {
       final index = tempsingleServiceWidget.indexWhere((item) => item.id == id);
       if (index != -1) {
-        // If service exists in Firestore, delete it
-
         // Dispose of controllers
         tempsingleServiceWidget[index].titleController.dispose();
         tempsingleServiceWidget[index].descriptionController.dispose();
@@ -359,6 +409,7 @@ class AddServicesController extends GetxController {
 
         // Remove from list
         tempsingleServiceWidget.removeAt(index);
+        updateTotals();
       }
     }
   }
@@ -411,6 +462,9 @@ class AddServicesController extends GetxController {
       ServiceItem serviceItem = ServiceItem.fromFirestore(doc, 0);
       serviceItem.documentId = docId;
 
+      // Initialize listeners for the service
+      serviceItem.initListeners(updateTotals);
+
       // Add to the appropriate list
       if (isServiceBundle) {
         tempbundleServiceWidgets.add(serviceItem);
@@ -418,6 +472,7 @@ class AddServicesController extends GetxController {
         tempsingleServiceWidget.add(serviceItem);
       }
 
+      updateTotals();
       _isLoading.value = false;
       return true;
     } catch (e) {
@@ -449,6 +504,7 @@ class AddServicesController extends GetxController {
         }
       }
 
+      updateTotals();
       _isLoading.value = false;
       return true;
     } catch (e) {

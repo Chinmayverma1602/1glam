@@ -170,64 +170,93 @@ class AddServicesPage extends StatelessWidget {
                         border: Border.all(color: Colors.grey.shade200),
                       ),
                       padding: const EdgeInsets.all(16),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "Total time",
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 14,
-                                    color: Colors.grey,
-                                  ),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  "${controller.calculateTotalTime()} hours",
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
-                                    color: AppColors.primary,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Container(
-                            height: 40,
-                            width: 1,
-                            color: Colors.grey.shade300,
-                          ),
-                          Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.only(left: 16),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    "Total price",
-                                    style: GoogleFonts.poppins(
-                                      fontSize: 14,
-                                      color: Colors.grey,
+                      child: Obx(() => Row(
+                            children: [
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Text(
+                                          "Total time",
+                                          style: GoogleFonts.poppins(
+                                            fontSize: 14,
+                                            color: Colors.grey,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 4),
+                                        if (controller.isRefreshing.value)
+                                          SizedBox(
+                                            height: 12,
+                                            width: 12,
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 2,
+                                              color: AppColors.primary,
+                                            ),
+                                          ),
+                                      ],
                                     ),
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    "₹ ${controller.calculateTotalPrice()}",
-                                    style: GoogleFonts.poppins(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600,
-                                      color: AppColors.primary,
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      "${controller.totalTime.value} hours",
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                        color: AppColors.primary,
+                                      ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
-                            ),
-                          ),
-                        ],
-                      ),
+                              Container(
+                                height: 40,
+                                width: 1,
+                                color: Colors.grey.shade300,
+                              ),
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.only(left: 16),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Text(
+                                            "Total price",
+                                            style: GoogleFonts.poppins(
+                                              fontSize: 14,
+                                              color: Colors.grey,
+                                            ),
+                                          ),
+                                          const SizedBox(width: 4),
+                                          if (controller.isRefreshing.value)
+                                            SizedBox(
+                                              height: 12,
+                                              width: 12,
+                                              child: CircularProgressIndicator(
+                                                strokeWidth: 2,
+                                                color: AppColors.primary,
+                                              ),
+                                            ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        "₹ ${controller.totalPrice.value}",
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600,
+                                          color: AppColors.primary,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          )),
                     ),
 
                     const SizedBox(height: 24),
@@ -294,8 +323,13 @@ class AddServicesPage extends StatelessWidget {
                                 serviceItem.trailingIconColor.value,
                             backgroundColor: Colors.white,
                             artistImage: serviceItem.artistImage.value,
+                            isUpdating: serviceItem.isUpdating,
                             onDelete: () =>
                                 controller.removeService(serviceItem.id),
+                            onServiceTypeChange: (newType) {
+                              serviceItem.serviceType.value = newType;
+                              controller.update();
+                            },
                           ),
                         );
                       }),

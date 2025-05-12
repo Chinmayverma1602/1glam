@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:glam1/constants/AppColors.dart';
-import 'package:switcher_button/switcher_button.dart';
 import 'package:dropdown_textfield/dropdown_textfield.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:glam1/services/add_services_controller.dart';
 
 class CustomServiceSelectionContainer extends StatefulWidget {
   final int id;
@@ -27,6 +27,8 @@ class CustomServiceSelectionContainer extends StatefulWidget {
   final Color backgroundColor;
   final String artistImage;
   final VoidCallback onDelete;
+  final Function(String) onServiceTypeChange;
+  final RxBool? isUpdating;
 
   const CustomServiceSelectionContainer({
     Key? key,
@@ -42,7 +44,7 @@ class CustomServiceSelectionContainer extends StatefulWidget {
     required this.priceController,
     required this.artistNameController,
     required this.artistSpecializationController,
-    required this.serviceType,
+    this.serviceType = "Standard",
     required this.serviceIcon,
     this.textColor = Colors.black,
     required this.leadingIconColor,
@@ -50,6 +52,8 @@ class CustomServiceSelectionContainer extends StatefulWidget {
     this.backgroundColor = Colors.white,
     required this.artistImage,
     required this.onDelete,
+    required this.onServiceTypeChange,
+    this.isUpdating,
   }) : super(key: key);
 
   @override
@@ -61,6 +65,7 @@ class _CustomServiceSelectionContainerState
     extends State<CustomServiceSelectionContainer> {
   bool isEditing = false;
   final FocusNode _titleFocusNode = FocusNode();
+  bool isBundleServiceEnabled = true;
 
   @override
   void dispose() {
@@ -167,33 +172,36 @@ class _CustomServiceSelectionContainerState
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 ),
               ),
-              child: DropDownTextField(
-                controller: widget.serviceCategoryController,
-                clearOption: false,
-                textFieldDecoration: InputDecoration(
-                  hintText: "Select Service Category",
+              child: TextFormField(
+                controller: TextEditingController(
+                    text:
+                        widget.serviceCategoryController.dropDownValue?.name ??
+                            ""),
+                decoration: InputDecoration(
+                  hintText: "Select Service",
                   hintStyle: GoogleFonts.poppins(
                     color: Colors.grey,
                     fontSize: 14,
                   ),
+                  suffixIcon:
+                      Icon(Icons.edit_outlined, color: AppColors.primary),
                 ),
+                style: GoogleFonts.poppins(
+                  color: Colors.black87,
+                  fontSize: 14,
+                ),
+                onChanged: (value) {
+                  if (value.isNotEmpty) {
+                    // Update dropdown value to custom text
+                    widget.serviceCategoryController.setDropDown(
+                        DropDownValueModel(name: value, value: value));
+                  }
+                },
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return "Please select a service";
+                    return "Please enter a service";
                   }
                   return null;
-                },
-                dropDownList: const [
-                  DropDownValueModel(name: "Hairstyling", value: "Hairstyling"),
-                  DropDownValueModel(name: "Makeup", value: "Makeup"),
-                  DropDownValueModel(name: "Facial", value: "Facial"),
-                  DropDownValueModel(name: "Massage", value: "Massage"),
-                  DropDownValueModel(
-                      name: "Hair Coloring", value: "Hair Coloring"),
-                  DropDownValueModel(name: "Nail Art", value: "Nail Art"),
-                ],
-                onChanged: (val) {
-                  // Handle on change
                 },
               ),
             ),
@@ -228,61 +236,99 @@ class _CustomServiceSelectionContainerState
               children: [
                 SizedBox(
                   width: MediaQuery.of(context).size.width * 0.2,
-                  child: TextField(
-                    controller: widget.durationController,
-                    decoration: InputDecoration(
-                      contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 12),
-                      hintText: "Duration",
-                      hintStyle: GoogleFonts.poppins(
-                        color: Colors.grey,
-                        fontSize: 14,
+                  child: Stack(
+                    children: [
+                      TextField(
+                        controller: widget.durationController,
+                        decoration: InputDecoration(
+                          contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 12),
+                          hintText: "Duration",
+                          hintStyle: GoogleFonts.poppins(
+                            color: Colors.grey,
+                            fontSize: 14,
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(color: Colors.grey.shade300),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide:
+                                const BorderSide(color: AppColors.primary),
+                          ),
+                        ),
+                        style: GoogleFonts.poppins(
+                          color: Colors.black87,
+                          fontSize: 14,
+                        ),
+                        keyboardType: TextInputType.number,
                       ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide(color: Colors.grey.shade300),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: const BorderSide(color: AppColors.primary),
-                      ),
-                    ),
+                      if (widget.isUpdating != null && widget.isUpdating!.value)
+                        Positioned(
+                          top: 8,
+                          right: 8,
+                          child: SizedBox(
+                            height: 15,
+                            width: 15,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: AppColors.primary,
+                            ),
+                          ),
+                        ),
+                    ],
                   ),
                 ),
-                const SizedBox(width: 8.0),
-                Text(
-                  "hours",
-                  style: GoogleFonts.poppins(
-                    color: Colors.grey.shade700,
-                    fontSize: 14,
-                  ),
-                ),
-                const SizedBox(width: 16.0),
+                const SizedBox(width: 10),
                 Expanded(
-                  child: TextField(
-                    controller: widget.priceController,
-                    decoration: InputDecoration(
-                      contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 12),
-                      prefixText: "₹ ",
-                      prefixStyle: GoogleFonts.poppins(
-                        color: Colors.grey.shade700,
-                        fontSize: 14,
+                  child: Stack(
+                    children: [
+                      TextField(
+                        controller: widget.priceController,
+                        decoration: InputDecoration(
+                          contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 12),
+                          hintText: "Price",
+                          prefixText: "₹ ",
+                          prefixStyle: GoogleFonts.poppins(
+                            color: Colors.black87,
+                            fontSize: 14,
+                          ),
+                          hintStyle: GoogleFonts.poppins(
+                            color: Colors.grey,
+                            fontSize: 14,
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(color: Colors.grey.shade300),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide:
+                                const BorderSide(color: AppColors.primary),
+                          ),
+                        ),
+                        style: GoogleFonts.poppins(
+                          color: Colors.black87,
+                          fontSize: 14,
+                        ),
+                        keyboardType: TextInputType.number,
                       ),
-                      hintText: "Price",
-                      hintStyle: GoogleFonts.poppins(
-                        color: Colors.grey,
-                        fontSize: 14,
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide(color: Colors.grey.shade300),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: const BorderSide(color: AppColors.primary),
-                      ),
-                    ),
+                      if (widget.isUpdating != null && widget.isUpdating!.value)
+                        Positioned(
+                          top: 8,
+                          right: 8,
+                          child: SizedBox(
+                            height: 15,
+                            width: 15,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: AppColors.primary,
+                            ),
+                          ),
+                        ),
+                    ],
                   ),
                 ),
               ],
@@ -377,33 +423,143 @@ class _CustomServiceSelectionContainerState
                         borderRadius: BorderRadius.circular(16),
                       ),
                       child: Center(
-                        child: SvgPicture.asset(
-                          widget.serviceIcon,
-                          width: 20,
-                          height: 20,
+                        child: Icon(
+                          Icons.style_outlined,
+                          size: 20,
                           color: AppColors.primary,
                         ),
                       ),
                     ),
                     const SizedBox(width: 12),
-                    Text(
-                      widget.serviceType,
-                      style: GoogleFonts.poppins(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.black87,
+                    InkWell(
+                      onTap: () {
+                        // Show dialog to change service type
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            TextEditingController typeController =
+                                TextEditingController(text: widget.serviceType);
+                            return AlertDialog(
+                              title: Text(
+                                "Edit Service Type",
+                                style: GoogleFonts.poppins(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 16,
+                                ),
+                              ),
+                              content: TextField(
+                                controller: typeController,
+                                decoration: InputDecoration(
+                                  hintText: "Enter service type",
+                                  hintStyle: GoogleFonts.poppins(
+                                    color: Colors.grey,
+                                    fontSize: 14,
+                                  ),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                ),
+                                autofocus: true,
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: Text(
+                                    "Cancel",
+                                    style: GoogleFonts.poppins(
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    // Update service type
+                                    if (typeController.text.isNotEmpty) {
+                                      widget.onServiceTypeChange(
+                                          typeController.text);
+                                      Navigator.of(context).pop();
+                                    }
+                                  },
+                                  child: Text(
+                                    "Save",
+                                    style: GoogleFonts.poppins(
+                                      color: AppColors.primary,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      },
+                      child: Row(
+                        children: [
+                          Text(
+                            widget.serviceType,
+                            style: GoogleFonts.poppins(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.black87,
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Icon(
+                            Icons.edit,
+                            size: 14,
+                            color: Colors.grey.shade600,
+                          ),
+                        ],
                       ),
                     ),
                   ],
                 ),
-                SwitcherButton(
-                  value: true,
-                  size: 30,
-                  onChange: (value) {
-                    // Add your switch toggle functionality here.
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      isBundleServiceEnabled = !isBundleServiceEnabled;
+                    });
                   },
-                  onColor: AppColors.primary,
-                  offColor: Colors.grey.shade400,
+                  child: Container(
+                    width: 50,
+                    height: 24,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      color: isBundleServiceEnabled
+                          ? AppColors.primary
+                          : Colors.grey.shade300,
+                    ),
+                    child: Stack(
+                      children: [
+                        AnimatedPositioned(
+                          duration: const Duration(milliseconds: 150),
+                          curve: Curves.easeInOut,
+                          left: isBundleServiceEnabled ? 26 : 0,
+                          right: isBundleServiceEnabled ? 0 : 26,
+                          top: 0,
+                          bottom: 0,
+                          child: Container(
+                            width: 24,
+                            height: 24,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.white,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.1),
+                                  blurRadius: 4,
+                                  spreadRadius: 0.5,
+                                  offset: const Offset(0, 1),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ],
             ),
